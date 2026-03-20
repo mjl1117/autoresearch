@@ -72,6 +72,7 @@ include: "rules/alphafold.smk"             # AlphaFold2 structure download (EBI)
 include: "rules/deepcoil.smk"              # HAMP linker extraction + DeepCoil coiled-coil prediction
 include: "rules/rfdiffusion.smk"           # RFDiffusion linker design
 include: "rules/validation.smk"           # Ground truth validation against well_characterized_tcs.tsv
+include: "rules/visualize.smk"            # Publication-quality result visualizations
 
 rule all:
     input:

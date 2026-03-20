@@ -42,6 +42,7 @@ def load_ftp_paths(summary_path: str) -> dict:
 
 def download_genome(accession: str, ftp_base: str, genome_dir: Path) -> str:
     """Download proteins.faa, genomic.fna, genomic.gff for one accession."""
+    ftp_base = ftp_base.rstrip("/")   # NCBI paths sometimes have trailing slash
     prefix = os.path.basename(ftp_base)
     out_dir = genome_dir / f"{accession}_{prefix.split('_', 2)[-1]}"
 

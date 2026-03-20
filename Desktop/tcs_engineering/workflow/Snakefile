@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import sys
 
 configfile: "config/config.yaml"
 workdir: "/Users/matthew/Desktop/tcs_engineering"
@@ -40,16 +41,18 @@ if os.path.exists(_curated_list_path):
     with open(_curated_list_path) as _f:
         _curated = set(l.strip() for l in _f if l.strip() and not l.startswith("#"))
     genomes = [g for g in FTP_LOOKUP.keys() if g in set(existing_folders) and g in _curated]
-    print(f"[Snakefile] Curated genome list loaded: {len(genomes)} genomes")
+    sys.stderr.write(f"[Snakefile] Curated genome list loaded: {len(genomes)} genomes\n")
 else:
     genomes = [g for g in FTP_LOOKUP.keys() if g in existing_folders]
-    print(f"[Snakefile] WARNING: no curated_genome_list.txt found — "
-          f"running on all {len(genomes)} downloaded genomes.")
-    print("[Snakefile] Run first: python scripts/curate_genome_set.py "
-          "--assembly_summary data/metadata/assembly_summary.txt "
-          "--genome_dir data/genomes "
-          "--output data/reference/curated_genome_list.txt "
-          "--report data/reference/curation_report.txt")
+    sys.stderr.write(
+        f"[Snakefile] WARNING: no curated_genome_list.txt found — "
+        f"running on all {len(genomes)} downloaded genomes.\n"
+        "[Snakefile] Run: python scripts/curate_genome_set.py "
+        "--assembly_summary data/metadata/assembly_summary.txt "
+        "--genome_dir data/genomes "
+        "--output data/reference/curated_genome_list.txt "
+        "--report data/reference/curation_report.txt\n"
+    )
 
 # 4. Standard Includes
 include: "rules/genomes.smk"                # Downloads data

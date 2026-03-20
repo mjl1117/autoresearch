@@ -1,0 +1,30 @@
+threads: 16
+
+# ─── Genome set curation ──────────────────────────────────────────────────────
+# Run scripts/curate_genome_set.py once before the pipeline to produce
+# data/reference/curated_genome_list.txt. The Snakefile reads this at startup
+# and skips the warning about uncapped genera.
+#
+# Recommended reference organisms (scripts/tcs_constants.py) are always kept
+# regardless of this cap.
+#
+# Rationale: 83% of the original 1,475-genome set came from 3 genera,
+# inflating cluster sizes and phase coherence scores (pseudo-replication).
+# A cap of 5 preserves species-level diversity within a genus.
+max_per_genus: 5           # passed to curate_genome_set.py --max_per_genus
+
+# ─── AlphaFold2 download ──────────────────────────────────────────────────────
+alphafold_max_structures: 150      # top chimera candidates to pull AF2 structures for
+alphafold_version: 4               # AF2 model version (EBI)
+
+# ─── HAMP linker window (heptad register analysis) ───────────────────────────
+deepcoil_upstream_residues: 30     # residues before HAMP start to include in linker window
+deepcoil_downstream_residues: 50   # residues into HAMP domain to include
+
+# ─── RFDiffusion linker design ────────────────────────────────────────────────
+# Install RFDiffusion: git clone https://github.com/RosettaCommons/RFdiffusion
+rfdiffusion_path: "~/RFdiffusion"  # path to RFdiffusion repo (run_inference.py lives here)
+rfdiffusion_n_candidates: 10       # top HK_sensor_swap candidates to design
+rfdiffusion_n_designs: 10          # designs per candidate
+rfdiffusion_partial_T: 0.15        # noise level for partial diffusion (0.1–0.2 = conservative)
+                                   # Hatstat 2025: linker phase/length critical — start conservative

@@ -1,0 +1,110 @@
+import pandas as pd
+import os
+
+configfile: "config/config.yaml"
+workdir: "/Users/matthew/Desktop/tcs_engineering"
+
+# Prepend the virtualenv so all shell rules find 'python', 'mmseqs', etc.
+shell.prefix("export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH; ")
+
+# 1. Load and Name Columns
+GENOME_TABLE = pd.read_csv(
+    "data/metadata/assembly_summary.txt",
+    sep="\t",
+    skiprows=2,
+    header=None
+)
+
+GENOME_TABLE.columns = [
+    "accession", "bioproject", "biosample", "wgs_master", "refseq_category", 
+    "taxid", "species_taxid", "organism_name", "infraspecific_name", 
+    "isolate", "version_status", "assembly_level", "release_type", 
+    "genome_rep", "seq_rel_date", "asm_name", "submitter", 
+    "gbrs_paired_asm", "paired_asm_comp", "ftp_path"
+] + [f"extra_{i}" for i in range(GENOME_TABLE.shape[1] - 20)]
+
+# 2. Build the Universal Lookup Map [cite: 17, 18]
+GENOME_TABLE["full_id"] = GENOME_TABLE["accession"] + "_" + GENOME_TABLE["asm_name"]
+short_to_ftp = GENOME_TABLE.set_index("accession")["ftp_path"].to_dict()
+full_to_ftp = GENOME_TABLE.set_index("full_id")["ftp_path"].to_dict()
+FTP_LOOKUP = {**short_to_ftp, **full_to_ftp}
+
+# 3. Determine genome list
+# If a curated list exists (produced by scripts/curate_genome_set.py), use it.
+# Curated list contains full_ids (e.g. GCF_000005845.2_ASM584v2) that match
+# data/genomes/ folder names — so the filter is a direct O(1) set lookup.
+# Without a curated list the pipeline runs on ALL downloaded genomes with a warning.
+existing_folders = [d for d in os.listdir("data/genomes") if d.startswith("GCF_")]
+_curated_list_path = "data/reference/curated_genome_list.txt"
+if os.path.exists(_curated_list_path):
+    with open(_curated_list_path) as _f:
+        _curated = set(l.strip() for l in _f if l.strip() and not l.startswith("#"))
+    genomes = [g for g in FTP_LOOKUP.keys() if g in set(existing_folders) and g in _curated]
+    print(f"[Snakefile] Curated genome list loaded: {len(genomes)} genomes")
+else:
+    genomes = [g for g in FTP_LOOKUP.keys() if g in existing_folders]
+    print(f"[Snakefile] WARNING: no curated_genome_list.txt found — "
+          f"running on all {len(genomes)} downloaded genomes.")
+    print("[Snakefile] Run first: python scripts/curate_genome_set.py "
+          "--assembly_summary data/metadata/assembly_summary.txt "
+          "--genome_dir data/genomes "
+          "--output data/reference/curated_genome_list.txt "
+          "--report data/reference/curation_report.txt")
+
+# 4. Standard Includes
+include: "rules/genomes.smk"                # Downloads data
+include: "rules/domains.smk"                # Pfam HMM search
+include: "rules/extract_hk_rr.smk"          # HK/RR extraction + classification CSV
+include: "rules/merge_tcs_sequences.smk"    # Aggregates all sequences
+include: "rules/split_sequences.smk"        # Splits merged FAA into HK / RR
+include: "rules/clustering.smk"             # MMseqs2 clustering (HK and RR separately)
+include: "rules/representatives.smk"        # One seq per cluster for phylogeny + MEME
+include: "rules/operons.smk"                # Operon / gene-pair detection
+include: "rules/promoters.smk"              # Promoter extraction + MEME
+include: "rules/phylogeny.smk"              # MAFFT alignment + IQ-TREE
+include: "rules/homology.smk"               # All-vs-all MMseqs2 homology search
+include: "rules/chimera.smk"                # DIAMOND annotation + chimera target scoring
+include: "rules/audit.smk"                 # Species diversity audit + reference TCS coverage
+include: "rules/alphafold.smk"             # AlphaFold2 structure download (EBI)
+include: "rules/deepcoil.smk"              # HAMP linker extraction + DeepCoil coiled-coil prediction
+include: "rules/rfdiffusion.smk"           # RFDiffusion linker design
+include: "rules/validation.smk"           # Ground truth validation against well_characterized_tcs.tsv
+
+rule all:
+    input:
+        # 1. Per-genome operon files
+        expand("results/operons/{genome}.tsv", genome=genomes),
+
+        # 2. Type-separated cluster assignments
+        "results/clusters/hk_clusters/clusters.tsv",
+        "results/clusters/rr_clusters/clusters.tsv",
+
+        # 3. Phylogeny
+        "results/phylogeny/tcs_tree.treefile",
+
+        # 4. Promoter motif discovery
+        "results/promoters/meme.html",
+
+        # 5. Sequence homology (all-vs-all within and across types)
+        "results/homology/hk_homology.m8",
+        "results/homology/rr_homology.m8",
+        "results/homology/hk_vs_rr_homology.m8",
+
+        # 6. Chimera engineering candidates (with bioinformatics linker phase scoring)
+        "results/chimera_targets/chimera_candidates.tsv",
+
+        # 6b. Species diversity + reference TCS coverage audit
+        "results/diversity_audit/diversity_audit_summary.txt",
+
+        # 7. AlphaFold2 structures for top candidates
+        "results/alphafold/af2_manifest.tsv",
+
+        # 8. HAMP heptad register analysis + AF2 structural confidence
+        "results/deepcoil/hamp_register_predictions.tsv",
+        "results/deepcoil/af2_plddt_analysis.tsv",
+
+        # 9. RFDiffusion linker designs (requires RFDiffusion installation)
+        "results/rfdiffusion/candidates_for_design.tsv",
+
+        # 10. Ground truth validation against well_characterized_tcs.tsv
+        "results/validation/validation_summary.txt"

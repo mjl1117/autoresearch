@@ -73,9 +73,9 @@ One `full_id` per line (all 200 selected, including already-downloaded). Replace
 
 ### Assembly Summary Parsing
 
-Use `skiprows=1` (skips the `# See ftp://...` comment line; the second line is the column header). This gives auto column names including `assembly_accession`, `asm_name`, `organism_name`, `assembly_level`, `ftp_path` — the same names used by the existing `00_download_genomes.py`.
+Use `skiprows=2, header=None, usecols=[0,5,7,11,15,19], names=["accession","taxid","organism_name","assembly_level","asm_name","ftp_path"]` — identical pattern to `curate_genome_set.py` (which uses `usecols=[0,5,7,11,15]`), extended with col 19 (`ftp_path`). This is the established codebase pattern and must NOT use `skiprows=1` or auto column names.
 
-**full_id construction:** `ftp_path.split("/")[-1]` — derives the folder name exactly as `00_download_genomes.py` creates it (avoids any `asm_name` normalization issues with spaces or special characters).
+**full_id construction:** `accession + "_" + asm_name` — matches `curate_genome_set.py` and the Snakefile's `FTP_LOOKUP` key format exactly.
 
 ### Derived Columns (added in `parse_assembly_summary`)
 
@@ -99,35 +99,39 @@ existing_dirs = set(
 
 ### Selection Logic
 
-**Priority pass** — called first:
+**`main()` runs three passes (seed → priority fill → diversity fill):**
+
+**Seed pass** — always included, exempt from all caps:
 ```python
-select_priority(df, priority_genera, max_per_genus=1) -> pd.DataFrame
+seed = select_seed(df)   # RECOMMENDED_GENOMES accessions found in assembly_summary (~12 rows)
 ```
-For each genus in priority_genera:
-- Filter `df` to that genus
-- Sort by `(assembly_level_rank ASC, already_downloaded DESC)` — already-downloaded preferred
-- Take top 1
-- Log a warning if genus has zero entries in catalog
+`RECOMMENDED_GENOMES` covers Myxococcus, Streptomyces, Anabaena, Caulobacter, Rhodobacter but NOT Pseudomonas.
 
-Returns 6 rows (one per priority genus; fewer if a genus is absent from catalog).
+**Priority fill** — called after seed, on the non-seed remainder:
+```python
+select_priority(df, priority_genera) -> pd.DataFrame
+```
+`priority_genera` is the subset of `PRIORITY_GENERA` whose genus is not already in `seed`. In normal operation this is only `["Pseudomonas"]` → 1 additional genome.
 
-**Diversity fill** — called after priority, with explicit slot count:
+Sort key per genus: `already_downloaded DESC` (primary), `level_rank ASC` (secondary) — an already-downloaded genome is preferred regardless of assembly quality, since it avoids a download.
+
+**Diversity fill** — fills remaining `target_n - len(seed) - len(priority)` slots:
 ```python
 select_diversity(df, exclude_genera, exclude_full_ids, target_n, max_per_genus=5) -> pd.DataFrame
 ```
-- `exclude_genera`: set of priority genus names (excluded entirely)
-- `exclude_full_ids`: set of full_ids already selected in priority pass
-- `target_n`: `args.target_n - len(priority_selected)` — computed in `main()`, e.g. 194 when 6 priority genomes found
-- Group remaining df by genus, sort by `assembly_level_rank ASC`, take up to `max_per_genus` per genus
-- Concatenate, shuffle (or sort by genus for reproducibility), take up to `target_n`
-- Log a warning if fewer than `target_n` rows available
+- `exclude_genera`: all of `PRIORITY_GENERA` (excluded entirely)
+- `exclude_full_ids`: full_ids already in seed or priority
+- Sort within each genus by `level_rank ASC` then `full_id ASC` for determinism
+- Log warning if catalog exhausted before `target_n`
 
 **`main()` slot arithmetic (explicit):**
 ```python
-priority_selected = select_priority(...)        # up to 6 rows
-diversity_target  = args.target_n - len(priority_selected)  # e.g. 194
-diversity_selected = select_diversity(..., target_n=diversity_target)
-all_selected = pd.concat([priority_selected, diversity_selected])
+seed              = select_seed(df)                          # ~12 rows
+priority_missing  = [g for g in PRIORITY_GENERA if g not in seed_genera]
+priority          = select_priority(pool, priority_missing)  # ~1 row (Pseudomonas)
+diversity_target  = args.target_n - len(seed) - len(priority)  # ~187
+diversity         = select_diversity(..., target_n=diversity_target)
+all_selected      = pd.concat([seed, priority, diversity])   # ~200 rows
 ```
 
 ### Functions

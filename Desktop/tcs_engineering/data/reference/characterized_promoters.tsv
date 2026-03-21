@@ -1,0 +1,11 @@
+dbd_family	promoter_name	target_gene	source_organism	ncbi_genome_accession	gene_name_ncbi	inducing_signal	sigma_factor	cofactors_required	dynamic_range_fold	aerobic_compatible	heterologous	synthetic_bio_validated	source_pmid	recommended	caveats
+OmpR_PhoB	PphoA	phoA	Escherichia coli K-12 MG1655	NC_000913.3	phoA	Phosphate starvation (<0.2 mM Pi)	sigma70	None	>100	True	False	True	26015501	True	Highest dynamic range in Pho regulon; clean single-input
+OmpR_PhoB	PpstS	pstS	Escherichia coli K-12 MG1655	NC_000913.3	pstS	Phosphate starvation (earliest activation)	sigma70	None	>100	True	False	True	2651888	True	Earliest PhoB-activated promoter; highest affinity Pho box
+OmpR_PhoB	PompF	ompF	Escherichia coli K-12 MG1655	NC_000913.3	ompF	Low osmolarity	sigma70	None	~10	True	False	True	2553720	True	Activated by low OmpR-P; repressed at high osmolarity
+OmpR_PhoB	PompC	ompC	Escherichia coli K-12 MG1655	NC_000913.3	ompC	High osmolarity	sigma70	None	~10	True	False	True	2553720	False	Reciprocal with PompF; pair for ratiometric sensing
+NarL_FixJ	PnarK	narK	Escherichia coli K-12 MG1655	NC_000913.3	narK	Nitrate (aerobic or anaerobic)	sigma70	Fnr_partial	~50	True	False	True	8183385	True	Less Fnr-dependent than PnarG; best NarL promoter for aerobic circuits
+NarL_FixJ	PnarG	narG	Escherichia coli K-12 MG1655	NC_000913.3	narG	Nitrate + anaerobic	sigma70	Fnr_required;IHF_required	5000-20000 MU	False	False	True	11460248	False	Highest dynamic range but requires Fnr+IHF; aerobic circuits will see no activation
+NtrC_AAA	PglnAp2	glnA	Escherichia coli K-12 MG1655	NC_000913.3	glnA	Nitrogen limitation (Gln starvation)	sigma54	None	>100	True	False	True	15327947	True	Requires sigma54 (rpoN present in BL21); UAS at -108 to -143; sharp switch
+NarL_FixJ	PttrB	ttrB	Shewanella baltica OS155	CP000563.1	ttrB	Tetrathionate	sigma70	None	~100	True	True	True	28373240	True	Heterologous; Daeffler & Tabor 2017; ported to E. coli BL21; 185-344 bp characterized
+OmpR_PhoB	PthsA	thsA	Shewanella woodyi ATCC 51908	CP001673.1	thsA	Thiosulfate	sigma70	None	~100	True	True	True	28373240	True	Heterologous; Daeffler & Tabor 2017; ported to E. coli BL21
+CheY	none	none	none	none	none	none	none	none	none	none	none	none	none	False	HARD EXCLUDE: CheY has no DNA-binding domain; acts on flagellar motor switch FliM; cannot drive promoter

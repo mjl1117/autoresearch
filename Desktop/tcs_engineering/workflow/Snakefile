@@ -73,6 +73,8 @@ include: "rules/deepcoil.smk"              # HAMP linker extraction + DeepCoil c
 include: "rules/rfdiffusion.smk"           # RFDiffusion linker design
 include: "rules/validation.smk"           # Ground truth validation against well_characterized_tcs.tsv
 include: "rules/visualize.smk"            # Publication-quality result visualizations
+include: "rules/crossover.smk"            # ProstT5 crossover scoring (replaces RFDiffusion logic)
+include: "rules/af3_screening.smk"        # AF3 DBD-promoter binding screening
 
 rule all:
     input:

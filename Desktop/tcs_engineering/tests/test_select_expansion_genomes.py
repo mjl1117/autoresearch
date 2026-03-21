@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from select_expansion_genomes import (
     parse_assembly_summary,
+    select_seed,
     select_priority,
     select_diversity,
 )
@@ -117,3 +118,33 @@ def test_select_diversity_excludes_full_ids():
                               target_n=10, max_per_genus=5)
     assert len(result) == 1
     assert result.iloc[0]["accession"] == "GCF_000002.1"
+
+
+def test_select_diversity_returns_empty_for_zero_target():
+    """select_diversity with target_n=0 returns empty DataFrame without error."""
+    rows = [
+        {"accession": "GCF_000001.1", "asm_name": "asm1",
+         "organism_name": "Vibrio harveyi", "assembly_level": "Complete Genome",
+         "ftp_path": "ftp://example/GCF_000001.1_asm1"},
+    ]
+    df = _make_asm_df(rows)
+    result = select_diversity(df, exclude_genera=set(), exclude_full_ids=set(),
+                              target_n=0, max_per_genus=5)
+    assert len(result) == 0
+
+
+def test_select_seed_returns_recommended_genomes():
+    """select_seed returns rows whose accession is in RECOMMENDED_GENOMES."""
+    real_acc = list(RECOMMENDED_GENOMES.values())[0]
+    rows = [
+        {"accession": real_acc, "asm_name": "asm1",
+         "organism_name": "Escherichia coli", "assembly_level": "Complete Genome",
+         "ftp_path": f"ftp://example/{real_acc}_asm1"},
+        {"accession": "GCF_NOTREAL.1", "asm_name": "asm2",
+         "organism_name": "Fakebacterium sp.", "assembly_level": "Complete Genome",
+         "ftp_path": "ftp://example/GCF_NOTREAL.1_asm2"},
+    ]
+    df = _make_asm_df(rows)
+    result = select_seed(df)
+    assert len(result) == 1
+    assert result.iloc[0]["accession"] == real_acc

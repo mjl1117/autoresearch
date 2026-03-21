@@ -38,14 +38,17 @@ PRIORITY_GENERA = [
 ]
 
 
-def parse_assembly_summary(path: str, genome_dir: str) -> pd.DataFrame:
+def get_downloaded_dirs(genome_dir: str) -> set[str]:
+    """Return the set of already-downloaded genome directory names (GCF_* only)."""
+    return {d for d in os.listdir(genome_dir) if d.startswith("GCF_")}
+
+
+def parse_assembly_summary(path: str, existing_dirs: set[str]) -> pd.DataFrame:
     """Load assembly_summary.txt; add derived columns used for selection.
 
     Follows curate_genome_set.py conventions exactly:
-      skiprows=2, header=None, usecols=[0,5,7,11,15] + col 19 (ftp_path).
+      skiprows=2, header=None, usecols=[0,5,7,11,15,19].
     """
-    existing_dirs = {d for d in os.listdir(genome_dir) if d.startswith("GCF_")}
-
     df = pd.read_csv(
         path, sep="\t", skiprows=2, header=None,
         usecols=[0, 5, 7, 11, 15, 19],
@@ -154,7 +157,8 @@ def main() -> None:
     args = parser.parse_args()
 
     print("Loading assembly summary...")
-    df = parse_assembly_summary(args.assembly_summary, args.genome_dir)
+    existing_dirs = get_downloaded_dirs(args.genome_dir)
+    df = parse_assembly_summary(args.assembly_summary, existing_dirs)
     print(f"  {len(df):,} assemblies with valid FTP paths")
 
     # Step 1: seed from RECOMMENDED_GENOMES
@@ -173,19 +177,22 @@ def main() -> None:
     already_selected = pd.concat([seed, priority], ignore_index=True)
     already_ids = set(already_selected["full_id"])
     diversity_target = args.target_n - len(already_selected)
-    diversity = select_diversity(
-        df,
-        exclude_genera=set(PRIORITY_GENERA),
-        exclude_full_ids=already_ids,
-        target_n=diversity_target,
-        max_per_genus=5,
-    )
+    if diversity_target <= 0:
+        print(f"  Seed + priority already meets target ({len(already_selected)} >= {args.target_n}); skipping diversity fill")
+        diversity = pd.DataFrame(columns=df.columns)
+    else:
+        diversity = select_diversity(
+            df,
+            exclude_genera=set(PRIORITY_GENERA),
+            exclude_full_ids=already_ids,
+            target_n=diversity_target,
+            max_per_genus=5,
+        )
     print(f"  Diversity fill: {len(diversity)} genomes")
 
     all_selected = pd.concat([already_selected, diversity], ignore_index=True)
     print(f"  Total selected: {len(all_selected)} genomes")
 
-    existing_dirs = {d for d in os.listdir(args.genome_dir) if d.startswith("GCF_")}
     write_outputs(all_selected, existing_dirs, args.output_manifest, args.output_list)
 
 

@@ -21,6 +21,19 @@ alphafold_version: 4               # AF2 model version (EBI)
 deepcoil_upstream_residues: 30     # residues before HAMP start to include in linker window
 deepcoil_downstream_residues: 50   # residues into HAMP domain to include
 
+# ─── NCBI Entrez (promoter sequence fetch) ───────────────────────────────────
+ncbi_email: "your@email.here"          # Required by NCBI policy; set before running fetch_promoters
+promoter_upstream_bp: 300              # bp upstream of CDS start to extract for each promoter
+
+# ─── ProstT5 crossover scoring ────────────────────────────────────────────────
+prostt5_device: "cpu"                  # PyTorch device: cpu | mps (Apple Silicon) | cuda
+crossover_top_n: 5                     # Top N crossover positions to report per candidate pair
+
+# ─── AlphaFold3 DBD-promoter screening ───────────────────────────────────────
+af3_top_n: 10                          # Top N RR DBD-swap candidates to screen
+af3_run_local: false                   # Set true to run AF3 locally after JSON preparation
+af3_dir: "~/alphafold3"                # Path to local AF3 installation (only used if af3_run_local: true)
+
 # ─── RFDiffusion linker design ────────────────────────────────────────────────
 # Install RFDiffusion: git clone https://github.com/RosettaCommons/RFdiffusion
 rfdiffusion_path: "~/RFdiffusion"  # path to RFdiffusion repo (run_inference.py lives here)

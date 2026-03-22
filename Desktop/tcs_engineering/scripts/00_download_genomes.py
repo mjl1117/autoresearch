@@ -27,7 +27,8 @@ def ensure_dirs(base):
 def download_file(url, outfile):
 
     subprocess.run(
-        ["curl", "-L", "--fail", "-o", str(outfile), url],
+        ["curl", "-L", "--fail", "--max-time", "300", "--connect-timeout", "30",
+         "-o", str(outfile), url],
         check=True
     )
 

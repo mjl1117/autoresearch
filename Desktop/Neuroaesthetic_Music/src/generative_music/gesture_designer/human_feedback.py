@@ -409,10 +409,7 @@ class _GestureTab(_EvalWidget):
             self._player.play_gesture(gesture)
 
     def _stop_item(self):
-        try:
-            self._player.stop()
-        except Exception:
-            pass
+        self._player.stop_gesture()
 
     def _item_id(self, item: dict) -> str:
         return item['name']
@@ -446,10 +443,7 @@ class _ChordTab(_EvalWidget):
         _play_chord_via_player(self._player, item)
 
     def _stop_item(self):
-        try:
-            self._player.stop()
-        except Exception:
-            pass
+        self._player.stop_gesture()
 
     def _item_id(self, item: dict) -> str:
         return item.get('chord_id', 'unknown')
@@ -492,16 +486,21 @@ class _MusicTab(_EvalWidget):
         return {'name': f'{len(self._sequence)}-gesture sequence', '_seq': True}
 
     def _play_item(self, item: dict):
-        for g_item in self._sequence:
+        from .gesture_model import Gesture
+        all_events = []
+        bpm = 80.0
+        for i, g_item in enumerate(self._sequence):
             gesture = self._lib.load(g_item['path'])
             if gesture:
-                self._player.play_gesture(gesture)
+                if i == 0:
+                    bpm = gesture.bpm
+                all_events.extend(gesture.events)
+        if all_events:
+            seq = Gesture(name='feedback_sequence', bpm=bpm, events=all_events)
+            self._player.play_gesture(seq)
 
     def _stop_item(self):
-        try:
-            self._player.stop()
-        except Exception:
-            pass
+        self._player.stop_gesture()
 
     def _item_id(self, item: dict) -> str:
         return '+'.join(g['name'] for g in self._sequence)
@@ -586,3 +585,9 @@ class HumanFeedbackWindow(QMainWindow):
         tabs.addTab(_MusicTab(store, ranker, pid_fn, player), 'Music')
 
         root.addWidget(tabs)
+        self._player = player
+
+    def closeEvent(self, event):
+        self._player.stop_gesture()
+        self._player.stop_preview()
+        super().closeEvent(event)

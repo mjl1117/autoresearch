@@ -131,3 +131,45 @@ def test_gesture_library_weighted_random(tmp_path):
         f"5-star item appeared {counts['gamma']}x vs unrated {counts['alpha']}x — "
         "exploration weighting not working"
     )
+
+
+# ── ChordPredictor rating weight tests ───────────────────────────────────────
+
+def test_chord_predictor_rating_weight(tmp_path):
+    """A 5-star chord is ranked above an equidistant unrated chord for that participant."""
+    from src.generative_music.gesture_designer.chord_predictor import ChordPredictor
+
+    # Build a minimal chord_predictions.jsonl with two equidistant chords
+    jsonl_path = tmp_path / 'chord_predictions.jsonl'
+    jsonl_path.write_text(
+        json.dumps({'chord_id': 'A', 'predicted_valence': 60.0, 'predicted_arousal': 40.0}) + '\n' +
+        json.dumps({'chord_id': 'B', 'predicted_valence': 40.0, 'predicted_arousal': 60.0}) + '\n'
+    )
+
+    feedback_dir = tmp_path / 'feedback'
+    ranker = LibraryRanker(gesture_dir=tmp_path / 'gestures', feedback_dir=feedback_dir)
+    ranker.update_chord_rating('A', 'alice', 5)   # Alice loves chord A
+
+    predictor = ChordPredictor(jsonl_path=jsonl_path)
+    # Query at (50, 50) — equidistant from both chords
+    result = predictor.find_nearest(50.0, 50.0, n=1,
+                                    participant_id='alice', ranker=ranker)
+    assert result[0]['chord_id'] == 'A', (
+        "5-star chord A should beat equidistant unrated chord B"
+    )
+
+
+def test_chord_predictor_unrated_participant(tmp_path):
+    """With no ratings, find_nearest() behaviour is identical to baseline."""
+    from src.generative_music.gesture_designer.chord_predictor import ChordPredictor
+
+    jsonl_path = tmp_path / 'chord_predictions.jsonl'
+    jsonl_path.write_text(
+        json.dumps({'chord_id': 'A', 'predicted_valence': 55.0, 'predicted_arousal': 45.0}) + '\n' +
+        json.dumps({'chord_id': 'B', 'predicted_valence': 80.0, 'predicted_arousal': 80.0}) + '\n'
+    )
+
+    predictor = ChordPredictor(jsonl_path=jsonl_path)
+    # No participant_id — should return closest by pure distance (chord A at 55/45 is closer to 50/50)
+    result = predictor.find_nearest(50.0, 50.0, n=1)
+    assert result[0]['chord_id'] == 'A'

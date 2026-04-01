@@ -173,3 +173,24 @@ def test_chord_predictor_unrated_participant(tmp_path):
     # No participant_id — should return closest by pure distance (chord A at 55/45 is closer to 50/50)
     result = predictor.find_nearest(50.0, 50.0, n=1)
     assert result[0]['chord_id'] == 'A'
+
+
+def test_ml_delta_rows_excluded_below_threshold(tmp_path):
+    """Pipeline export skips sessions where participant rated fewer than 3 items."""
+    store = FeedbackStore(directory=tmp_path)
+    store.save_rating('alice', 'gesture', 'g1', 50, 50, 3, 55, 55)
+    store.save_rating('alice', 'gesture', 'g2', 50, 50, 3, 55, 55)
+    # Only 2 ratings — should be excluded
+
+    exported = store.export_for_pipeline()
+    assert len(exported) == 0
+
+
+def test_ml_delta_rows_sample_weight(tmp_path):
+    """export_for_pipeline records carry sample_weight = 0.3."""
+    store = FeedbackStore(directory=tmp_path)
+    for i in range(3):
+        store.save_rating('carol', 'gesture', f'g{i}', 50, 50, 3, 55, 55)
+
+    exported = store.export_for_pipeline()
+    assert all(r['sample_weight'] == 0.3 for r in exported)

@@ -101,3 +101,33 @@ def test_library_ranker_no_cross_participant_bleed(tmp_path):
     # Bob has not rated — should return None, not Alice's rating
     bob_rating = ranker.get_participant_gesture_rating('sweep', 'bob')
     assert bob_rating is None
+
+
+def test_gesture_library_weighted_random(tmp_path):
+    """Under-rated / unrated items surface at higher probability than 5-star items."""
+    import random
+    from src.generative_music.gesture_designer.gesture_library import GestureLibrary
+
+    gesture_dir = tmp_path / 'gestures'
+    gesture_dir.mkdir()
+
+    # Create 3 gesture files: unrated, 1-star, 5-star
+    for name, ratings in [('alpha', {}), ('beta', {'alice': 1.0}), ('gamma', {'alice': 5.0})]:
+        (gesture_dir / f'{name}.json').write_text(json.dumps(
+            {'name': name, 'bpm': 80, 'events': [], 'ratings': ratings}
+        ))
+
+    lib = GestureLibrary(directory=gesture_dir)
+
+    # Sample many times and count how often gamma (5-star) is drawn vs alpha (unrated)
+    random.seed(42)
+    counts = {'alpha': 0, 'beta': 0, 'gamma': 0}
+    for _ in range(300):
+        item = lib.weighted_random(participant_id='alice')
+        counts[item['name']] += 1
+
+    # gamma (5-star) should appear significantly less than alpha (unrated)
+    assert counts['gamma'] < counts['alpha'], (
+        f"5-star item appeared {counts['gamma']}x vs unrated {counts['alpha']}x — "
+        "exploration weighting not working"
+    )

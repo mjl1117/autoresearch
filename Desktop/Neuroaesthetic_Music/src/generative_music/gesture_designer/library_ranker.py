@@ -10,11 +10,16 @@ MJL Neuroaesthetic Music Research — 2026
 from __future__ import annotations
 
 import json
+import logging
+import os
 import re
+import tempfile
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 _DEFAULT_GESTURE_DIR  = Path(__file__).parent.parent.parent.parent / 'data' / 'gesture_library'
 _DEFAULT_FEEDBACK_DIR = Path(__file__).parent.parent.parent.parent / 'data' / 'feedback'
@@ -86,9 +91,16 @@ class LibraryRanker:
 
     def update_gesture_rating(self, gesture_name: str,
                               participant_id: str, stars: int) -> None:
-        """Update the running per-participant mean in the gesture JSON file."""
+        """Update the running per-participant mean in the gesture JSON file.
+
+        _rating_counts is internal bookkeeping for the running mean; not public API.
+        """
         path = self._gesture_path(gesture_name)
         if path is None:
+            logger.warning(
+                f"LibraryRanker: gesture file not found for '{gesture_name}' "
+                f"— rating by '{participant_id}' discarded"
+            )
             return
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -106,9 +118,19 @@ class LibraryRanker:
             counts[participant_id]  = n + 1
 
         data['ratings']        = ratings
+        # _rating_counts is internal bookkeeping for the running mean; not public API.
         data['_rating_counts'] = counts
-        with open(path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=2)
+
+        # Atomic write using temporary file + rename (safe on POSIX/macOS)
+        tmp_fd, tmp_path_str = tempfile.mkstemp(
+            dir=path.parent, suffix='.tmp')
+        try:
+            with os.fdopen(tmp_fd, 'w', encoding='utf-8') as tf:
+                json.dump(data, tf, indent=2)
+            Path(tmp_path_str).replace(path)
+        except Exception:
+            os.unlink(tmp_path_str)
+            raise
 
     def get_participant_gesture_rating(self, gesture_name: str,
                                        participant_id: str) -> Optional[float]:

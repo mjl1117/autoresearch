@@ -8,6 +8,7 @@ import pytest
 from pathlib import Path
 
 from src.generative_music.gesture_designer.feedback_store import FeedbackStore
+from src.generative_music.gesture_designer.library_ranker import LibraryRanker
 
 
 # ── FeedbackStore tests ───────────────────────────────────────────────────────
@@ -57,3 +58,46 @@ def test_feedback_store_session_threshold(tmp_path):
     assert 'alice' not in pids
     assert 'bob' in pids
     assert len(exported) == 3
+
+
+# ── LibraryRanker tests ───────────────────────────────────────────────────────
+
+def test_library_ranker_gesture_update(tmp_path):
+    """Star rating is written into gesture JSON under correct participant key."""
+    # Create a minimal gesture JSON file
+    gesture_dir = tmp_path / 'gestures'
+    gesture_dir.mkdir()
+    gesture_path = gesture_dir / 'sweep.json'
+    gesture_path.write_text(json.dumps({'name': 'sweep', 'bpm': 80, 'events': []}))
+
+    ranker = LibraryRanker(gesture_dir=gesture_dir, feedback_dir=tmp_path / 'feedback')
+    ranker.update_gesture_rating('sweep', 'alice', 5)
+
+    data = json.loads(gesture_path.read_text())
+    assert data['ratings']['alice'] == 5.0
+
+
+def test_library_ranker_chord_sidecar(tmp_path):
+    """Chord rating written to sidecar JSONL; per-participant mean computed correctly."""
+    feedback_dir = tmp_path / 'feedback'
+    ranker = LibraryRanker(gesture_dir=tmp_path / 'gestures', feedback_dir=feedback_dir)
+
+    ranker.update_chord_rating('chord_001', 'bob', 4)
+    ranker.update_chord_rating('chord_001', 'bob', 2)
+
+    mean = ranker.get_participant_chord_rating('chord_001', 'bob')
+    assert abs(mean - 3.0) < 1e-6
+
+
+def test_library_ranker_no_cross_participant_bleed(tmp_path):
+    """Alice's ratings do not affect Bob's weighted draw."""
+    gesture_dir = tmp_path / 'gestures'
+    gesture_dir.mkdir()
+    (gesture_dir / 'sweep.json').write_text(json.dumps({'name': 'sweep', 'bpm': 80, 'events': []}))
+
+    ranker = LibraryRanker(gesture_dir=gesture_dir, feedback_dir=tmp_path / 'feedback')
+    ranker.update_gesture_rating('sweep', 'alice', 5)
+
+    # Bob has not rated — should return None, not Alice's rating
+    bob_rating = ranker.get_participant_gesture_rating('sweep', 'bob')
+    assert bob_rating is None

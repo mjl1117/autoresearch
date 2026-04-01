@@ -136,7 +136,7 @@ class ChordPredictor:
                     continue
                 stars = ranker.get_participant_chord_rating(
                     rec['chord_id'], participant_id)
-                if stars is not None:
+                if stars is not None and stars > 0:
                     dists[i] *= 1.0 / (1.0 + stars * 0.2)
 
         idx = np.argsort(dists)

@@ -7,7 +7,7 @@ Each gesture is stored as an individual JSON file in the gestures/ directory.
 MJL Neuroaesthetic Music Research — 2026
 """
 from __future__ import annotations
-import json, os, re
+import json, re
 from pathlib import Path
 from typing import List, Optional
 from .gesture_model import Gesture
@@ -88,7 +88,7 @@ class GestureLibrary:
     # ── Listing ──────────────────────────────────────────────────────────────
 
     def list_gestures(self) -> List[dict]:
-        """Return list of {name, path, bpm, event_count} dicts, sorted by name."""
+        """Return list of {name, path, bpm, event_count, tags, ratings} dicts, sorted by name."""
         items = []
         for p in sorted(self.directory.glob('*.json')):
             try:
@@ -100,6 +100,7 @@ class GestureLibrary:
                     'bpm':         d.get('bpm', 80),
                     'event_count': len(d.get('events', [])),
                     'tags':        d.get('tags', []),
+                    'ratings':     d.get('ratings', {}),
                 })
             except (json.JSONDecodeError, KeyError):
                 pass
@@ -119,24 +120,18 @@ class GestureLibrary:
         Returns None if the library is empty.
         """
         import random as _random
-        import json as _json
         items = self.list_gestures()
         if not items:
             return None
 
         weights = []
         for item in items:
-            try:
-                with open(item['path'], 'r', encoding='utf-8') as f:
-                    data = _json.load(f)
-                rating = data.get('ratings', {}).get(participant_id)
-            except Exception:
-                rating = None
-
+            rating = item.get('ratings', {}).get(participant_id)
             if rating is None:
                 weights.append(1.0)
             else:
-                weights.append(max(0.1, (6.0 - float(rating)) / 5.0))
+                r = min(5.0, max(1.0, float(rating)))   # clamp to valid range
+                weights.append(max(0.1, (6.0 - r) / 5.0))
 
         return _random.choices(items, weights=weights, k=1)[0]
 

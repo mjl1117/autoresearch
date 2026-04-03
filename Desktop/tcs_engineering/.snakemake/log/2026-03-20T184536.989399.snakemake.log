@@ -1,0 +1,737 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                              count
+-----------------------------  -------
+hmmsearch_domains                   10
+extract_hk_rr_sequences             10
+extract_promoters                   10
+merge_sequences                      1
+pair_adjacent_genes                 10
+split_hk_rr                          1
+cluster_tcs                          1
+homology_search_cross                1
+homology_search_hk                   1
+homology_search_rr                   1
+extract_hk_reps                      1
+extract_rr_reps                      1
+annotate_hk                          1
+annotate_rr                          1
+hmmsearch_hk_reps_domtbl             1
+merge_promoters                      1
+merge_reps                           1
+align_sequences                      1
+audit_species_diversity              1
+extract_hamp_linkers                 1
+find_motifs                          1
+identify_chimera_targets             1
+build_tree                           1
+download_alphafold_structures        1
+hamp_register_analysis               1
+validate_ground_truth                1
+analyze_af2_hamp_plddt               1
+prepare_rfdiffusion_inputs           1
+all                                  1
+total                               65
+
+Select jobs to execute...
+Execute 2 jobs...
+[Fri Mar 20 18:45:39 2026]
+localrule hmmsearch_domains:
+    input: data/genomes/GCF_000009485.1_ASM948v1/proteins.faa
+    output: results/domains/GCF_000009485.1_ASM948v1.tbl
+    jobid: 15
+    reason: Missing output files: results/domains/GCF_000009485.1_ASM948v1.tbl
+    wildcards: genome=GCF_000009485.1_ASM948v1
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 18:45:39 2026]
+localrule hmmsearch_domains:
+    input: data/genomes/GCF_000009725.1_ASM972v1/proteins.faa
+    output: results/domains/GCF_000009725.1_ASM972v1.tbl
+    jobid: 3
+    reason: Missing output files: results/domains/GCF_000009725.1_ASM972v1.tbl
+    wildcards: genome=GCF_000009725.1_ASM972v1
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:48:11 2026]
+Finished jobid: 3 (Rule: hmmsearch_domains)
+1 of 65 steps (2%) done
+Execute 1 jobs...
+[Fri Mar 20 18:48:11 2026]
+localrule hmmsearch_domains:
+    input: data/genomes/GCF_000012685.1_ASM1268v1/proteins.faa
+    output: results/domains/GCF_000012685.1_ASM1268v1.tbl
+    jobid: 27
+    reason: Missing output files: results/domains/GCF_000012685.1_ASM1268v1.tbl
+    wildcards: genome=GCF_000012685.1_ASM1268v1
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:50:14 2026]
+Finished jobid: 15 (Rule: hmmsearch_domains)
+2 of 65 steps (3%) done
+Execute 1 jobs...
+[Fri Mar 20 18:50:14 2026]
+localrule hmmsearch_domains:
+    input: data/genomes/GCF_000009705.1_ASM970v1/proteins.faa
+    output: results/domains/GCF_000009705.1_ASM970v1.tbl
+    jobid: 11
+    reason: Missing output files: results/domains/GCF_000009705.1_ASM970v1.tbl
+    wildcards: genome=GCF_000009705.1_ASM970v1
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:53:35 2026]
+Finished jobid: 27 (Rule: hmmsearch_domains)
+3 of 65 steps (5%) done
+Execute 1 jobs...
+[Fri Mar 20 18:53:35 2026]
+localrule hmmsearch_domains:
+    input: data/genomes/GCF_000022005.1_ASM2200v1/proteins.faa
+    output: results/domains/GCF_000022005.1_ASM2200v1.tbl
+    jobid: 39
+    reason: Missing output files: results/domains/GCF_000022005.1_ASM2200v1.tbl
+    wildcards: genome=GCF_000022005.1_ASM2200v1
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:54:28 2026]
+Finished jobid: 11 (Rule: hmmsearch_domains)
+4 of 65 steps (6%) done
+Execute 1 jobs...
+[Fri Mar 20 18:54:28 2026]
+localrule hmmsearch_domains:
+    input: data/genomes/GCF_000008545.1_ASM854v1/proteins.faa
+    output: results/domains/GCF_000008545.1_ASM854v1.tbl
+    jobid: 23
+    reason: Missing output files: results/domains/GCF_000008545.1_ASM854v1.tbl
+    wildcards: genome=GCF_000008545.1_ASM854v1
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:56:11 2026]
+Finished jobid: 39 (Rule: hmmsearch_domains)
+5 of 65 steps (8%) done
+Execute 4 jobs...
+[Fri Mar 20 18:56:11 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_000009705.1_ASM970v1.tbl, data/genomes/GCF_000009705.1_ASM970v1/proteins.faa
+    output: results/sequences/GCF_000009705.1_ASM970v1.faa, results/classifications/GCF_000009705.1_ASM970v1_proteins.csv
+    jobid: 10
+    reason: Missing output files: results/classifications/GCF_000009705.1_ASM970v1_proteins.csv, results/sequences/GCF_000009705.1_ASM970v1.faa; Input files updated by another job: results/domains/GCF_000009705.1_ASM970v1.tbl
+    wildcards: genome=GCF_000009705.1_ASM970v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 18:56:11 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_000022005.1_ASM2200v1.tbl, data/genomes/GCF_000022005.1_ASM2200v1/proteins.faa
+    output: results/sequences/GCF_000022005.1_ASM2200v1.faa, results/classifications/GCF_000022005.1_ASM2200v1_proteins.csv
+    jobid: 38
+    reason: Missing output files: results/classifications/GCF_000022005.1_ASM2200v1_proteins.csv, results/sequences/GCF_000022005.1_ASM2200v1.faa; Input files updated by another job: results/domains/GCF_000022005.1_ASM2200v1.tbl
+    wildcards: genome=GCF_000022005.1_ASM2200v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 18:56:11 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_000012685.1_ASM1268v1.tbl, data/genomes/GCF_000012685.1_ASM1268v1/proteins.faa
+    output: results/sequences/GCF_000012685.1_ASM1268v1.faa, results/classifications/GCF_000012685.1_ASM1268v1_proteins.csv
+    jobid: 26
+    reason: Missing output files: results/classifications/GCF_000012685.1_ASM1268v1_proteins.csv, results/sequences/GCF_000012685.1_ASM1268v1.faa; Input files updated by another job: results/domains/GCF_000012685.1_ASM1268v1.tbl
+    wildcards: genome=GCF_000012685.1_ASM1268v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 18:56:11 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_000009485.1_ASM948v1.tbl, data/genomes/GCF_000009485.1_ASM948v1/proteins.faa
+    output: results/sequences/GCF_000009485.1_ASM948v1.faa, results/classifications/GCF_000009485.1_ASM948v1_proteins.csv
+    jobid: 14
+    reason: Missing output files: results/sequences/GCF_000009485.1_ASM948v1.faa, results/classifications/GCF_000009485.1_ASM948v1_proteins.csv; Input files updated by another job: results/domains/GCF_000009485.1_ASM948v1.tbl
+    wildcards: genome=GCF_000009485.1_ASM948v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:56:12 2026]
+Finished jobid: 38 (Rule: extract_hk_rr_sequences)
+6 of 65 steps (9%) done
+Execute 1 jobs...
+[Fri Mar 20 18:56:12 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_000009725.1_ASM972v1.tbl, data/genomes/GCF_000009725.1_ASM972v1/proteins.faa
+    output: results/sequences/GCF_000009725.1_ASM972v1.faa, results/classifications/GCF_000009725.1_ASM972v1_proteins.csv
+    jobid: 2
+    reason: Missing output files: results/sequences/GCF_000009725.1_ASM972v1.faa, results/classifications/GCF_000009725.1_ASM972v1_proteins.csv; Input files updated by another job: results/domains/GCF_000009725.1_ASM972v1.tbl
+    wildcards: genome=GCF_000009725.1_ASM972v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 18:56:12 2026]
+Finished jobid: 10 (Rule: extract_hk_rr_sequences)
+7 of 65 steps (11%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 18:56:12 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_000009705.1_ASM970v1.faa, data/genomes/GCF_000009705.1_ASM970v1/genome.gff, data/genomes/GCF_000009705.1_ASM970v1/genome.fna
+    output: results/sequences/GCF_000009705.1_ASM970v1_promoters.fasta
+    jobid: 53
+    reason: Missing output files: results/sequences/GCF_000009705.1_ASM970v1_promoters.fasta; Input files updated by another job: results/sequences/GCF_000009705.1_ASM970v1.faa
+    wildcards: genome=GCF_000009705.1_ASM970v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 18:56:12 2026]
+Finished jobid: 14 (Rule: extract_hk_rr_sequences)
+8 of 65 steps (12%) done
+[Fri Mar 20 18:56:12 2026]
+Finished jobid: 26 (Rule: extract_hk_rr_sequences)
+9 of 65 steps (14%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Fri Mar 20 18:56:12 2026]
+localrule pair_adjacent_genes:
+    input: results/classifications/GCF_000022005.1_ASM2200v1_proteins.csv, data/genomes/GCF_000022005.1_ASM2200v1/genome.gff
+    output: results/operons/GCF_000022005.1_ASM2200v1.tsv
+    jobid: 37
+    reason: Missing output files: results/operons/GCF_000022005.1_ASM2200v1.tsv; Input files updated by another job: results/classifications/GCF_000022005.1_ASM2200v1_proteins.csv
+    wildcards: genome=GCF_000022005.1_ASM2200v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 18:56:12 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_000012685.1_ASM1268v1.faa, data/genomes/GCF_000012685.1_ASM1268v1/genome.gff, data/genomes/GCF_000012685.1_ASM1268v1/genome.fna
+    output: results/sequences/GCF_000012685.1_ASM1268v1_promoters.fasta
+    jobid: 57
+    reason: Missing output files: results/sequences/GCF_000012685.1_ASM1268v1_promoters.fasta; Input files updated by another job: results/sequences/GCF_000012685.1_ASM1268v1.faa
+    wildcards: genome=GCF_000012685.1_ASM1268v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:56:12 2026]
+Finished jobid: 37 (Rule: pair_adjacent_genes)
+10 of 65 steps (15%) done
+Execute 1 jobs...
+[Fri Mar 20 18:56:12 2026]
+localrule pair_adjacent_genes:
+    input: results/classifications/GCF_000012685.1_ASM1268v1_proteins.csv, data/genomes/GCF_000012685.1_ASM1268v1/genome.gff
+    output: results/operons/GCF_000012685.1_ASM1268v1.tsv
+    jobid: 25
+    reason: Missing output files: results/operons/GCF_000012685.1_ASM1268v1.tsv; Input files updated by another job: results/classifications/GCF_000012685.1_ASM1268v1_proteins.csv
+    wildcards: genome=GCF_000012685.1_ASM1268v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 18:56:12 2026]
+Finished jobid: 2 (Rule: extract_hk_rr_sequences)
+11 of 65 steps (17%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 18:56:12 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_000009725.1_ASM972v1.faa, data/genomes/GCF_000009725.1_ASM972v1/genome.gff, data/genomes/GCF_000009725.1_ASM972v1/genome.fna
+    output: results/sequences/GCF_000009725.1_ASM972v1_promoters.fasta
+    jobid: 51
+    reason: Missing output files: results/sequences/GCF_000009725.1_ASM972v1_promoters.fasta; Input files updated by another job: results/sequences/GCF_000009725.1_ASM972v1.faa
+    wildcards: genome=GCF_000009725.1_ASM972v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:56:12 2026]
+Finished jobid: 53 (Rule: extract_promoters)
+12 of 65 steps (18%) done
+Execute 1 jobs...
+[Fri Mar 20 18:56:12 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_000009485.1_ASM948v1.faa, data/genomes/GCF_000009485.1_ASM948v1/genome.gff, data/genomes/GCF_000009485.1_ASM948v1/genome.fna
+    output: results/sequences/GCF_000009485.1_ASM948v1_promoters.fasta
+    jobid: 54
+    reason: Missing output files: results/sequences/GCF_000009485.1_ASM948v1_promoters.fasta; Input files updated by another job: results/sequences/GCF_000009485.1_ASM948v1.faa
+    wildcards: genome=GCF_000009485.1_ASM948v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:56:12 2026]
+Finished jobid: 57 (Rule: extract_promoters)
+13 of 65 steps (20%) done
+Execute 1 jobs...
+[Fri Mar 20 18:56:12 2026]
+localrule pair_adjacent_genes:
+    input: results/classifications/GCF_000009705.1_ASM970v1_proteins.csv, data/genomes/GCF_000009705.1_ASM970v1/genome.gff
+    output: results/operons/GCF_000009705.1_ASM970v1.tsv
+    jobid: 9
+    reason: Missing output files: results/operons/GCF_000009705.1_ASM970v1.tsv; Input files updated by another job: results/classifications/GCF_000009705.1_ASM970v1_proteins.csv
+    wildcards: genome=GCF_000009705.1_ASM970v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 18:56:12 2026]
+Finished jobid: 25 (Rule: pair_adjacent_genes)
+14 of 65 steps (22%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 18:56:12 2026]
+localrule pair_adjacent_genes:
+    input: results/classifications/GCF_000009485.1_ASM948v1_proteins.csv, data/genomes/GCF_000009485.1_ASM948v1/genome.gff
+    output: results/operons/GCF_000009485.1_ASM948v1.tsv
+    jobid: 13
+    reason: Missing output files: results/operons/GCF_000009485.1_ASM948v1.tsv; Input files updated by another job: results/classifications/GCF_000009485.1_ASM948v1_proteins.csv
+    wildcards: genome=GCF_000009485.1_ASM948v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:56:12 2026]
+Finished jobid: 51 (Rule: extract_promoters)
+15 of 65 steps (23%) done
+Execute 1 jobs...
+[Fri Mar 20 18:56:12 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_000022005.1_ASM2200v1.faa, data/genomes/GCF_000022005.1_ASM2200v1/genome.gff, data/genomes/GCF_000022005.1_ASM2200v1/genome.fna
+    output: results/sequences/GCF_000022005.1_ASM2200v1_promoters.fasta
+    jobid: 60
+    reason: Missing output files: results/sequences/GCF_000022005.1_ASM2200v1_promoters.fasta; Input files updated by another job: results/sequences/GCF_000022005.1_ASM2200v1.faa
+    wildcards: genome=GCF_000022005.1_ASM2200v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 18:56:13 2026]
+Finished jobid: 9 (Rule: pair_adjacent_genes)
+16 of 65 steps (25%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 18:56:13 2026]
+localrule pair_adjacent_genes:
+    input: results/classifications/GCF_000009725.1_ASM972v1_proteins.csv, data/genomes/GCF_000009725.1_ASM972v1/genome.gff
+    output: results/operons/GCF_000009725.1_ASM972v1.tsv
+    jobid: 1
+    reason: Missing output files: results/operons/GCF_000009725.1_ASM972v1.tsv; Input files updated by another job: results/classifications/GCF_000009725.1_ASM972v1_proteins.csv
+    wildcards: genome=GCF_000009725.1_ASM972v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 18:56:13 2026]
+Finished jobid: 13 (Rule: pair_adjacent_genes)
+17 of 65 steps (26%) done
+Select jobs to execute...
+[Fri Mar 20 18:56:13 2026]
+Finished jobid: 54 (Rule: extract_promoters)
+18 of 65 steps (28%) done
+[Fri Mar 20 18:56:13 2026]
+Finished jobid: 60 (Rule: extract_promoters)
+19 of 65 steps (29%) done
+[Fri Mar 20 18:56:13 2026]
+Finished jobid: 1 (Rule: pair_adjacent_genes)
+20 of 65 steps (31%) done
+Execute 1 jobs...
+[Fri Mar 20 18:56:13 2026]
+localrule hmmsearch_domains:
+    input: data/genomes/GCF_000011505.1_ASM1150v1/proteins.faa
+    output: results/domains/GCF_000011505.1_ASM1150v1.tbl
+    jobid: 31
+    reason: Missing output files: results/domains/GCF_000011505.1_ASM1150v1.tbl
+    wildcards: genome=GCF_000011505.1_ASM1150v1
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:56:15 2026]
+Finished jobid: 23 (Rule: hmmsearch_domains)
+21 of 65 steps (32%) done
+Execute 1 jobs...
+[Fri Mar 20 18:56:15 2026]
+localrule hmmsearch_domains:
+    input: data/genomes/GCF_000009045.1_ASM904v1/proteins.faa
+    output: results/domains/GCF_000009045.1_ASM904v1.tbl
+    jobid: 19
+    reason: Missing output files: results/domains/GCF_000009045.1_ASM904v1.tbl
+    wildcards: genome=GCF_000009045.1_ASM904v1
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:58:22 2026]
+Finished jobid: 31 (Rule: hmmsearch_domains)
+22 of 65 steps (34%) done
+Execute 1 jobs...
+[Fri Mar 20 18:58:23 2026]
+localrule hmmsearch_domains:
+    input: data/genomes/GCF_000203835.1_ASM20383v1/proteins.faa
+    output: results/domains/GCF_000203835.1_ASM20383v1.tbl
+    jobid: 7
+    reason: Missing output files: results/domains/GCF_000203835.1_ASM20383v1.tbl
+    wildcards: genome=GCF_000203835.1_ASM20383v1
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 18:59:11 2026]
+Finished jobid: 19 (Rule: hmmsearch_domains)
+23 of 65 steps (35%) done
+Execute 1 jobs...
+[Fri Mar 20 18:59:11 2026]
+localrule hmmsearch_domains:
+    input: data/genomes/GCF_000005845.2_ASM584v2/proteins.faa
+    output: results/domains/GCF_000005845.2_ASM584v2.tbl
+    jobid: 35
+    reason: Missing output files: results/domains/GCF_000005845.2_ASM584v2.tbl
+    wildcards: genome=GCF_000005845.2_ASM584v2
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 19:02:06 2026]
+Finished jobid: 35 (Rule: hmmsearch_domains)
+24 of 65 steps (37%) done
+Execute 4 jobs...
+[Fri Mar 20 19:02:06 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_000008545.1_ASM854v1.tbl, data/genomes/GCF_000008545.1_ASM854v1/proteins.faa
+    output: results/sequences/GCF_000008545.1_ASM854v1.faa, results/classifications/GCF_000008545.1_ASM854v1_proteins.csv
+    jobid: 22
+    reason: Missing output files: results/sequences/GCF_000008545.1_ASM854v1.faa, results/classifications/GCF_000008545.1_ASM854v1_proteins.csv; Input files updated by another job: results/domains/GCF_000008545.1_ASM854v1.tbl
+    wildcards: genome=GCF_000008545.1_ASM854v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:02:06 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_000005845.2_ASM584v2.tbl, data/genomes/GCF_000005845.2_ASM584v2/proteins.faa
+    output: results/sequences/GCF_000005845.2_ASM584v2.faa, results/classifications/GCF_000005845.2_ASM584v2_proteins.csv
+    jobid: 34
+    reason: Missing output files: results/classifications/GCF_000005845.2_ASM584v2_proteins.csv, results/sequences/GCF_000005845.2_ASM584v2.faa; Input files updated by another job: results/domains/GCF_000005845.2_ASM584v2.tbl
+    wildcards: genome=GCF_000005845.2_ASM584v2
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:02:06 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_000011505.1_ASM1150v1.tbl, data/genomes/GCF_000011505.1_ASM1150v1/proteins.faa
+    output: results/sequences/GCF_000011505.1_ASM1150v1.faa, results/classifications/GCF_000011505.1_ASM1150v1_proteins.csv
+    jobid: 30
+    reason: Missing output files: results/sequences/GCF_000011505.1_ASM1150v1.faa, results/classifications/GCF_000011505.1_ASM1150v1_proteins.csv; Input files updated by another job: results/domains/GCF_000011505.1_ASM1150v1.tbl
+    wildcards: genome=GCF_000011505.1_ASM1150v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:02:06 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_000009045.1_ASM904v1.tbl, data/genomes/GCF_000009045.1_ASM904v1/proteins.faa
+    output: results/sequences/GCF_000009045.1_ASM904v1.faa, results/classifications/GCF_000009045.1_ASM904v1_proteins.csv
+    jobid: 18
+    reason: Missing output files: results/classifications/GCF_000009045.1_ASM904v1_proteins.csv, results/sequences/GCF_000009045.1_ASM904v1.faa; Input files updated by another job: results/domains/GCF_000009045.1_ASM904v1.tbl
+    wildcards: genome=GCF_000009045.1_ASM904v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:02:07 2026]
+Finished jobid: 22 (Rule: extract_hk_rr_sequences)
+25 of 65 steps (38%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 19:02:07 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_000008545.1_ASM854v1.faa, data/genomes/GCF_000008545.1_ASM854v1/genome.gff, data/genomes/GCF_000008545.1_ASM854v1/genome.fna
+    output: results/sequences/GCF_000008545.1_ASM854v1_promoters.fasta
+    jobid: 56
+    reason: Missing output files: results/sequences/GCF_000008545.1_ASM854v1_promoters.fasta; Input files updated by another job: results/sequences/GCF_000008545.1_ASM854v1.faa
+    wildcards: genome=GCF_000008545.1_ASM854v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:02:07 2026]
+Finished jobid: 30 (Rule: extract_hk_rr_sequences)
+26 of 65 steps (40%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 19:02:07 2026]
+localrule pair_adjacent_genes:
+    input: results/classifications/GCF_000008545.1_ASM854v1_proteins.csv, data/genomes/GCF_000008545.1_ASM854v1/genome.gff
+    output: results/operons/GCF_000008545.1_ASM854v1.tsv
+    jobid: 21
+    reason: Missing output files: results/operons/GCF_000008545.1_ASM854v1.tsv; Input files updated by another job: results/classifications/GCF_000008545.1_ASM854v1_proteins.csv
+    wildcards: genome=GCF_000008545.1_ASM854v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:02:07 2026]
+Finished jobid: 34 (Rule: extract_hk_rr_sequences)
+27 of 65 steps (42%) done
+[Fri Mar 20 19:02:07 2026]
+Finished jobid: 18 (Rule: extract_hk_rr_sequences)
+28 of 65 steps (43%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Fri Mar 20 19:02:07 2026]
+localrule pair_adjacent_genes:
+    input: results/classifications/GCF_000005845.2_ASM584v2_proteins.csv, data/genomes/GCF_000005845.2_ASM584v2/genome.gff
+    output: results/operons/GCF_000005845.2_ASM584v2.tsv
+    jobid: 33
+    reason: Missing output files: results/operons/GCF_000005845.2_ASM584v2.tsv; Input files updated by another job: results/classifications/GCF_000005845.2_ASM584v2_proteins.csv
+    wildcards: genome=GCF_000005845.2_ASM584v2
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:02:07 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_000011505.1_ASM1150v1.faa, data/genomes/GCF_000011505.1_ASM1150v1/genome.gff, data/genomes/GCF_000011505.1_ASM1150v1/genome.fna
+    output: results/sequences/GCF_000011505.1_ASM1150v1_promoters.fasta
+    jobid: 58
+    reason: Missing output files: results/sequences/GCF_000011505.1_ASM1150v1_promoters.fasta; Input files updated by another job: results/sequences/GCF_000011505.1_ASM1150v1.faa
+    wildcards: genome=GCF_000011505.1_ASM1150v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 19:02:07 2026]
+Finished jobid: 21 (Rule: pair_adjacent_genes)
+29 of 65 steps (45%) done
+Execute 1 jobs...
+[Fri Mar 20 19:02:07 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_000005845.2_ASM584v2.faa, data/genomes/GCF_000005845.2_ASM584v2/genome.gff, data/genomes/GCF_000005845.2_ASM584v2/genome.fna
+    output: results/sequences/GCF_000005845.2_ASM584v2_promoters.fasta
+    jobid: 59
+    reason: Missing output files: results/sequences/GCF_000005845.2_ASM584v2_promoters.fasta; Input files updated by another job: results/sequences/GCF_000005845.2_ASM584v2.faa
+    wildcards: genome=GCF_000005845.2_ASM584v2
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 19:02:07 2026]
+Finished jobid: 33 (Rule: pair_adjacent_genes)
+30 of 65 steps (46%) done
+Execute 1 jobs...
+[Fri Mar 20 19:02:07 2026]
+localrule pair_adjacent_genes:
+    input: results/classifications/GCF_000011505.1_ASM1150v1_proteins.csv, data/genomes/GCF_000011505.1_ASM1150v1/genome.gff
+    output: results/operons/GCF_000011505.1_ASM1150v1.tsv
+    jobid: 29
+    reason: Missing output files: results/operons/GCF_000011505.1_ASM1150v1.tsv; Input files updated by another job: results/classifications/GCF_000011505.1_ASM1150v1_proteins.csv
+    wildcards: genome=GCF_000011505.1_ASM1150v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:02:07 2026]
+Finished jobid: 56 (Rule: extract_promoters)
+31 of 65 steps (48%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 19:02:07 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_000009045.1_ASM904v1.faa, data/genomes/GCF_000009045.1_ASM904v1/genome.gff, data/genomes/GCF_000009045.1_ASM904v1/genome.fna
+    output: results/sequences/GCF_000009045.1_ASM904v1_promoters.fasta
+    jobid: 55
+    reason: Missing output files: results/sequences/GCF_000009045.1_ASM904v1_promoters.fasta; Input files updated by another job: results/sequences/GCF_000009045.1_ASM904v1.faa
+    wildcards: genome=GCF_000009045.1_ASM904v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 19:02:07 2026]
+Finished jobid: 58 (Rule: extract_promoters)
+32 of 65 steps (49%) done
+Execute 1 jobs...
+[Fri Mar 20 19:02:07 2026]
+localrule pair_adjacent_genes:
+    input: results/classifications/GCF_000009045.1_ASM904v1_proteins.csv, data/genomes/GCF_000009045.1_ASM904v1/genome.gff
+    output: results/operons/GCF_000009045.1_ASM904v1.tsv
+    jobid: 17
+    reason: Missing output files: results/operons/GCF_000009045.1_ASM904v1.tsv; Input files updated by another job: results/classifications/GCF_000009045.1_ASM904v1_proteins.csv
+    wildcards: genome=GCF_000009045.1_ASM904v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:02:07 2026]
+Finished jobid: 29 (Rule: pair_adjacent_genes)
+33 of 65 steps (51%) done
+[Fri Mar 20 19:02:07 2026]
+Finished jobid: 59 (Rule: extract_promoters)
+34 of 65 steps (52%) done
+[Fri Mar 20 19:02:08 2026]
+Finished jobid: 17 (Rule: pair_adjacent_genes)
+35 of 65 steps (54%) done
+[Fri Mar 20 19:02:08 2026]
+Finished jobid: 55 (Rule: extract_promoters)
+36 of 65 steps (55%) done
+[Fri Mar 20 19:03:19 2026]
+Finished jobid: 7 (Rule: hmmsearch_domains)
+37 of 65 steps (57%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 19:03:19 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_000203835.1_ASM20383v1.tbl, data/genomes/GCF_000203835.1_ASM20383v1/proteins.faa
+    output: results/sequences/GCF_000203835.1_ASM20383v1.faa, results/classifications/GCF_000203835.1_ASM20383v1_proteins.csv
+    jobid: 6
+    reason: Missing output files: results/sequences/GCF_000203835.1_ASM20383v1.faa, results/classifications/GCF_000203835.1_ASM20383v1_proteins.csv; Input files updated by another job: results/domains/GCF_000203835.1_ASM20383v1.tbl
+    wildcards: genome=GCF_000203835.1_ASM20383v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:20 2026]
+Finished jobid: 6 (Rule: extract_hk_rr_sequences)
+38 of 65 steps (58%) done
+Select jobs to execute...
+Execute 3 jobs...
+[Fri Mar 20 19:03:20 2026]
+localrule pair_adjacent_genes:
+    input: results/classifications/GCF_000203835.1_ASM20383v1_proteins.csv, data/genomes/GCF_000203835.1_ASM20383v1/genome.gff
+    output: results/operons/GCF_000203835.1_ASM20383v1.tsv
+    jobid: 5
+    reason: Missing output files: results/operons/GCF_000203835.1_ASM20383v1.tsv; Input files updated by another job: results/classifications/GCF_000203835.1_ASM20383v1_proteins.csv
+    wildcards: genome=GCF_000203835.1_ASM20383v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:20 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_000203835.1_ASM20383v1.faa, data/genomes/GCF_000203835.1_ASM20383v1/genome.gff, data/genomes/GCF_000203835.1_ASM20383v1/genome.fna
+    output: results/sequences/GCF_000203835.1_ASM20383v1_promoters.fasta
+    jobid: 52
+    reason: Missing output files: results/sequences/GCF_000203835.1_ASM20383v1_promoters.fasta; Input files updated by another job: results/sequences/GCF_000203835.1_ASM20383v1.faa
+    wildcards: genome=GCF_000203835.1_ASM20383v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:20 2026]
+localrule merge_sequences:
+    input: results/sequences/GCF_000009725.1_ASM972v1.faa, results/sequences/GCF_000203835.1_ASM20383v1.faa, results/sequences/GCF_000009705.1_ASM970v1.faa, results/sequences/GCF_000009485.1_ASM948v1.faa, results/sequences/GCF_000009045.1_ASM904v1.faa, results/sequences/GCF_000008545.1_ASM854v1.faa, results/sequences/GCF_000012685.1_ASM1268v1.faa, results/sequences/GCF_000011505.1_ASM1150v1.faa, results/sequences/GCF_000005845.2_ASM584v2.faa, results/sequences/GCF_000022005.1_ASM2200v1.faa
+    output: results/tcs_sequences.faa
+    jobid: 43
+    reason: Missing output files: results/tcs_sequences.faa; Input files updated by another job: results/sequences/GCF_000009725.1_ASM972v1.faa, results/sequences/GCF_000203835.1_ASM20383v1.faa, results/sequences/GCF_000009705.1_ASM970v1.faa, results/sequences/GCF_000011505.1_ASM1150v1.faa, results/sequences/GCF_000012685.1_ASM1268v1.faa, results/sequences/GCF_000022005.1_ASM2200v1.faa, results/sequences/GCF_000009045.1_ASM904v1.faa, results/sequences/GCF_000008545.1_ASM854v1.faa, results/sequences/GCF_000009485.1_ASM948v1.faa, results/sequences/GCF_000005845.2_ASM584v2.faa; Set of input files has changed since last execution
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:20 2026]
+Finished jobid: 43 (Rule: merge_sequences)
+39 of 65 steps (60%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 19:03:20 2026]
+localrule split_hk_rr:
+    input: results/tcs_sequences.faa, results/classifications/GCF_000009725.1_ASM972v1_proteins.csv, results/classifications/GCF_000203835.1_ASM20383v1_proteins.csv, results/classifications/GCF_000009705.1_ASM970v1_proteins.csv, results/classifications/GCF_000009485.1_ASM948v1_proteins.csv, results/classifications/GCF_000009045.1_ASM904v1_proteins.csv, results/classifications/GCF_000008545.1_ASM854v1_proteins.csv, results/classifications/GCF_000012685.1_ASM1268v1_proteins.csv, results/classifications/GCF_000011505.1_ASM1150v1_proteins.csv, results/classifications/GCF_000005845.2_ASM584v2_proteins.csv, results/classifications/GCF_000022005.1_ASM2200v1_proteins.csv
+    output: results/hk_sequences.faa, results/rr_sequences.faa
+    jobid: 42
+    reason: Missing output files: results/rr_sequences.faa, results/hk_sequences.faa; Input files updated by another job: results/classifications/GCF_000022005.1_ASM2200v1_proteins.csv, results/tcs_sequences.faa, results/classifications/GCF_000012685.1_ASM1268v1_proteins.csv, results/classifications/GCF_000008545.1_ASM854v1_proteins.csv, results/classifications/GCF_000011505.1_ASM1150v1_proteins.csv, results/classifications/GCF_000203835.1_ASM20383v1_proteins.csv, results/classifications/GCF_000009705.1_ASM970v1_proteins.csv, results/classifications/GCF_000009485.1_ASM948v1_proteins.csv, results/classifications/GCF_000005845.2_ASM584v2_proteins.csv, results/classifications/GCF_000009725.1_ASM972v1_proteins.csv, results/classifications/GCF_000009045.1_ASM904v1_proteins.csv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:20 2026]
+Finished jobid: 5 (Rule: pair_adjacent_genes)
+40 of 65 steps (62%) done
+[Fri Mar 20 19:03:20 2026]
+Finished jobid: 42 (Rule: split_hk_rr)
+41 of 65 steps (63%) done
+Select jobs to execute...
+Execute 4 jobs...
+[Fri Mar 20 19:03:20 2026]
+localrule cluster_tcs:
+    input: results/hk_sequences.faa, results/rr_sequences.faa
+    output: results/clusters/hk_clusters/clusters.tsv, results/clusters/rr_clusters/clusters.tsv
+    jobid: 41
+    reason: Missing output files: results/clusters/hk_clusters/clusters.tsv, results/clusters/rr_clusters/clusters.tsv; Input files updated by another job: results/rr_sequences.faa, results/hk_sequences.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:20 2026]
+localrule homology_search_hk:
+    input: results/hk_sequences.faa
+    output: results/homology/hk_homology.m8
+    jobid: 61
+    reason: Missing output files: results/homology/hk_homology.m8; Input files updated by another job: results/hk_sequences.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:20 2026]
+localrule homology_search_cross:
+    input: results/hk_sequences.faa, results/rr_sequences.faa
+    output: results/homology/hk_vs_rr_homology.m8
+    jobid: 63
+    reason: Missing output files: results/homology/hk_vs_rr_homology.m8; Input files updated by another job: results/rr_sequences.faa, results/hk_sequences.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:20 2026]
+localrule homology_search_rr:
+    input: results/rr_sequences.faa
+    output: results/homology/rr_homology.m8
+    jobid: 62
+    reason: Missing output files: results/homology/rr_homology.m8; Input files updated by another job: results/rr_sequences.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:20 2026]
+Finished jobid: 52 (Rule: extract_promoters)
+42 of 65 steps (65%) done
+[Fri Mar 20 19:03:26 2026]
+Finished jobid: 63 (Rule: homology_search_cross)
+43 of 65 steps (66%) done
+[Fri Mar 20 19:03:26 2026]
+Finished jobid: 62 (Rule: homology_search_rr)
+44 of 65 steps (68%) done
+[Fri Mar 20 19:03:28 2026]
+Finished jobid: 41 (Rule: cluster_tcs)
+45 of 65 steps (69%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Fri Mar 20 19:03:28 2026]
+localrule extract_rr_reps:
+    input: results/clusters/rr_clusters/clusters.tsv, results/rr_sequences.faa
+    output: results/representatives/rr_reps.faa
+    jobid: 48
+    reason: Missing output files: results/representatives/rr_reps.faa; Input files updated by another job: results/rr_sequences.faa, results/clusters/rr_clusters/clusters.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:28 2026]
+localrule extract_hk_reps:
+    input: results/clusters/hk_clusters/clusters.tsv, results/hk_sequences.faa
+    output: results/representatives/hk_reps.faa
+    jobid: 47
+    reason: Missing output files: results/representatives/hk_reps.faa; Input files updated by another job: results/hk_sequences.faa, results/clusters/hk_clusters/clusters.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:28 2026]
+Finished jobid: 48 (Rule: extract_rr_reps)
+46 of 65 steps (71%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Fri Mar 20 19:03:28 2026]
+localrule merge_promoters:
+    input: results/sequences/GCF_000009725.1_ASM972v1_promoters.fasta, results/sequences/GCF_000203835.1_ASM20383v1_promoters.fasta, results/sequences/GCF_000009705.1_ASM970v1_promoters.fasta, results/sequences/GCF_000009485.1_ASM948v1_promoters.fasta, results/sequences/GCF_000009045.1_ASM904v1_promoters.fasta, results/sequences/GCF_000008545.1_ASM854v1_promoters.fasta, results/sequences/GCF_000012685.1_ASM1268v1_promoters.fasta, results/sequences/GCF_000011505.1_ASM1150v1_promoters.fasta, results/sequences/GCF_000005845.2_ASM584v2_promoters.fasta, results/sequences/GCF_000022005.1_ASM2200v1_promoters.fasta, results/representatives/rr_reps.faa
+    output: results/promoters/promoters_for_meme.fasta
+    jobid: 50
+    reason: Missing output files: results/promoters/promoters_for_meme.fasta; Input files updated by another job: results/sequences/GCF_000008545.1_ASM854v1_promoters.fasta, results/sequences/GCF_000005845.2_ASM584v2_promoters.fasta, results/sequences/GCF_000009485.1_ASM948v1_promoters.fasta, results/sequences/GCF_000203835.1_ASM20383v1_promoters.fasta, results/sequences/GCF_000009705.1_ASM970v1_promoters.fasta, results/sequences/GCF_000012685.1_ASM1268v1_promoters.fasta, results/sequences/GCF_000009725.1_ASM972v1_promoters.fasta, results/sequences/GCF_000009045.1_ASM904v1_promoters.fasta, results/sequences/GCF_000022005.1_ASM2200v1_promoters.fasta, results/representatives/rr_reps.faa, results/sequences/GCF_000011505.1_ASM1150v1_promoters.fasta
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:28 2026]
+localrule annotate_rr:
+    input: results/representatives/rr_reps.faa, data/databases/swissprot.dmnd
+    output: results/annotation/rr_annotation.tsv
+    jobid: 67
+    reason: Missing output files: results/annotation/rr_annotation.tsv; Input files updated by another job: results/representatives/rr_reps.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:28 2026]
+Finished jobid: 47 (Rule: extract_hk_reps)
+47 of 65 steps (72%) done
+Select jobs to execute...
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/chimera.smk", line 46:
+Command 'export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH;  
+        mkdir -p results/annotation
+        diamond blastp             --query results/representatives/rr_reps.faa             --db data/databases/swissprot.dmnd             --out results/annotation/rr_annotation.tsv             --outfmt 6 qseqid sseqid pident length qcovhsp evalue bitscore stitle             --max-target-seqs 1             --evalue 1e-5             --threads 8             --sensitive' returned non-zero exit status 127.
+[Fri Mar 20 19:03:28 2026]
+Error in rule annotate_rr:
+    message: None
+    jobid: 67
+    input: results/representatives/rr_reps.faa, data/databases/swissprot.dmnd
+    output: results/annotation/rr_annotation.tsv
+    shell:
+        
+        mkdir -p results/annotation
+        diamond blastp             --query results/representatives/rr_reps.faa             --db data/databases/swissprot.dmnd             --out results/annotation/rr_annotation.tsv             --outfmt 6 qseqid sseqid pident length qcovhsp evalue bitscore stitle             --max-target-seqs 1             --evalue 1e-5             --threads 8             --sensitive
+        
+        (command exited with non-zero exit code)
+Execute 2 jobs...
+[Fri Mar 20 19:03:28 2026]
+localrule merge_reps:
+    input: results/representatives/hk_reps.faa, results/representatives/rr_reps.faa
+    output: results/representatives/tcs_reps.faa
+    jobid: 46
+    reason: Missing output files: results/representatives/tcs_reps.faa; Input files updated by another job: results/representatives/rr_reps.faa, results/representatives/hk_reps.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:28 2026]
+localrule annotate_hk:
+    input: results/representatives/hk_reps.faa, data/databases/swissprot.dmnd
+    output: results/annotation/hk_annotation.tsv
+    jobid: 65
+    reason: Missing output files: results/annotation/hk_annotation.tsv; Input files updated by another job: results/representatives/hk_reps.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:03:28 2026]
+Finished jobid: 46 (Rule: merge_reps)
+48 of 65 steps (74%) done
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/chimera.smk", line 24:
+Command 'export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH;  
+        mkdir -p results/annotation
+        diamond blastp             --query results/representatives/hk_reps.faa             --db data/databases/swissprot.dmnd             --out results/annotation/hk_annotation.tsv             --outfmt 6 qseqid sseqid pident length qcovhsp evalue bitscore stitle             --max-target-seqs 1             --evalue 1e-5             --threads 8             --sensitive' returned non-zero exit status 127.
+[Fri Mar 20 19:03:28 2026]
+Error in rule annotate_hk:
+    message: None
+    jobid: 65
+    input: results/representatives/hk_reps.faa, data/databases/swissprot.dmnd
+    output: results/annotation/hk_annotation.tsv
+    shell:
+        
+        mkdir -p results/annotation
+        diamond blastp             --query results/representatives/hk_reps.faa             --db data/databases/swissprot.dmnd             --out results/annotation/hk_annotation.tsv             --outfmt 6 qseqid sseqid pident length qcovhsp evalue bitscore stitle             --max-target-seqs 1             --evalue 1e-5             --threads 8             --sensitive
+        
+        (command exited with non-zero exit code)
+[Fri Mar 20 19:03:29 2026]
+Finished jobid: 50 (Rule: merge_promoters)
+49 of 65 steps (75%) done
+[Fri Mar 20 19:03:31 2026]
+Finished jobid: 61 (Rule: homology_search_hk)
+50 of 65 steps (77%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Fri Mar 20 19:03:31 2026]
+Error in rule annotate_rr:
+    message: None
+    jobid: 67
+    input: results/representatives/rr_reps.faa, data/databases/swissprot.dmnd
+    output: results/annotation/rr_annotation.tsv
+    shell:
+        
+        mkdir -p results/annotation
+        diamond blastp             --query results/representatives/rr_reps.faa             --db data/databases/swissprot.dmnd             --out results/annotation/rr_annotation.tsv             --outfmt 6 qseqid sseqid pident length qcovhsp evalue bitscore stitle             --max-target-seqs 1             --evalue 1e-5             --threads 8             --sensitive
+        
+        (command exited with non-zero exit code)
+[Fri Mar 20 19:03:31 2026]
+Error in rule annotate_hk:
+    message: None
+    jobid: 65
+    input: results/representatives/hk_reps.faa, data/databases/swissprot.dmnd
+    output: results/annotation/hk_annotation.tsv
+    shell:
+        
+        mkdir -p results/annotation
+        diamond blastp             --query results/representatives/hk_reps.faa             --db data/databases/swissprot.dmnd             --out results/annotation/hk_annotation.tsv             --outfmt 6 qseqid sseqid pident length qcovhsp evalue bitscore stitle             --max-target-seqs 1             --evalue 1e-5             --threads 8             --sensitive
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-20T184536.989399.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

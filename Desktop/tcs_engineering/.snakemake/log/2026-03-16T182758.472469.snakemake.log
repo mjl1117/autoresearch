@@ -1,0 +1,15 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+AmbiguousRuleException:
+Rules phylogeny and build_tree are ambiguous for the file results/phylogeny/tcs_tree.treefile.
+Consider starting rule output with a unique prefix, constrain your wildcards, or use the ruleorder directive.
+Wildcards:
+	phylogeny: 
+	build_tree: 
+Expected input files:
+	phylogeny: results/alignment/tcs_alignment.faa
+	build_tree: results/alignment/tcs_alignment.faa
+Expected output files:
+	phylogeny: results/phylogeny/tcs_tree.treefile
+	build_tree: results/phylogeny/tcs_tree.treefile

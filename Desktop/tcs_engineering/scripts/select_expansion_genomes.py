@@ -47,17 +47,24 @@ def parse_assembly_summary(path: str, existing_dirs: set[str]) -> pd.DataFrame:
     """Load assembly_summary.txt; add derived columns used for selection.
 
     Follows curate_genome_set.py conventions exactly:
-      skiprows=2, header=None, usecols=[0,5,7,11,15,19].
+      skiprows=2, header=None, usecols=[0,5,7,10,11,15,19].
+
+    Filters to version_status == "latest" and assembly_level in
+    {"Complete Genome", "Chromosome"} to exclude suppressed assemblies and
+    Scaffold/Contig entries whose FTP paths are frequently stale.
     """
     df = pd.read_csv(
         path, sep="\t", skiprows=2, header=None,
-        usecols=[0, 5, 7, 11, 15, 19],
+        usecols=[0, 5, 7, 10, 11, 15, 19],
         names=["accession", "taxid", "organism_name",
-               "assembly_level", "asm_name", "ftp_path"],
+               "version_status", "assembly_level", "asm_name", "ftp_path"],
         low_memory=False,
         dtype=str,
     )
+    # Keep only current, accessible assemblies
     df = df[df["ftp_path"] != "na"].copy()
+    df = df[df["version_status"] == "latest"].copy()
+    df = df[df["assembly_level"].isin(["Complete Genome", "Chromosome"])].copy()
     df["full_id"] = df["accession"] + "_" + df["asm_name"]
     df["genus"] = df["organism_name"].str.split().str[0]
     df["level_rank"] = df["assembly_level"].map(ASSEMBLY_LEVEL_PRIORITY).fillna(99)
@@ -97,20 +104,41 @@ def select_diversity(
     exclude_full_ids: set[str],
     target_n: int,
     max_per_genus: int = 5,
+    seed: int = 42,
 ) -> pd.DataFrame:
     """Return up to target_n genomes with genus cap, excluding specified genera/ids.
 
+    Selection maximizes genus-level diversity: genera are drawn in random order
+    (fixed seed for reproducibility) so that head(target_n) samples uniformly
+    across the full taxonomic spread rather than biasing alphabetically-early
+    genera.  Within each genus the best-quality assembly is taken first.
+
     Logs a warning if catalog exhausted before target_n.
     """
+    import numpy as np
+
     pool = df[
         ~df["genus"].isin(exclude_genera) &
         ~df["full_id"].isin(exclude_full_ids)
-    ].sort_values(["genus", "level_rank", "full_id"])
+    ].copy()
 
+    # Assign each genus a random draw-order index so that when we round-robin
+    # across genera and then call head(target_n), we sample genera uniformly
+    # rather than front-loading whichever genera sort first alphabetically.
+    rng = np.random.default_rng(seed)
+    unique_genera = pool["genus"].unique()
+    genus_order = {g: i for i, g in enumerate(rng.permutation(unique_genera))}
+    pool["_genus_order"] = pool["genus"].map(genus_order)
+
+    # Within each genus rank by quality (Complete Genome before Chromosome).
+    # Round-robin: sort by (_rank, _genus_order) so all genera contribute their
+    # best genome before any genus contributes a second.
     selected = (
-        pool.assign(_rank=pool.groupby("genus").cumcount())
+        pool.sort_values(["level_rank", "full_id"])   # best quality first within genus
+        .assign(_rank=lambda d: d.groupby("genus").cumcount())
         .query("_rank < @max_per_genus")
-        .drop(columns="_rank")
+        .sort_values(["_rank", "_genus_order"])        # round-robin with random genus order
+        .drop(columns=["_rank", "_genus_order"])
         .reset_index(drop=True)
     )
 
@@ -146,6 +174,15 @@ def write_outputs(
     print(f"Curated list: {len(selected)} genomes → {curated_list_path}")
 
 
+def load_blacklist(path: str) -> set[str]:
+    """Return full_ids that had broken FTP paths and should never be selected."""
+    from pathlib import Path as _Path
+    p = _Path(path)
+    if not p.exists():
+        return set()
+    return {line.split("\t")[0] for line in p.read_text().splitlines() if line.strip()}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -154,11 +191,19 @@ def main() -> None:
     parser.add_argument("--output_manifest",  required=True)
     parser.add_argument("--output_list",      required=True)
     parser.add_argument("--target_n",         type=int, default=200)
+    parser.add_argument("--blacklist",
+                        default="data/reference/ftp_blacklist.txt",
+                        help="TSV of full_ids with broken FTP paths to exclude")
     args = parser.parse_args()
+
+    blacklisted = load_blacklist(args.blacklist)
+    if blacklisted:
+        print(f"  Blacklist: excluding {len(blacklisted)} known-broken assemblies")
 
     print("Loading assembly summary...")
     existing_dirs = get_downloaded_dirs(args.genome_dir)
     df = parse_assembly_summary(args.assembly_summary, existing_dirs)
+    df = df[~df["full_id"].isin(blacklisted)].copy()  # exclude permanently broken
     print(f"  {len(df):,} assemblies with valid FTP paths")
 
     # Step 1: seed from RECOMMENDED_GENOMES

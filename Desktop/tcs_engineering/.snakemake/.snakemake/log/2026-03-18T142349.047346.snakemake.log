@@ -1,0 +1,2 @@
+WorkflowError in file "/Users/matthew/Desktop/tcs_engineering/workflow/Snakefile", line 4:
+Workflow defines configfile config/config.yaml but it is not present or accessible (full checked path: /Users/matthew/Desktop/tcs_engineering/.snakemake/config/config.yaml).

@@ -1,0 +1,4 @@
+SyntaxError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/download.smk", line 3:
+invalid syntax:
+    """
+

@@ -1,0 +1,6 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+WildcardError in rule find_motifs in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/promoters.smk", line 1:
+Wildcards in input files cannot be determined from output files: (rule find_motifs, line 1, /Users/matthew/Desktop/tcs_engineering/workflow/rules/promoters.smk)
+'genome'

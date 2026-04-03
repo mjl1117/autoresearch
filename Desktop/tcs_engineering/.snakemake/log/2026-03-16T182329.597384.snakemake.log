@@ -1,0 +1,8 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+MissingInputException in rule phylogeny in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/phylogeny.smk", line 1:
+Missing input files for rule phylogeny:
+    output: results/phylogeny/tcs_tree.treefile
+    affected files:
+        results/alignment/tcs_alignment.faa

@@ -1,0 +1,1482 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job                        count
+-----------------------  -------
+download_genome              148
+extract_promoters           1468
+hmmsearch_domains           1467
+classify_proteins           1467
+extract_hk_rr_sequences     1467
+pair_adjacent_genes         1467
+merge_sequences                1
+align_sequences                1
+cluster_tcs                    1
+find_motifs                    1
+build_tree                     1
+all                            1
+total                       7490
+
+Select jobs to execute...
+Execute 4 jobs...
+[Wed Mar 18 14:32:23 2026]
+localrule download_genome:
+    output: data/genomes/GCF_030761295.1_ASM3076129v1/proteins.faa, data/genomes/GCF_030761295.1_ASM3076129v1/genome.fna, data/genomes/GCF_030761295.1_ASM3076129v1/genome.gff
+    jobid: 3548
+    reason: Missing output files: data/genomes/GCF_030761295.1_ASM3076129v1/proteins.faa, data/genomes/GCF_030761295.1_ASM3076129v1/genome.gff
+    wildcards: genome=GCF_030761295.1_ASM3076129v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:23 2026]
+localrule download_genome:
+    output: data/genomes/GCF_020735525.1_ASM2073552v1/proteins.faa, data/genomes/GCF_020735525.1_ASM2073552v1/genome.fna, data/genomes/GCF_020735525.1_ASM2073552v1/genome.gff
+    jobid: 3004
+    reason: Missing output files: data/genomes/GCF_020735525.1_ASM2073552v1/genome.gff, data/genomes/GCF_020735525.1_ASM2073552v1/proteins.faa
+    wildcards: genome=GCF_020735525.1_ASM2073552v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:23 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022922015.1_ASM2292201v1/proteins.faa, data/genomes/GCF_022922015.1_ASM2292201v1/genome.fna, data/genomes/GCF_022922015.1_ASM2292201v1/genome.gff
+    jobid: 3076
+    reason: Missing output files: data/genomes/GCF_022922015.1_ASM2292201v1/genome.gff, data/genomes/GCF_022922015.1_ASM2292201v1/proteins.faa
+    wildcards: genome=GCF_022922015.1_ASM2292201v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:23 2026]
+localrule download_genome:
+    output: data/genomes/GCF_003288335.1_ASM328833v1/proteins.faa, data/genomes/GCF_003288335.1_ASM328833v1/genome.fna, data/genomes/GCF_003288335.1_ASM328833v1/genome.gff
+    jobid: 4268
+    reason: Missing output files: data/genomes/GCF_003288335.1_ASM328833v1/genome.gff
+    wildcards: genome=GCF_003288335.1_ASM328833v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:24 2026]
+Finished jobid: 3076 (Rule: download_genome)
+1 of 7490 steps (0.0%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:24 2026]
+localrule download_genome:
+    output: data/genomes/GCF_016126955.1_ASM1612695v1/proteins.faa, data/genomes/GCF_016126955.1_ASM1612695v1/genome.fna, data/genomes/GCF_016126955.1_ASM1612695v1/genome.gff
+    jobid: 4612
+    reason: Missing output files: data/genomes/GCF_016126955.1_ASM1612695v1/genome.gff, data/genomes/GCF_016126955.1_ASM1612695v1/proteins.faa
+    wildcards: genome=GCF_016126955.1_ASM1612695v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:24 2026]
+Finished jobid: 3548 (Rule: download_genome)
+2 of 7490 steps (0.0%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:24 2026]
+localrule download_genome:
+    output: data/genomes/GCF_006402735.1_ASM640273v1/proteins.faa, data/genomes/GCF_006402735.1_ASM640273v1/genome.fna, data/genomes/GCF_006402735.1_ASM640273v1/genome.gff
+    jobid: 68
+    reason: Missing output files: data/genomes/GCF_006402735.1_ASM640273v1/genome.gff
+    wildcards: genome=GCF_006402735.1_ASM640273v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:24 2026]
+Finished jobid: 3004 (Rule: download_genome)
+3 of 7490 steps (0.0%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:24 2026]
+localrule download_genome:
+    output: data/genomes/GCF_006402415.1_ASM640241v1/proteins.faa, data/genomes/GCF_006402415.1_ASM640241v1/genome.fna, data/genomes/GCF_006402415.1_ASM640241v1/genome.gff
+    jobid: 64
+    reason: Missing output files: data/genomes/GCF_006402415.1_ASM640241v1/genome.gff, data/genomes/GCF_006402415.1_ASM640241v1/proteins.faa
+    wildcards: genome=GCF_006402415.1_ASM640241v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:24 2026]
+Finished jobid: 4268 (Rule: download_genome)
+4 of 7490 steps (0.1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:24 2026]
+localrule download_genome:
+    output: data/genomes/GCF_037727755.1_ASM3772775v1/proteins.faa, data/genomes/GCF_037727755.1_ASM3772775v1/genome.fna, data/genomes/GCF_037727755.1_ASM3772775v1/genome.gff
+    jobid: 2004
+    reason: Missing output files: data/genomes/GCF_037727755.1_ASM3772775v1/proteins.faa, data/genomes/GCF_037727755.1_ASM3772775v1/genome.gff
+    wildcards: genome=GCF_037727755.1_ASM3772775v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:25 2026]
+Finished jobid: 4612 (Rule: download_genome)
+5 of 7490 steps (0.1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:25 2026]
+localrule download_genome:
+    output: data/genomes/GCF_013343515.1_ASM1334351v1/proteins.faa, data/genomes/GCF_013343515.1_ASM1334351v1/genome.fna, data/genomes/GCF_013343515.1_ASM1334351v1/genome.gff
+    jobid: 4516
+    reason: Missing output files: data/genomes/GCF_013343515.1_ASM1334351v1/genome.gff, data/genomes/GCF_013343515.1_ASM1334351v1/proteins.faa
+    wildcards: genome=GCF_013343515.1_ASM1334351v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:25 2026]
+Finished jobid: 2004 (Rule: download_genome)
+6 of 7490 steps (0.1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:25 2026]
+localrule download_genome:
+    output: data/genomes/GCF_025152605.1_ASM2515260v1/proteins.faa, data/genomes/GCF_025152605.1_ASM2515260v1/genome.fna, data/genomes/GCF_025152605.1_ASM2515260v1/genome.gff
+    jobid: 1528
+    reason: Missing output files: data/genomes/GCF_025152605.1_ASM2515260v1/genome.gff
+    wildcards: genome=GCF_025152605.1_ASM2515260v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:25 2026]
+Finished jobid: 68 (Rule: download_genome)
+7 of 7490 steps (0.1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:26 2026]
+localrule download_genome:
+    output: data/genomes/GCF_025200945.1_ASM2520094v1/proteins.faa, data/genomes/GCF_025200945.1_ASM2520094v1/genome.fna, data/genomes/GCF_025200945.1_ASM2520094v1/genome.gff
+    jobid: 1532
+    reason: Missing output files: data/genomes/GCF_025200945.1_ASM2520094v1/genome.gff
+    wildcards: genome=GCF_025200945.1_ASM2520094v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:26 2026]
+Finished jobid: 64 (Rule: download_genome)
+8 of 7490 steps (0.1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:26 2026]
+localrule download_genome:
+    output: data/genomes/GCF_006401635.1_ASM640163v1/proteins.faa, data/genomes/GCF_006401635.1_ASM640163v1/genome.fna, data/genomes/GCF_006401635.1_ASM640163v1/genome.gff
+    jobid: 60
+    reason: Missing output files: data/genomes/GCF_006401635.1_ASM640163v1/genome.gff, data/genomes/GCF_006401635.1_ASM640163v1/proteins.faa
+    wildcards: genome=GCF_006401635.1_ASM640163v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:26 2026]
+Finished jobid: 4516 (Rule: download_genome)
+9 of 7490 steps (0.1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:26 2026]
+localrule download_genome:
+    output: data/genomes/GCF_011458015.1_ASM1145801v1/proteins.faa, data/genomes/GCF_011458015.1_ASM1145801v1/genome.fna, data/genomes/GCF_011458015.1_ASM1145801v1/genome.gff
+    jobid: 2808
+    reason: Missing output files: data/genomes/GCF_011458015.1_ASM1145801v1/genome.gff, data/genomes/GCF_011458015.1_ASM1145801v1/proteins.faa
+    wildcards: genome=GCF_011458015.1_ASM1145801v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:26 2026]
+Finished jobid: 1528 (Rule: download_genome)
+10 of 7490 steps (0.1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:26 2026]
+localrule download_genome:
+    output: data/genomes/GCF_025215645.1_ASM2521564v1/proteins.faa, data/genomes/GCF_025215645.1_ASM2521564v1/genome.fna, data/genomes/GCF_025215645.1_ASM2521564v1/genome.gff
+    jobid: 1536
+    reason: Missing output files: data/genomes/GCF_025215645.1_ASM2521564v1/genome.gff
+    wildcards: genome=GCF_025215645.1_ASM2521564v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:26 2026]
+Finished jobid: 1532 (Rule: download_genome)
+11 of 7490 steps (0.1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:27 2026]
+localrule download_genome:
+    output: data/genomes/GCF_033128685.1_ASM3312868v1/proteins.faa, data/genomes/GCF_033128685.1_ASM3312868v1/genome.fna, data/genomes/GCF_033128685.1_ASM3312868v1/genome.gff
+    jobid: 1752
+    reason: Missing output files: data/genomes/GCF_033128685.1_ASM3312868v1/proteins.faa, data/genomes/GCF_033128685.1_ASM3312868v1/genome.gff
+    wildcards: genome=GCF_033128685.1_ASM3312868v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:27 2026]
+Finished jobid: 60 (Rule: download_genome)
+12 of 7490 steps (0.2%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:27 2026]
+localrule download_genome:
+    output: data/genomes/GCF_027570855.1_ASM2757085v1/proteins.faa, data/genomes/GCF_027570855.1_ASM2757085v1/genome.fna, data/genomes/GCF_027570855.1_ASM2757085v1/genome.gff
+    jobid: 5316
+    reason: Missing output files: data/genomes/GCF_027570855.1_ASM2757085v1/proteins.faa, data/genomes/GCF_027570855.1_ASM2757085v1/genome.gff
+    wildcards: genome=GCF_027570855.1_ASM2757085v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:27 2026]
+Finished jobid: 2808 (Rule: download_genome)
+13 of 7490 steps (0.2%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:27 2026]
+localrule download_genome:
+    output: data/genomes/GCF_027570995.1_ASM2757099v1/proteins.faa, data/genomes/GCF_027570995.1_ASM2757099v1/genome.fna, data/genomes/GCF_027570995.1_ASM2757099v1/genome.gff
+    jobid: 5320
+    reason: Missing output files: data/genomes/GCF_027570995.1_ASM2757099v1/genome.gff
+    wildcards: genome=GCF_027570995.1_ASM2757099v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:27 2026]
+Finished jobid: 1536 (Rule: download_genome)
+14 of 7490 steps (0.2%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:27 2026]
+localrule download_genome:
+    output: data/genomes/GCF_037711575.1_ASM3771157v1/proteins.faa, data/genomes/GCF_037711575.1_ASM3771157v1/genome.fna, data/genomes/GCF_037711575.1_ASM3771157v1/genome.gff
+    jobid: 1976
+    reason: Missing output files: data/genomes/GCF_037711575.1_ASM3771157v1/genome.gff, data/genomes/GCF_037711575.1_ASM3771157v1/proteins.faa
+    wildcards: genome=GCF_037711575.1_ASM3771157v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:27 2026]
+Finished jobid: 1752 (Rule: download_genome)
+15 of 7490 steps (0.2%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:28 2026]
+localrule download_genome:
+    output: data/genomes/GCF_025232295.1_ASM2523229v1/proteins.faa, data/genomes/GCF_025232295.1_ASM2523229v1/genome.fna, data/genomes/GCF_025232295.1_ASM2523229v1/genome.gff
+    jobid: 1548
+    reason: Missing output files: data/genomes/GCF_025232295.1_ASM2523229v1/genome.gff
+    wildcards: genome=GCF_025232295.1_ASM2523229v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:28 2026]
+Finished jobid: 5316 (Rule: download_genome)
+16 of 7490 steps (0.2%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:28 2026]
+localrule download_genome:
+    output: data/genomes/GCF_024705295.2_ASM2470529v2/proteins.faa, data/genomes/GCF_024705295.2_ASM2470529v2/genome.fna, data/genomes/GCF_024705295.2_ASM2470529v2/genome.gff
+    jobid: 2528
+    reason: Missing output files: data/genomes/GCF_024705295.2_ASM2470529v2/genome.gff, data/genomes/GCF_024705295.2_ASM2470529v2/proteins.faa
+    wildcards: genome=GCF_024705295.2_ASM2470529v2
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:28 2026]
+Finished jobid: 1976 (Rule: download_genome)
+17 of 7490 steps (0.2%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:28 2026]
+localrule download_genome:
+    output: data/genomes/GCF_027571135.1_ASM2757113v1/proteins.faa, data/genomes/GCF_027571135.1_ASM2757113v1/genome.fna, data/genomes/GCF_027571135.1_ASM2757113v1/genome.gff
+    jobid: 5324
+    reason: Missing output files: data/genomes/GCF_027571135.1_ASM2757113v1/genome.gff, data/genomes/GCF_027571135.1_ASM2757113v1/proteins.faa
+    wildcards: genome=GCF_027571135.1_ASM2757113v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:29 2026]
+Finished jobid: 5320 (Rule: download_genome)
+18 of 7490 steps (0.2%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:29 2026]
+localrule download_genome:
+    output: data/genomes/GCF_021513535.1_ASM2151353v1/proteins.faa, data/genomes/GCF_021513535.1_ASM2151353v1/genome.fna, data/genomes/GCF_021513535.1_ASM2151353v1/genome.gff
+    jobid: 4952
+    reason: Missing output files: data/genomes/GCF_021513535.1_ASM2151353v1/genome.gff, data/genomes/GCF_021513535.1_ASM2151353v1/proteins.faa
+    wildcards: genome=GCF_021513535.1_ASM2151353v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:29 2026]
+Finished jobid: 1548 (Rule: download_genome)
+19 of 7490 steps (0.3%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:29 2026]
+localrule download_genome:
+    output: data/genomes/GCF_025232315.1_ASM2523231v1/proteins.faa, data/genomes/GCF_025232315.1_ASM2523231v1/genome.fna, data/genomes/GCF_025232315.1_ASM2523231v1/genome.gff
+    jobid: 1552
+    reason: Missing output files: data/genomes/GCF_025232315.1_ASM2523231v1/proteins.faa, data/genomes/GCF_025232315.1_ASM2523231v1/genome.gff
+    wildcards: genome=GCF_025232315.1_ASM2523231v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:29 2026]
+Finished jobid: 2528 (Rule: download_genome)
+20 of 7490 steps (0.3%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:29 2026]
+localrule download_genome:
+    output: data/genomes/GCF_021513555.1_ASM2151355v1/proteins.faa, data/genomes/GCF_021513555.1_ASM2151355v1/genome.fna, data/genomes/GCF_021513555.1_ASM2151355v1/genome.gff
+    jobid: 4956
+    reason: Missing output files: data/genomes/GCF_021513555.1_ASM2151355v1/proteins.faa, data/genomes/GCF_021513555.1_ASM2151355v1/genome.gff
+    wildcards: genome=GCF_021513555.1_ASM2151355v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:30 2026]
+Finished jobid: 5324 (Rule: download_genome)
+21 of 7490 steps (0.3%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:30 2026]
+localrule download_genome:
+    output: data/genomes/GCF_030761315.1_ASM3076131v1/proteins.faa, data/genomes/GCF_030761315.1_ASM3076131v1/genome.fna, data/genomes/GCF_030761315.1_ASM3076131v1/genome.gff
+    jobid: 3552
+    reason: Missing output files: data/genomes/GCF_030761315.1_ASM3076131v1/proteins.faa, data/genomes/GCF_030761315.1_ASM3076131v1/genome.gff
+    wildcards: genome=GCF_030761315.1_ASM3076131v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:30 2026]
+Finished jobid: 4952 (Rule: download_genome)
+22 of 7490 steps (0.3%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:30 2026]
+localrule download_genome:
+    output: data/genomes/GCF_025232335.1_ASM2523233v1/proteins.faa, data/genomes/GCF_025232335.1_ASM2523233v1/genome.fna, data/genomes/GCF_025232335.1_ASM2523233v1/genome.gff
+    jobid: 1556
+    reason: Missing output files: data/genomes/GCF_025232335.1_ASM2523233v1/genome.gff, data/genomes/GCF_025232335.1_ASM2523233v1/proteins.faa
+    wildcards: genome=GCF_025232335.1_ASM2523233v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:30 2026]
+Finished jobid: 1552 (Rule: download_genome)
+23 of 7490 steps (0.3%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:30 2026]
+localrule download_genome:
+    output: data/genomes/GCF_030121915.1_ASM3012191v1/proteins.faa, data/genomes/GCF_030121915.1_ASM3012191v1/genome.fna, data/genomes/GCF_030121915.1_ASM3012191v1/genome.gff
+    jobid: 5528
+    reason: Missing output files: data/genomes/GCF_030121915.1_ASM3012191v1/genome.gff, data/genomes/GCF_030121915.1_ASM3012191v1/proteins.faa
+    wildcards: genome=GCF_030121915.1_ASM3012191v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:31 2026]
+Finished jobid: 4956 (Rule: download_genome)
+24 of 7490 steps (0.3%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:31 2026]
+localrule download_genome:
+    output: data/genomes/GCF_003028335.1_ASM302833v1/proteins.faa, data/genomes/GCF_003028335.1_ASM302833v1/genome.fna, data/genomes/GCF_003028335.1_ASM302833v1/genome.gff
+    jobid: 4228
+    reason: Missing output files: data/genomes/GCF_003028335.1_ASM302833v1/proteins.faa, data/genomes/GCF_003028335.1_ASM302833v1/genome.gff
+    wildcards: genome=GCF_003028335.1_ASM302833v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:31 2026]
+Finished jobid: 3552 (Rule: download_genome)
+25 of 7490 steps (0.3%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:31 2026]
+localrule download_genome:
+    output: data/genomes/GCF_021513615.1_ASM2151361v1/proteins.faa, data/genomes/GCF_021513615.1_ASM2151361v1/genome.fna, data/genomes/GCF_021513615.1_ASM2151361v1/genome.gff
+    jobid: 4960
+    reason: Missing output files: data/genomes/GCF_021513615.1_ASM2151361v1/genome.gff
+    wildcards: genome=GCF_021513615.1_ASM2151361v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:31 2026]
+Finished jobid: 1556 (Rule: download_genome)
+26 of 7490 steps (0.3%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:31 2026]
+localrule download_genome:
+    output: data/genomes/GCF_025232515.1_ASM2523251v1/proteins.faa, data/genomes/GCF_025232515.1_ASM2523251v1/genome.fna, data/genomes/GCF_025232515.1_ASM2523251v1/genome.gff
+    jobid: 1560
+    reason: Missing output files: data/genomes/GCF_025232515.1_ASM2523251v1/proteins.faa, data/genomes/GCF_025232515.1_ASM2523251v1/genome.gff
+    wildcards: genome=GCF_025232515.1_ASM2523251v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:32 2026]
+Finished jobid: 5528 (Rule: download_genome)
+27 of 7490 steps (0.4%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:32 2026]
+localrule download_genome:
+    output: data/genomes/GCF_021513635.1_ASM2151363v1/proteins.faa, data/genomes/GCF_021513635.1_ASM2151363v1/genome.fna, data/genomes/GCF_021513635.1_ASM2151363v1/genome.gff
+    jobid: 4964
+    reason: Missing output files: data/genomes/GCF_021513635.1_ASM2151363v1/genome.gff, data/genomes/GCF_021513635.1_ASM2151363v1/proteins.faa
+    wildcards: genome=GCF_021513635.1_ASM2151363v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:32 2026]
+Finished jobid: 4228 (Rule: download_genome)
+28 of 7490 steps (0.4%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:32 2026]
+localrule download_genome:
+    output: data/genomes/GCF_030761615.1_ASM3076161v1/proteins.faa, data/genomes/GCF_030761615.1_ASM3076161v1/genome.fna, data/genomes/GCF_030761615.1_ASM3076161v1/genome.gff
+    jobid: 3560
+    reason: Missing output files: data/genomes/GCF_030761615.1_ASM3076161v1/proteins.faa, data/genomes/GCF_030761615.1_ASM3076161v1/genome.gff
+    wildcards: genome=GCF_030761615.1_ASM3076161v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:32 2026]
+Finished jobid: 1560 (Rule: download_genome)
+29 of 7490 steps (0.4%) done
+[Wed Mar 18 14:32:32 2026]
+Finished jobid: 4960 (Rule: download_genome)
+30 of 7490 steps (0.4%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Wed Mar 18 14:32:32 2026]
+localrule download_genome:
+    output: data/genomes/GCF_037707025.1_ASM3770702v1/proteins.faa, data/genomes/GCF_037707025.1_ASM3770702v1/genome.fna, data/genomes/GCF_037707025.1_ASM3770702v1/genome.gff
+    jobid: 1968
+    reason: Missing output files: data/genomes/GCF_037707025.1_ASM3770702v1/proteins.faa, data/genomes/GCF_037707025.1_ASM3770702v1/genome.gff
+    wildcards: genome=GCF_037707025.1_ASM3770702v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:32 2026]
+localrule download_genome:
+    output: data/genomes/GCF_030121855.1_ASM3012185v1/proteins.faa, data/genomes/GCF_030121855.1_ASM3012185v1/genome.fna, data/genomes/GCF_030121855.1_ASM3012185v1/genome.gff
+    jobid: 5524
+    reason: Missing output files: data/genomes/GCF_030121855.1_ASM3012185v1/genome.gff
+    wildcards: genome=GCF_030121855.1_ASM3012185v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:33 2026]
+Finished jobid: 4964 (Rule: download_genome)
+31 of 7490 steps (0.4%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:33 2026]
+localrule download_genome:
+    output: data/genomes/GCF_025232535.1_ASM2523253v1/proteins.faa, data/genomes/GCF_025232535.1_ASM2523253v1/genome.fna, data/genomes/GCF_025232535.1_ASM2523253v1/genome.gff
+    jobid: 1564
+    reason: Missing output files: data/genomes/GCF_025232535.1_ASM2523253v1/genome.gff, data/genomes/GCF_025232535.1_ASM2523253v1/proteins.faa
+    wildcards: genome=GCF_025232535.1_ASM2523253v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:33 2026]
+Finished jobid: 3560 (Rule: download_genome)
+32 of 7490 steps (0.4%) done
+[Wed Mar 18 14:32:33 2026]
+Finished jobid: 1968 (Rule: download_genome)
+33 of 7490 steps (0.4%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Wed Mar 18 14:32:33 2026]
+localrule download_genome:
+    output: data/genomes/GCF_033129965.1_ASM3312996v1/proteins.faa, data/genomes/GCF_033129965.1_ASM3312996v1/genome.fna, data/genomes/GCF_033129965.1_ASM3312996v1/genome.gff
+    jobid: 1768
+    reason: Missing output files: data/genomes/GCF_033129965.1_ASM3312996v1/genome.gff, data/genomes/GCF_033129965.1_ASM3312996v1/proteins.faa
+    wildcards: genome=GCF_033129965.1_ASM3312996v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:33 2026]
+localrule download_genome:
+    output: data/genomes/GCF_008152505.1_ASM815250v1/proteins.faa, data/genomes/GCF_008152505.1_ASM815250v1/genome.fna, data/genomes/GCF_008152505.1_ASM815250v1/genome.gff
+    jobid: 516
+    reason: Missing output files: data/genomes/GCF_008152505.1_ASM815250v1/genome.gff, data/genomes/GCF_008152505.1_ASM815250v1/proteins.faa
+    wildcards: genome=GCF_008152505.1_ASM815250v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:33 2026]
+Finished jobid: 5524 (Rule: download_genome)
+34 of 7490 steps (0.5%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:33 2026]
+localrule download_genome:
+    output: data/genomes/GCF_006339065.1_ASM633906v1/proteins.faa, data/genomes/GCF_006339065.1_ASM633906v1/genome.fna, data/genomes/GCF_006339065.1_ASM633906v1/genome.gff
+    jobid: 2748
+    reason: Missing output files: data/genomes/GCF_006339065.1_ASM633906v1/genome.gff, data/genomes/GCF_006339065.1_ASM633906v1/proteins.faa
+    wildcards: genome=GCF_006339065.1_ASM633906v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:34 2026]
+Finished jobid: 1564 (Rule: download_genome)
+35 of 7490 steps (0.5%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:34 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022533445.1_ASM2253344v1/proteins.faa, data/genomes/GCF_022533445.1_ASM2253344v1/genome.fna, data/genomes/GCF_022533445.1_ASM2253344v1/genome.gff
+    jobid: 4968
+    reason: Missing output files: data/genomes/GCF_022533445.1_ASM2253344v1/genome.gff
+    wildcards: genome=GCF_022533445.1_ASM2253344v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:34 2026]
+Finished jobid: 1768 (Rule: download_genome)
+36 of 7490 steps (0.5%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:34 2026]
+localrule download_genome:
+    output: data/genomes/GCF_030761635.1_ASM3076163v1/proteins.faa, data/genomes/GCF_030761635.1_ASM3076163v1/genome.fna, data/genomes/GCF_030761635.1_ASM3076163v1/genome.gff
+    jobid: 3564
+    reason: Missing output files: data/genomes/GCF_030761635.1_ASM3076163v1/genome.gff, data/genomes/GCF_030761635.1_ASM3076163v1/proteins.faa
+    wildcards: genome=GCF_030761635.1_ASM3076163v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:34 2026]
+Finished jobid: 516 (Rule: download_genome)
+37 of 7490 steps (0.5%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:34 2026]
+localrule download_genome:
+    output: data/genomes/GCF_025232635.1_ASM2523263v1/proteins.faa, data/genomes/GCF_025232635.1_ASM2523263v1/genome.fna, data/genomes/GCF_025232635.1_ASM2523263v1/genome.gff
+    jobid: 1568
+    reason: Missing output files: data/genomes/GCF_025232635.1_ASM2523263v1/proteins.faa, data/genomes/GCF_025232635.1_ASM2523263v1/genome.gff
+    wildcards: genome=GCF_025232635.1_ASM2523263v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:34 2026]
+Finished jobid: 2748 (Rule: download_genome)
+38 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:35 2026]
+localrule download_genome:
+    output: data/genomes/GCF_006339365.1_ASM633936v1/proteins.faa, data/genomes/GCF_006339365.1_ASM633936v1/genome.fna, data/genomes/GCF_006339365.1_ASM633936v1/genome.gff
+    jobid: 2752
+    reason: Missing output files: data/genomes/GCF_006339365.1_ASM633936v1/proteins.faa, data/genomes/GCF_006339365.1_ASM633936v1/genome.gff
+    wildcards: genome=GCF_006339365.1_ASM633936v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:35 2026]
+Finished jobid: 3564 (Rule: download_genome)
+39 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:35 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022569995.1_ASM2256999v1/proteins.faa, data/genomes/GCF_022569995.1_ASM2256999v1/genome.fna, data/genomes/GCF_022569995.1_ASM2256999v1/genome.gff
+    jobid: 4972
+    reason: Missing output files: data/genomes/GCF_022569995.1_ASM2256999v1/genome.gff
+    wildcards: genome=GCF_022569995.1_ASM2256999v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:35 2026]
+Finished jobid: 4968 (Rule: download_genome)
+40 of 7490 steps (1%) done
+[Wed Mar 18 14:32:35 2026]
+Finished jobid: 1568 (Rule: download_genome)
+41 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Wed Mar 18 14:32:36 2026]
+localrule download_genome:
+    output: data/genomes/GCF_001548135.1_ASM154813v1/proteins.faa, data/genomes/GCF_001548135.1_ASM154813v1/genome.fna, data/genomes/GCF_001548135.1_ASM154813v1/genome.gff
+    jobid: 4080
+    reason: Missing output files: data/genomes/GCF_001548135.1_ASM154813v1/proteins.faa, data/genomes/GCF_001548135.1_ASM154813v1/genome.gff
+    wildcards: genome=GCF_001548135.1_ASM154813v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:36 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022921275.1_ASM2292127v1/proteins.faa, data/genomes/GCF_022921275.1_ASM2292127v1/genome.fna, data/genomes/GCF_022921275.1_ASM2292127v1/genome.gff
+    jobid: 3036
+    reason: Missing output files: data/genomes/GCF_022921275.1_ASM2292127v1/genome.gff
+    wildcards: genome=GCF_022921275.1_ASM2292127v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:36 2026]
+Finished jobid: 2752 (Rule: download_genome)
+42 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:36 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022570235.1_ASM2257023v1/proteins.faa, data/genomes/GCF_022570235.1_ASM2257023v1/genome.fna, data/genomes/GCF_022570235.1_ASM2257023v1/genome.gff
+    jobid: 4976
+    reason: Missing output files: data/genomes/GCF_022570235.1_ASM2257023v1/proteins.faa, data/genomes/GCF_022570235.1_ASM2257023v1/genome.gff
+    wildcards: genome=GCF_022570235.1_ASM2257023v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:37 2026]
+Finished jobid: 3036 (Rule: download_genome)
+43 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:37 2026]
+localrule download_genome:
+    output: data/genomes/GCF_979086635.1_UWI247P_ann_v1/proteins.faa, data/genomes/GCF_979086635.1_UWI247P_ann_v1/genome.fna, data/genomes/GCF_979086635.1_UWI247P_ann_v1/genome.gff
+    jobid: 324
+    reason: Missing output files: data/genomes/GCF_979086635.1_UWI247P_ann_v1/genome.gff, data/genomes/GCF_979086635.1_UWI247P_ann_v1/proteins.faa
+    wildcards: genome=GCF_979086635.1_UWI247P_ann_v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:37 2026]
+Finished jobid: 4972 (Rule: download_genome)
+44 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:37 2026]
+localrule download_genome:
+    output: data/genomes/GCF_024662195.1_ASM2466219v1/proteins.faa, data/genomes/GCF_024662195.1_ASM2466219v1/genome.fna, data/genomes/GCF_024662195.1_ASM2466219v1/genome.gff
+    jobid: 220
+    reason: Missing output files: data/genomes/GCF_024662195.1_ASM2466219v1/genome.gff, data/genomes/GCF_024662195.1_ASM2466219v1/proteins.faa
+    wildcards: genome=GCF_024662195.1_ASM2466219v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:37 2026]
+Finished jobid: 4080 (Rule: download_genome)
+45 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:37 2026]
+localrule download_genome:
+    output: data/genomes/GCF_001880245.1_ASM188024v1/proteins.faa, data/genomes/GCF_001880245.1_ASM188024v1/genome.fna, data/genomes/GCF_001880245.1_ASM188024v1/genome.gff
+    jobid: 3896
+    reason: Missing output files: data/genomes/GCF_001880245.1_ASM188024v1/genome.gff, data/genomes/GCF_001880245.1_ASM188024v1/proteins.faa
+    wildcards: genome=GCF_001880245.1_ASM188024v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:37 2026]
+Finished jobid: 4976 (Rule: download_genome)
+46 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:38 2026]
+localrule download_genome:
+    output: data/genomes/GCF_040268345.1_ASM4026834v1/proteins.faa, data/genomes/GCF_040268345.1_ASM4026834v1/genome.fna, data/genomes/GCF_040268345.1_ASM4026834v1/genome.gff
+    jobid: 228
+    reason: Missing output files: data/genomes/GCF_040268345.1_ASM4026834v1/proteins.faa, data/genomes/GCF_040268345.1_ASM4026834v1/genome.gff
+    wildcards: genome=GCF_040268345.1_ASM4026834v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:38 2026]
+Finished jobid: 324 (Rule: download_genome)
+47 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:38 2026]
+localrule download_genome:
+    output: data/genomes/GCF_002952075.1_ASM295207v1/proteins.faa, data/genomes/GCF_002952075.1_ASM295207v1/genome.fna, data/genomes/GCF_002952075.1_ASM295207v1/genome.gff
+    jobid: 3900
+    reason: Missing output files: data/genomes/GCF_002952075.1_ASM295207v1/genome.gff
+    wildcards: genome=GCF_002952075.1_ASM295207v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:38 2026]
+Finished jobid: 220 (Rule: download_genome)
+48 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:38 2026]
+localrule download_genome:
+    output: data/genomes/GCF_004063735.1_ASM406373v1/proteins.faa, data/genomes/GCF_004063735.1_ASM406373v1/genome.fna, data/genomes/GCF_004063735.1_ASM406373v1/genome.gff
+    jobid: 3904
+    reason: Missing output files: data/genomes/GCF_004063735.1_ASM406373v1/proteins.faa, data/genomes/GCF_004063735.1_ASM406373v1/genome.gff
+    wildcards: genome=GCF_004063735.1_ASM406373v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:38 2026]
+Finished jobid: 3896 (Rule: download_genome)
+49 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:38 2026]
+localrule download_genome:
+    output: data/genomes/GCF_008326525.1_ASM832652v1/proteins.faa, data/genomes/GCF_008326525.1_ASM832652v1/genome.fna, data/genomes/GCF_008326525.1_ASM832652v1/genome.gff
+    jobid: 2772
+    reason: Missing output files: data/genomes/GCF_008326525.1_ASM832652v1/proteins.faa, data/genomes/GCF_008326525.1_ASM832652v1/genome.gff
+    wildcards: genome=GCF_008326525.1_ASM832652v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:38 2026]
+Finished jobid: 228 (Rule: download_genome)
+50 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:39 2026]
+localrule download_genome:
+    output: data/genomes/GCF_033128325.1_ASM3312832v1/proteins.faa, data/genomes/GCF_033128325.1_ASM3312832v1/genome.fna, data/genomes/GCF_033128325.1_ASM3312832v1/genome.gff
+    jobid: 1740
+    reason: Missing output files: data/genomes/GCF_033128325.1_ASM3312832v1/genome.gff, data/genomes/GCF_033128325.1_ASM3312832v1/proteins.faa
+    wildcards: genome=GCF_033128325.1_ASM3312832v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:39 2026]
+Finished jobid: 3900 (Rule: download_genome)
+51 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:39 2026]
+localrule download_genome:
+    output: data/genomes/GCF_023238405.1_ASM2323840v1/proteins.faa, data/genomes/GCF_023238405.1_ASM2323840v1/genome.fna, data/genomes/GCF_023238405.1_ASM2323840v1/genome.gff
+    jobid: 3908
+    reason: Missing output files: data/genomes/GCF_023238405.1_ASM2323840v1/proteins.faa, data/genomes/GCF_023238405.1_ASM2323840v1/genome.gff
+    wildcards: genome=GCF_023238405.1_ASM2323840v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:39 2026]
+Finished jobid: 3904 (Rule: download_genome)
+52 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:39 2026]
+localrule download_genome:
+    output: data/genomes/GCF_011456275.1_ASM1145627v1/proteins.faa, data/genomes/GCF_011456275.1_ASM1145627v1/genome.fna, data/genomes/GCF_011456275.1_ASM1145627v1/genome.gff
+    jobid: 2776
+    reason: Missing output files: data/genomes/GCF_011456275.1_ASM1145627v1/genome.gff
+    wildcards: genome=GCF_011456275.1_ASM1145627v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:39 2026]
+Finished jobid: 2772 (Rule: download_genome)
+53 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:39 2026]
+localrule download_genome:
+    output: data/genomes/GCF_001506485.1_ASM150648v1/proteins.faa, data/genomes/GCF_001506485.1_ASM150648v1/genome.fna, data/genomes/GCF_001506485.1_ASM150648v1/genome.gff
+    jobid: 996
+    reason: Missing output files: data/genomes/GCF_001506485.1_ASM150648v1/genome.gff, data/genomes/GCF_001506485.1_ASM150648v1/proteins.faa
+    wildcards: genome=GCF_001506485.1_ASM150648v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:39 2026]
+Finished jobid: 1740 (Rule: download_genome)
+54 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:39 2026]
+localrule download_genome:
+    output: data/genomes/GCF_033128465.1_ASM3312846v1/proteins.faa, data/genomes/GCF_033128465.1_ASM3312846v1/genome.fna, data/genomes/GCF_033128465.1_ASM3312846v1/genome.gff
+    jobid: 1744
+    reason: Missing output files: data/genomes/GCF_033128465.1_ASM3312846v1/genome.gff, data/genomes/GCF_033128465.1_ASM3312846v1/proteins.faa
+    wildcards: genome=GCF_033128465.1_ASM3312846v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:40 2026]
+Finished jobid: 3908 (Rule: download_genome)
+55 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:40 2026]
+localrule download_genome:
+    output: data/genomes/GCF_016105505.1_ASM1610550v1/proteins.faa, data/genomes/GCF_016105505.1_ASM1610550v1/genome.fna, data/genomes/GCF_016105505.1_ASM1610550v1/genome.gff
+    jobid: 4600
+    reason: Missing output files: data/genomes/GCF_016105505.1_ASM1610550v1/proteins.faa, data/genomes/GCF_016105505.1_ASM1610550v1/genome.gff
+    wildcards: genome=GCF_016105505.1_ASM1610550v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:40 2026]
+Finished jobid: 2776 (Rule: download_genome)
+56 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:40 2026]
+localrule download_genome:
+    output: data/genomes/GCF_032252975.1_ASM3225297v1/proteins.faa, data/genomes/GCF_032252975.1_ASM3225297v1/genome.fna, data/genomes/GCF_032252975.1_ASM3225297v1/genome.gff
+    jobid: 5716
+    reason: Missing output files: data/genomes/GCF_032252975.1_ASM3225297v1/proteins.faa, data/genomes/GCF_032252975.1_ASM3225297v1/genome.gff
+    wildcards: genome=GCF_032252975.1_ASM3225297v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:40 2026]
+Finished jobid: 1744 (Rule: download_genome)
+57 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:41 2026]
+localrule download_genome:
+    output: data/genomes/GCF_040790755.1_ASM4079075v1/proteins.faa, data/genomes/GCF_040790755.1_ASM4079075v1/genome.fna, data/genomes/GCF_040790755.1_ASM4079075v1/genome.gff
+    jobid: 240
+    reason: Missing output files: data/genomes/GCF_040790755.1_ASM4079075v1/genome.gff, data/genomes/GCF_040790755.1_ASM4079075v1/proteins.faa
+    wildcards: genome=GCF_040790755.1_ASM4079075v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:41 2026]
+Finished jobid: 996 (Rule: download_genome)
+58 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:41 2026]
+localrule download_genome:
+    output: data/genomes/GCF_034627565.1_ASM3462756v1/proteins.faa, data/genomes/GCF_034627565.1_ASM3462756v1/genome.fna, data/genomes/GCF_034627565.1_ASM3462756v1/genome.gff
+    jobid: 3912
+    reason: Missing output files: data/genomes/GCF_034627565.1_ASM3462756v1/proteins.faa, data/genomes/GCF_034627565.1_ASM3462756v1/genome.gff
+    wildcards: genome=GCF_034627565.1_ASM3462756v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:41 2026]
+Finished jobid: 240 (Rule: download_genome)
+59 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:42 2026]
+localrule download_genome:
+    output: data/genomes/GCF_033128585.1_ASM3312858v1/proteins.faa, data/genomes/GCF_033128585.1_ASM3312858v1/genome.fna, data/genomes/GCF_033128585.1_ASM3312858v1/genome.gff
+    jobid: 1748
+    reason: Missing output files: data/genomes/GCF_033128585.1_ASM3312858v1/genome.gff, data/genomes/GCF_033128585.1_ASM3312858v1/proteins.faa
+    wildcards: genome=GCF_033128585.1_ASM3312858v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:42 2026]
+Finished jobid: 4600 (Rule: download_genome)
+60 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:42 2026]
+localrule download_genome:
+    output: data/genomes/GCF_011462215.1_ASM1146221v1/proteins.faa, data/genomes/GCF_011462215.1_ASM1146221v1/genome.fna, data/genomes/GCF_011462215.1_ASM1146221v1/genome.gff
+    jobid: 2816
+    reason: Missing output files: data/genomes/GCF_011462215.1_ASM1146221v1/genome.gff, data/genomes/GCF_011462215.1_ASM1146221v1/proteins.faa
+    wildcards: genome=GCF_011462215.1_ASM1146221v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:42 2026]
+Finished jobid: 5716 (Rule: download_genome)
+61 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:42 2026]
+localrule download_genome:
+    output: data/genomes/GCF_032843885.3_ASM3284388v3/proteins.faa, data/genomes/GCF_032843885.3_ASM3284388v3/genome.fna, data/genomes/GCF_032843885.3_ASM3284388v3/genome.gff
+    jobid: 5720
+    reason: Missing output files: data/genomes/GCF_032843885.3_ASM3284388v3/proteins.faa, data/genomes/GCF_032843885.3_ASM3284388v3/genome.gff
+    wildcards: genome=GCF_032843885.3_ASM3284388v3
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:42 2026]
+Finished jobid: 3912 (Rule: download_genome)
+62 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:42 2026]
+localrule download_genome:
+    output: data/genomes/GCF_979086265.1_UNY149P_ann_v1/proteins.faa, data/genomes/GCF_979086265.1_UNY149P_ann_v1/genome.fna, data/genomes/GCF_979086265.1_UNY149P_ann_v1/genome.gff
+    jobid: 304
+    reason: Missing output files: data/genomes/GCF_979086265.1_UNY149P_ann_v1/genome.gff, data/genomes/GCF_979086265.1_UNY149P_ann_v1/proteins.faa
+    wildcards: genome=GCF_979086265.1_UNY149P_ann_v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:43 2026]
+Finished jobid: 2816 (Rule: download_genome)
+63 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:43 2026]
+localrule download_genome:
+    output: data/genomes/GCF_037714695.1_ASM3771469v1/proteins.faa, data/genomes/GCF_037714695.1_ASM3771469v1/genome.fna, data/genomes/GCF_037714695.1_ASM3771469v1/genome.gff
+    jobid: 1984
+    reason: Missing output files: data/genomes/GCF_037714695.1_ASM3771469v1/proteins.faa, data/genomes/GCF_037714695.1_ASM3771469v1/genome.gff
+    wildcards: genome=GCF_037714695.1_ASM3771469v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:43 2026]
+Finished jobid: 1748 (Rule: download_genome)
+64 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:43 2026]
+localrule download_genome:
+    output: data/genomes/GCF_011462575.1_ASM1146257v1/proteins.faa, data/genomes/GCF_011462575.1_ASM1146257v1/genome.fna, data/genomes/GCF_011462575.1_ASM1146257v1/genome.gff
+    jobid: 2820
+    reason: Missing output files: data/genomes/GCF_011462575.1_ASM1146257v1/proteins.faa, data/genomes/GCF_011462575.1_ASM1146257v1/genome.gff
+    wildcards: genome=GCF_011462575.1_ASM1146257v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:43 2026]
+Finished jobid: 5720 (Rule: download_genome)
+65 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:43 2026]
+localrule download_genome:
+    output: data/genomes/GCF_037710325.1_ASM3771032v1/proteins.faa, data/genomes/GCF_037710325.1_ASM3771032v1/genome.fna, data/genomes/GCF_037710325.1_ASM3771032v1/genome.gff
+    jobid: 1972
+    reason: Missing output files: data/genomes/GCF_037710325.1_ASM3771032v1/genome.gff
+    wildcards: genome=GCF_037710325.1_ASM3771032v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:43 2026]
+Finished jobid: 304 (Rule: download_genome)
+66 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:43 2026]
+localrule download_genome:
+    output: data/genomes/GCF_979086275.1_UNY990P_ann_v1/proteins.faa, data/genomes/GCF_979086275.1_UNY990P_ann_v1/genome.fna, data/genomes/GCF_979086275.1_UNY990P_ann_v1/genome.gff
+    jobid: 308
+    reason: Missing output files: data/genomes/GCF_979086275.1_UNY990P_ann_v1/proteins.faa, data/genomes/GCF_979086275.1_UNY990P_ann_v1/genome.gff
+    wildcards: genome=GCF_979086275.1_UNY990P_ann_v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:44 2026]
+Finished jobid: 1984 (Rule: download_genome)
+67 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:44 2026]
+localrule download_genome:
+    output: data/genomes/GCF_027570795.1_ASM2757079v1/proteins.faa, data/genomes/GCF_027570795.1_ASM2757079v1/genome.fna, data/genomes/GCF_027570795.1_ASM2757079v1/genome.gff
+    jobid: 5312
+    reason: Missing output files: data/genomes/GCF_027570795.1_ASM2757079v1/genome.gff, data/genomes/GCF_027570795.1_ASM2757079v1/proteins.faa
+    wildcards: genome=GCF_027570795.1_ASM2757079v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:44 2026]
+Finished jobid: 2820 (Rule: download_genome)
+68 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:44 2026]
+localrule download_genome:
+    output: data/genomes/GCF_011462735.1_ASM1146273v1/proteins.faa, data/genomes/GCF_011462735.1_ASM1146273v1/genome.fna, data/genomes/GCF_011462735.1_ASM1146273v1/genome.gff
+    jobid: 2824
+    reason: Missing output files: data/genomes/GCF_011462735.1_ASM1146273v1/proteins.faa, data/genomes/GCF_011462735.1_ASM1146273v1/genome.gff
+    wildcards: genome=GCF_011462735.1_ASM1146273v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:44 2026]
+Finished jobid: 1972 (Rule: download_genome)
+69 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:44 2026]
+localrule download_genome:
+    output: data/genomes/GCF_011462915.1_ASM1146291v1/proteins.faa, data/genomes/GCF_011462915.1_ASM1146291v1/genome.fna, data/genomes/GCF_011462915.1_ASM1146291v1/genome.gff
+    jobid: 2828
+    reason: Missing output files: data/genomes/GCF_011462915.1_ASM1146291v1/proteins.faa, data/genomes/GCF_011462915.1_ASM1146291v1/genome.gff
+    wildcards: genome=GCF_011462915.1_ASM1146291v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:44 2026]
+Finished jobid: 308 (Rule: download_genome)
+70 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:44 2026]
+localrule download_genome:
+    output: data/genomes/GCF_023016425.1_ASM2301642v1/proteins.faa, data/genomes/GCF_023016425.1_ASM2301642v1/genome.fna, data/genomes/GCF_023016425.1_ASM2301642v1/genome.gff
+    jobid: 500
+    reason: Missing output files: data/genomes/GCF_023016425.1_ASM2301642v1/genome.gff, data/genomes/GCF_023016425.1_ASM2301642v1/proteins.faa
+    wildcards: genome=GCF_023016425.1_ASM2301642v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:45 2026]
+Finished jobid: 2824 (Rule: download_genome)
+71 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:45 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022810985.1_ASM2281098v1/proteins.faa, data/genomes/GCF_022810985.1_ASM2281098v1/genome.fna, data/genomes/GCF_022810985.1_ASM2281098v1/genome.gff
+    jobid: 5048
+    reason: Missing output files: data/genomes/GCF_022810985.1_ASM2281098v1/genome.gff, data/genomes/GCF_022810985.1_ASM2281098v1/proteins.faa
+    wildcards: genome=GCF_022810985.1_ASM2281098v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:45 2026]
+Finished jobid: 5312 (Rule: download_genome)
+72 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:45 2026]
+localrule download_genome:
+    output: data/genomes/GCF_029856995.1_ASM2985699v1/proteins.faa, data/genomes/GCF_029856995.1_ASM2985699v1/genome.fna, data/genomes/GCF_029856995.1_ASM2985699v1/genome.gff
+    jobid: 5416
+    reason: Missing output files: data/genomes/GCF_029856995.1_ASM2985699v1/genome.gff, data/genomes/GCF_029856995.1_ASM2985699v1/proteins.faa
+    wildcards: genome=GCF_029856995.1_ASM2985699v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:45 2026]
+Finished jobid: 2828 (Rule: download_genome)
+73 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:45 2026]
+localrule download_genome:
+    output: data/genomes/GCF_011463055.1_ASM1146305v1/proteins.faa, data/genomes/GCF_011463055.1_ASM1146305v1/genome.fna, data/genomes/GCF_011463055.1_ASM1146305v1/genome.gff
+    jobid: 2832
+    reason: Missing output files: data/genomes/GCF_011463055.1_ASM1146305v1/genome.gff, data/genomes/GCF_011463055.1_ASM1146305v1/proteins.faa
+    wildcards: genome=GCF_011463055.1_ASM1146305v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:45 2026]
+Finished jobid: 500 (Rule: download_genome)
+74 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:45 2026]
+localrule download_genome:
+    output: data/genomes/GCF_003815895.1_ASM381589v1/proteins.faa, data/genomes/GCF_003815895.1_ASM381589v1/genome.fna, data/genomes/GCF_003815895.1_ASM381589v1/genome.gff
+    jobid: 3788
+    reason: Missing output files: data/genomes/GCF_003815895.1_ASM381589v1/genome.gff, data/genomes/GCF_003815895.1_ASM381589v1/proteins.faa
+    wildcards: genome=GCF_003815895.1_ASM381589v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:46 2026]
+Finished jobid: 5048 (Rule: download_genome)
+75 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:46 2026]
+localrule download_genome:
+    output: data/genomes/GCF_016064595.1_ASM1606459v1/proteins.faa, data/genomes/GCF_016064595.1_ASM1606459v1/genome.fna, data/genomes/GCF_016064595.1_ASM1606459v1/genome.gff
+    jobid: 4596
+    reason: Missing output files: data/genomes/GCF_016064595.1_ASM1606459v1/genome.gff, data/genomes/GCF_016064595.1_ASM1606459v1/proteins.faa
+    wildcards: genome=GCF_016064595.1_ASM1606459v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:46 2026]
+Finished jobid: 5416 (Rule: download_genome)
+76 of 7490 steps (1%) done
+[Wed Mar 18 14:32:46 2026]
+Finished jobid: 2832 (Rule: download_genome)
+77 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Wed Mar 18 14:32:46 2026]
+localrule download_genome:
+    output: data/genomes/GCF_040409775.1_ASM4040977v1/proteins.faa, data/genomes/GCF_040409775.1_ASM4040977v1/genome.fna, data/genomes/GCF_040409775.1_ASM4040977v1/genome.gff
+    jobid: 3916
+    reason: Missing output files: data/genomes/GCF_040409775.1_ASM4040977v1/genome.gff, data/genomes/GCF_040409775.1_ASM4040977v1/proteins.faa
+    wildcards: genome=GCF_040409775.1_ASM4040977v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:46 2026]
+localrule download_genome:
+    output: data/genomes/GCF_037705215.1_ASM3770521v1/proteins.faa, data/genomes/GCF_037705215.1_ASM3770521v1/genome.fna, data/genomes/GCF_037705215.1_ASM3770521v1/genome.gff
+    jobid: 1964
+    reason: Missing output files: data/genomes/GCF_037705215.1_ASM3770521v1/genome.gff
+    wildcards: genome=GCF_037705215.1_ASM3770521v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:46 2026]
+Finished jobid: 3788 (Rule: download_genome)
+78 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:47 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022811005.1_ASM2281100v1/proteins.faa, data/genomes/GCF_022811005.1_ASM2281100v1/genome.fna, data/genomes/GCF_022811005.1_ASM2281100v1/genome.gff
+    jobid: 5052
+    reason: Missing output files: data/genomes/GCF_022811005.1_ASM2281100v1/proteins.faa, data/genomes/GCF_022811005.1_ASM2281100v1/genome.gff
+    wildcards: genome=GCF_022811005.1_ASM2281100v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:47 2026]
+Finished jobid: 1964 (Rule: download_genome)
+79 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:47 2026]
+localrule download_genome:
+    output: data/genomes/GCF_001507125.1_ASM150712v1/proteins.faa, data/genomes/GCF_001507125.1_ASM150712v1/genome.fna, data/genomes/GCF_001507125.1_ASM150712v1/genome.gff
+    jobid: 1108
+    reason: Missing output files: data/genomes/GCF_001507125.1_ASM150712v1/genome.gff, data/genomes/GCF_001507125.1_ASM150712v1/proteins.faa
+    wildcards: genome=GCF_001507125.1_ASM150712v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:48 2026]
+Finished jobid: 4596 (Rule: download_genome)
+80 of 7490 steps (1%) done
+[Wed Mar 18 14:32:48 2026]
+Finished jobid: 3916 (Rule: download_genome)
+81 of 7490 steps (1%) done
+Execute 2 jobs...
+[Wed Mar 18 14:32:48 2026]
+localrule download_genome:
+    output: data/genomes/GCF_030761275.1_ASM3076127v1/proteins.faa, data/genomes/GCF_030761275.1_ASM3076127v1/genome.fna, data/genomes/GCF_030761275.1_ASM3076127v1/genome.gff
+    jobid: 3544
+    reason: Missing output files: data/genomes/GCF_030761275.1_ASM3076127v1/proteins.faa, data/genomes/GCF_030761275.1_ASM3076127v1/genome.gff
+    wildcards: genome=GCF_030761275.1_ASM3076127v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:48 2026]
+localrule download_genome:
+    output: data/genomes/GCF_001516385.1_ASM151638v1/proteins.faa, data/genomes/GCF_001516385.1_ASM151638v1/genome.fna, data/genomes/GCF_001516385.1_ASM151638v1/genome.gff
+    jobid: 4076
+    reason: Missing output files: data/genomes/GCF_001516385.1_ASM151638v1/genome.gff, data/genomes/GCF_001516385.1_ASM151638v1/proteins.faa
+    wildcards: genome=GCF_001516385.1_ASM151638v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:48 2026]
+Finished jobid: 5052 (Rule: download_genome)
+82 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:48 2026]
+localrule download_genome:
+    output: data/genomes/GCF_029958385.1_ASM2995838v1/proteins.faa, data/genomes/GCF_029958385.1_ASM2995838v1/genome.fna, data/genomes/GCF_029958385.1_ASM2995838v1/genome.gff
+    jobid: 5420
+    reason: Missing output files: data/genomes/GCF_029958385.1_ASM2995838v1/genome.gff, data/genomes/GCF_029958385.1_ASM2995838v1/proteins.faa
+    wildcards: genome=GCF_029958385.1_ASM2995838v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:49 2026]
+Finished jobid: 1108 (Rule: download_genome)
+83 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:49 2026]
+localrule download_genome:
+    output: data/genomes/GCF_033130065.1_ASM3313006v1/proteins.faa, data/genomes/GCF_033130065.1_ASM3313006v1/genome.fna, data/genomes/GCF_033130065.1_ASM3313006v1/genome.gff
+    jobid: 860
+    reason: Missing output files: data/genomes/GCF_033130065.1_ASM3313006v1/genome.gff, data/genomes/GCF_033130065.1_ASM3313006v1/proteins.faa
+    wildcards: genome=GCF_033130065.1_ASM3313006v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:49 2026]
+Finished jobid: 3544 (Rule: download_genome)
+84 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:49 2026]
+localrule download_genome:
+    output: data/genomes/GCF_001506445.1_ASM150644v1/proteins.faa, data/genomes/GCF_001506445.1_ASM150644v1/genome.fna, data/genomes/GCF_001506445.1_ASM150644v1/genome.gff
+    jobid: 988
+    reason: Missing output files: data/genomes/GCF_001506445.1_ASM150644v1/genome.gff, data/genomes/GCF_001506445.1_ASM150644v1/proteins.faa
+    wildcards: genome=GCF_001506445.1_ASM150644v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:49 2026]
+Finished jobid: 4076 (Rule: download_genome)
+85 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:49 2026]
+localrule download_genome:
+    output: data/genomes/GCF_033129205.1_ASM3312920v1/proteins.faa, data/genomes/GCF_033129205.1_ASM3312920v1/genome.fna, data/genomes/GCF_033129205.1_ASM3312920v1/genome.gff
+    jobid: 1756
+    reason: Missing output files: data/genomes/GCF_033129205.1_ASM3312920v1/proteins.faa, data/genomes/GCF_033129205.1_ASM3312920v1/genome.gff
+    wildcards: genome=GCF_033129205.1_ASM3312920v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:49 2026]
+Finished jobid: 5420 (Rule: download_genome)
+86 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:49 2026]
+localrule download_genome:
+    output: data/genomes/GCF_006401215.1_ASM640121v1/proteins.faa, data/genomes/GCF_006401215.1_ASM640121v1/genome.fna, data/genomes/GCF_006401215.1_ASM640121v1/genome.gff
+    jobid: 56
+    reason: Missing output files: data/genomes/GCF_006401215.1_ASM640121v1/proteins.faa, data/genomes/GCF_006401215.1_ASM640121v1/genome.gff
+    wildcards: genome=GCF_006401215.1_ASM640121v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:50 2026]
+Finished jobid: 860 (Rule: download_genome)
+87 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:50 2026]
+localrule download_genome:
+    output: data/genomes/GCF_023016445.1_ASM2301644v1/proteins.faa, data/genomes/GCF_023016445.1_ASM2301644v1/genome.fna, data/genomes/GCF_023016445.1_ASM2301644v1/genome.gff
+    jobid: 504
+    reason: Missing output files: data/genomes/GCF_023016445.1_ASM2301644v1/proteins.faa, data/genomes/GCF_023016445.1_ASM2301644v1/genome.gff
+    wildcards: genome=GCF_023016445.1_ASM2301644v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:50 2026]
+Finished jobid: 988 (Rule: download_genome)
+88 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:50 2026]
+localrule download_genome:
+    output: data/genomes/GCF_019857305.1_ASM1985730v1/proteins.faa, data/genomes/GCF_019857305.1_ASM1985730v1/genome.fna, data/genomes/GCF_019857305.1_ASM1985730v1/genome.gff
+    jobid: 4768
+    reason: Missing output files: data/genomes/GCF_019857305.1_ASM1985730v1/proteins.faa, data/genomes/GCF_019857305.1_ASM1985730v1/genome.gff
+    wildcards: genome=GCF_019857305.1_ASM1985730v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:50 2026]
+Finished jobid: 1756 (Rule: download_genome)
+89 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:50 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022925925.1_ASM2292592v1/proteins.faa, data/genomes/GCF_022925925.1_ASM2292592v1/genome.fna, data/genomes/GCF_022925925.1_ASM2292592v1/genome.gff
+    jobid: 3288
+    reason: Missing output files: data/genomes/GCF_022925925.1_ASM2292592v1/genome.gff
+    wildcards: genome=GCF_022925925.1_ASM2292592v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:51 2026]
+Finished jobid: 504 (Rule: download_genome)
+90 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:51 2026]
+localrule download_genome:
+    output: data/genomes/GCF_016724845.1_ASM1672484v1/proteins.faa, data/genomes/GCF_016724845.1_ASM1672484v1/genome.fna, data/genomes/GCF_016724845.1_ASM1672484v1/genome.gff
+    jobid: 3796
+    reason: Missing output files: data/genomes/GCF_016724845.1_ASM1672484v1/genome.gff, data/genomes/GCF_016724845.1_ASM1672484v1/proteins.faa
+    wildcards: genome=GCF_016724845.1_ASM1672484v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:51 2026]
+Finished jobid: 56 (Rule: download_genome)
+91 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:51 2026]
+localrule download_genome:
+    output: data/genomes/GCF_052921185.1_ASM5292118v1/proteins.faa, data/genomes/GCF_052921185.1_ASM5292118v1/genome.fna, data/genomes/GCF_052921185.1_ASM5292118v1/genome.gff
+    jobid: 2192
+    reason: Missing output files: data/genomes/GCF_052921185.1_ASM5292118v1/genome.gff, data/genomes/GCF_052921185.1_ASM5292118v1/proteins.faa
+    wildcards: genome=GCF_052921185.1_ASM5292118v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:51 2026]
+Finished jobid: 3288 (Rule: download_genome)
+92 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:51 2026]
+localrule download_genome:
+    output: data/genomes/GCF_019857325.1_ASM1985732v1/proteins.faa, data/genomes/GCF_019857325.1_ASM1985732v1/genome.fna, data/genomes/GCF_019857325.1_ASM1985732v1/genome.gff
+    jobid: 4772
+    reason: Missing output files: data/genomes/GCF_019857325.1_ASM1985732v1/genome.gff
+    wildcards: genome=GCF_019857325.1_ASM1985732v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:51 2026]
+Finished jobid: 4768 (Rule: download_genome)
+93 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:52 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022925945.1_ASM2292594v1/proteins.faa, data/genomes/GCF_022925945.1_ASM2292594v1/genome.fna, data/genomes/GCF_022925945.1_ASM2292594v1/genome.gff
+    jobid: 3292
+    reason: Missing output files: data/genomes/GCF_022925945.1_ASM2292594v1/proteins.faa, data/genomes/GCF_022925945.1_ASM2292594v1/genome.gff
+    wildcards: genome=GCF_022925945.1_ASM2292594v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:52 2026]
+Finished jobid: 2192 (Rule: download_genome)
+94 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:52 2026]
+localrule download_genome:
+    output: data/genomes/GCF_009867055.1_ASM986705v1/proteins.faa, data/genomes/GCF_009867055.1_ASM986705v1/genome.fna, data/genomes/GCF_009867055.1_ASM986705v1/genome.gff
+    jobid: 4456
+    reason: Missing output files: data/genomes/GCF_009867055.1_ASM986705v1/genome.gff, data/genomes/GCF_009867055.1_ASM986705v1/proteins.faa
+    wildcards: genome=GCF_009867055.1_ASM986705v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:52 2026]
+Finished jobid: 3796 (Rule: download_genome)
+95 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:52 2026]
+localrule download_genome:
+    output: data/genomes/GCF_052921385.1_ASM5292138v1/proteins.faa, data/genomes/GCF_052921385.1_ASM5292138v1/genome.fna, data/genomes/GCF_052921385.1_ASM5292138v1/genome.gff
+    jobid: 2196
+    reason: Missing output files: data/genomes/GCF_052921385.1_ASM5292138v1/proteins.faa, data/genomes/GCF_052921385.1_ASM5292138v1/genome.gff
+    wildcards: genome=GCF_052921385.1_ASM5292138v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:53 2026]
+Finished jobid: 3292 (Rule: download_genome)
+96 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:53 2026]
+localrule download_genome:
+    output: data/genomes/GCF_019857465.1_ASM1985746v1/proteins.faa, data/genomes/GCF_019857465.1_ASM1985746v1/genome.fna, data/genomes/GCF_019857465.1_ASM1985746v1/genome.gff
+    jobid: 4776
+    reason: Missing output files: data/genomes/GCF_019857465.1_ASM1985746v1/proteins.faa, data/genomes/GCF_019857465.1_ASM1985746v1/genome.gff
+    wildcards: genome=GCF_019857465.1_ASM1985746v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:53 2026]
+Finished jobid: 4772 (Rule: download_genome)
+97 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:53 2026]
+localrule download_genome:
+    output: data/genomes/GCF_023016405.1_ASM2301640v1/proteins.faa, data/genomes/GCF_023016405.1_ASM2301640v1/genome.fna, data/genomes/GCF_023016405.1_ASM2301640v1/genome.gff
+    jobid: 496
+    reason: Missing output files: data/genomes/GCF_023016405.1_ASM2301640v1/genome.gff
+    wildcards: genome=GCF_023016405.1_ASM2301640v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:53 2026]
+Finished jobid: 2196 (Rule: download_genome)
+98 of 7490 steps (1%) done
+[Wed Mar 18 14:32:53 2026]
+Finished jobid: 4456 (Rule: download_genome)
+99 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Wed Mar 18 14:32:53 2026]
+localrule download_genome:
+    output: data/genomes/GCF_001506505.1_ASM150650v1/proteins.faa, data/genomes/GCF_001506505.1_ASM150650v1/genome.fna, data/genomes/GCF_001506505.1_ASM150650v1/genome.gff
+    jobid: 1000
+    reason: Missing output files: data/genomes/GCF_001506505.1_ASM150650v1/proteins.faa, data/genomes/GCF_001506505.1_ASM150650v1/genome.gff
+    wildcards: genome=GCF_001506505.1_ASM150650v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:53 2026]
+localrule download_genome:
+    output: data/genomes/GCF_001506465.1_ASM150646v1/proteins.faa, data/genomes/GCF_001506465.1_ASM150646v1/genome.fna, data/genomes/GCF_001506465.1_ASM150646v1/genome.gff
+    jobid: 992
+    reason: Missing output files: data/genomes/GCF_001506465.1_ASM150646v1/proteins.faa, data/genomes/GCF_001506465.1_ASM150646v1/genome.gff
+    wildcards: genome=GCF_001506465.1_ASM150646v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:54 2026]
+Finished jobid: 496 (Rule: download_genome)
+100 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:54 2026]
+localrule download_genome:
+    output: data/genomes/GCF_050595935.1_ASM5059593v1/proteins.faa, data/genomes/GCF_050595935.1_ASM5059593v1/genome.fna, data/genomes/GCF_050595935.1_ASM5059593v1/genome.gff
+    jobid: 3784
+    reason: Missing output files: data/genomes/GCF_050595935.1_ASM5059593v1/genome.gff
+    wildcards: genome=GCF_050595935.1_ASM5059593v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:54 2026]
+Finished jobid: 4776 (Rule: download_genome)
+101 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:54 2026]
+localrule download_genome:
+    output: data/genomes/GCF_016458845.1_ASM1645884v1/proteins.faa, data/genomes/GCF_016458845.1_ASM1645884v1/genome.fna, data/genomes/GCF_016458845.1_ASM1645884v1/genome.gff
+    jobid: 1396
+    reason: Missing output files: data/genomes/GCF_016458845.1_ASM1645884v1/genome.gff, data/genomes/GCF_016458845.1_ASM1645884v1/proteins.faa
+    wildcards: genome=GCF_016458845.1_ASM1645884v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:54 2026]
+Finished jobid: 1000 (Rule: download_genome)
+102 of 7490 steps (1%) done
+[Wed Mar 18 14:32:54 2026]
+Finished jobid: 992 (Rule: download_genome)
+103 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Wed Mar 18 14:32:55 2026]
+localrule download_genome:
+    output: data/genomes/GCF_013391125.1_ASM1339112v1/proteins.faa, data/genomes/GCF_013391125.1_ASM1339112v1/genome.fna, data/genomes/GCF_013391125.1_ASM1339112v1/genome.gff
+    jobid: 748
+    reason: Missing output files: data/genomes/GCF_013391125.1_ASM1339112v1/proteins.faa, data/genomes/GCF_013391125.1_ASM1339112v1/genome.gff
+    wildcards: genome=GCF_013391125.1_ASM1339112v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:55 2026]
+localrule download_genome:
+    output: data/genomes/GCF_014622925.2_ASM1462292v2/proteins.faa, data/genomes/GCF_014622925.2_ASM1462292v2/genome.fna, data/genomes/GCF_014622925.2_ASM1462292v2/genome.gff
+    jobid: 752
+    reason: Missing output files: data/genomes/GCF_014622925.2_ASM1462292v2/genome.gff
+    wildcards: genome=GCF_014622925.2_ASM1462292v2
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:55 2026]
+Finished jobid: 3784 (Rule: download_genome)
+104 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:55 2026]
+localrule download_genome:
+    output: data/genomes/GCF_019974395.1_ASM1997439v1/proteins.faa, data/genomes/GCF_019974395.1_ASM1997439v1/genome.fna, data/genomes/GCF_019974395.1_ASM1997439v1/genome.gff
+    jobid: 3924
+    reason: Missing output files: data/genomes/GCF_019974395.1_ASM1997439v1/proteins.faa, data/genomes/GCF_019974395.1_ASM1997439v1/genome.gff
+    wildcards: genome=GCF_019974395.1_ASM1997439v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:55 2026]
+Finished jobid: 1396 (Rule: download_genome)
+105 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:56 2026]
+localrule download_genome:
+    output: data/genomes/GCF_009905195.1_ASM990519v1/proteins.faa, data/genomes/GCF_009905195.1_ASM990519v1/genome.fna, data/genomes/GCF_009905195.1_ASM990519v1/genome.gff
+    jobid: 4460
+    reason: Missing output files: data/genomes/GCF_009905195.1_ASM990519v1/genome.gff, data/genomes/GCF_009905195.1_ASM990519v1/proteins.faa
+    wildcards: genome=GCF_009905195.1_ASM990519v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:56 2026]
+Finished jobid: 748 (Rule: download_genome)
+106 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:56 2026]
+localrule download_genome:
+    output: data/genomes/GCF_023016345.1_ASM2301634v1/proteins.faa, data/genomes/GCF_023016345.1_ASM2301634v1/genome.fna, data/genomes/GCF_023016345.1_ASM2301634v1/genome.gff
+    jobid: 484
+    reason: Missing output files: data/genomes/GCF_023016345.1_ASM2301634v1/genome.gff
+    wildcards: genome=GCF_023016345.1_ASM2301634v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:56 2026]
+Finished jobid: 752 (Rule: download_genome)
+107 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:56 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022925835.1_ASM2292583v1/proteins.faa, data/genomes/GCF_022925835.1_ASM2292583v1/genome.fna, data/genomes/GCF_022925835.1_ASM2292583v1/genome.gff
+    jobid: 3276
+    reason: Missing output files: data/genomes/GCF_022925835.1_ASM2292583v1/genome.gff
+    wildcards: genome=GCF_022925835.1_ASM2292583v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:57 2026]
+Finished jobid: 3924 (Rule: download_genome)
+108 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:57 2026]
+localrule download_genome:
+    output: data/genomes/GCF_019857485.1_ASM1985748v1/proteins.faa, data/genomes/GCF_019857485.1_ASM1985748v1/genome.fna, data/genomes/GCF_019857485.1_ASM1985748v1/genome.gff
+    jobid: 4780
+    reason: Missing output files: data/genomes/GCF_019857485.1_ASM1985748v1/genome.gff
+    wildcards: genome=GCF_019857485.1_ASM1985748v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:57 2026]
+Finished jobid: 484 (Rule: download_genome)
+109 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:57 2026]
+localrule download_genome:
+    output: data/genomes/GCF_011466835.1_ASM1146683v1/proteins.faa, data/genomes/GCF_011466835.1_ASM1146683v1/genome.fna, data/genomes/GCF_011466835.1_ASM1146683v1/genome.gff
+    jobid: 4464
+    reason: Missing output files: data/genomes/GCF_011466835.1_ASM1146683v1/proteins.faa, data/genomes/GCF_011466835.1_ASM1146683v1/genome.gff
+    wildcards: genome=GCF_011466835.1_ASM1146683v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:57 2026]
+Finished jobid: 4460 (Rule: download_genome)
+110 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:57 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022925875.1_ASM2292587v1/proteins.faa, data/genomes/GCF_022925875.1_ASM2292587v1/genome.fna, data/genomes/GCF_022925875.1_ASM2292587v1/genome.gff
+    jobid: 3280
+    reason: Missing output files: data/genomes/GCF_022925875.1_ASM2292587v1/genome.gff
+    wildcards: genome=GCF_022925875.1_ASM2292587v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:57 2026]
+Finished jobid: 3276 (Rule: download_genome)
+111 of 7490 steps (1%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Mar 18 14:32:57 2026]
+localrule download_genome:
+    output: data/genomes/GCF_019857505.1_ASM1985750v1/proteins.faa, data/genomes/GCF_019857505.1_ASM1985750v1/genome.fna, data/genomes/GCF_019857505.1_ASM1985750v1/genome.gff
+    jobid: 4784
+    reason: Missing output files: data/genomes/GCF_019857505.1_ASM1985750v1/genome.gff
+    wildcards: genome=GCF_019857505.1_ASM1985750v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:58 2026]
+Finished jobid: 3280 (Rule: download_genome)
+112 of 7490 steps (1%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:58 2026]
+localrule download_genome:
+    output: data/genomes/GCF_012276675.1_ASM1227667v1/proteins.faa, data/genomes/GCF_012276675.1_ASM1227667v1/genome.fna, data/genomes/GCF_012276675.1_ASM1227667v1/genome.gff
+    jobid: 4468
+    reason: Missing output files: data/genomes/GCF_012276675.1_ASM1227667v1/proteins.faa, data/genomes/GCF_012276675.1_ASM1227667v1/genome.gff
+    wildcards: genome=GCF_012276675.1_ASM1227667v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:58 2026]
+Finished jobid: 4780 (Rule: download_genome)
+113 of 7490 steps (2%) done
+[Wed Mar 18 14:32:58 2026]
+Finished jobid: 4464 (Rule: download_genome)
+114 of 7490 steps (2%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Wed Mar 18 14:32:58 2026]
+localrule download_genome:
+    output: data/genomes/GCF_055695285.1_ASM5569528v1/proteins.faa, data/genomes/GCF_055695285.1_ASM5569528v1/genome.fna, data/genomes/GCF_055695285.1_ASM5569528v1/genome.gff
+    jobid: 512
+    reason: Missing output files: data/genomes/GCF_055695285.1_ASM5569528v1/genome.gff
+    wildcards: genome=GCF_055695285.1_ASM5569528v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:58 2026]
+localrule download_genome:
+    output: data/genomes/GCF_001314285.1_ASM131428v1/proteins.faa, data/genomes/GCF_001314285.1_ASM131428v1/genome.fna, data/genomes/GCF_001314285.1_ASM131428v1/genome.gff
+    jobid: 928
+    reason: Missing output files: data/genomes/GCF_001314285.1_ASM131428v1/genome.gff, data/genomes/GCF_001314285.1_ASM131428v1/proteins.faa
+    wildcards: genome=GCF_001314285.1_ASM131428v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:58 2026]
+Finished jobid: 4784 (Rule: download_genome)
+115 of 7490 steps (2%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:58 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_036600855.1.faa, data/genomes/GCF_036600855.1/genome.gff, data/genomes/GCF_036600855.1/genome.fna
+    output: results/sequences/GCF_036600855.1_promoters.fasta
+    jobid: 7346
+    reason: Missing output files: results/sequences/GCF_036600855.1_promoters.fasta
+    wildcards: genome=GCF_036600855.1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Wed Mar 18 14:32:59 2026]
+Finished jobid: 512 (Rule: download_genome)
+116 of 7490 steps (2%) done
+Execute 1 jobs...
+[Wed Mar 18 14:32:59 2026]
+localrule download_genome:
+    output: data/genomes/GCF_022925905.1_ASM2292590v1/proteins.faa, data/genomes/GCF_022925905.1_ASM2292590v1/genome.fna, data/genomes/GCF_022925905.1_ASM2292590v1/genome.gff
+    jobid: 3284
+    reason: Missing output files: data/genomes/GCF_022925905.1_ASM2292590v1/genome.gff, data/genomes/GCF_022925905.1_ASM2292590v1/proteins.faa
+    wildcards: genome=GCF_022925905.1_ASM2292590v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:59 2026]
+Finished jobid: 928 (Rule: download_genome)
+117 of 7490 steps (2%) done
+Select jobs to execute...
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/promoters.smk", line 11:
+Command 'set -euo pipefail;  
+        python scripts/05_extract_promoters.py             --gff data/genomes/GCF_036600855.1/genome.gff             --fna data/genomes/GCF_036600855.1/genome.fna             --ids results/sequences/GCF_036600855.1.faa             --upstream 200             --output results/sequences/GCF_036600855.1_promoters.fasta' returned non-zero exit status 1.
+[Wed Mar 18 14:32:59 2026]
+Error in rule extract_promoters:
+    message: None
+    jobid: 7346
+    input: results/sequences/GCF_036600855.1.faa, data/genomes/GCF_036600855.1/genome.gff, data/genomes/GCF_036600855.1/genome.fna
+    output: results/sequences/GCF_036600855.1_promoters.fasta
+    shell:
+        
+        python scripts/05_extract_promoters.py             --gff data/genomes/GCF_036600855.1/genome.gff             --fna data/genomes/GCF_036600855.1/genome.fna             --ids results/sequences/GCF_036600855.1.faa             --upstream 200             --output results/sequences/GCF_036600855.1_promoters.fasta
+        
+        (command exited with non-zero exit code)
+Execute 1 jobs...
+[Wed Mar 18 14:32:59 2026]
+localrule download_genome:
+    output: data/genomes/GCF_012935295.1_ASM1293529v1/proteins.faa, data/genomes/GCF_012935295.1_ASM1293529v1/genome.fna, data/genomes/GCF_012935295.1_ASM1293529v1/genome.gff
+    jobid: 4472
+    reason: Missing output files: data/genomes/GCF_012935295.1_ASM1293529v1/genome.gff
+    wildcards: genome=GCF_012935295.1_ASM1293529v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Wed Mar 18 14:32:59 2026]
+Finished jobid: 4468 (Rule: download_genome)
+118 of 7490 steps (2%) done
+[Wed Mar 18 14:33:00 2026]
+Finished jobid: 3284 (Rule: download_genome)
+119 of 7490 steps (2%) done
+[Wed Mar 18 14:33:00 2026]
+Finished jobid: 4472 (Rule: download_genome)
+120 of 7490 steps (2%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Wed Mar 18 14:33:00 2026]
+Error in rule extract_promoters:
+    message: None
+    jobid: 7346
+    input: results/sequences/GCF_036600855.1.faa, data/genomes/GCF_036600855.1/genome.gff, data/genomes/GCF_036600855.1/genome.fna
+    output: results/sequences/GCF_036600855.1_promoters.fasta
+    shell:
+        
+        python scripts/05_extract_promoters.py             --gff data/genomes/GCF_036600855.1/genome.gff             --fna data/genomes/GCF_036600855.1/genome.fna             --ids results/sequences/GCF_036600855.1.faa             --upstream 200             --output results/sequences/GCF_036600855.1_promoters.fasta
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-18T143158.543061.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

@@ -1,0 +1,303 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                        count
+-----------------------  -------
+extract_hk_rr_sequences     1468
+extract_promoters           1468
+merge_sequences                1
+pair_adjacent_genes         1468
+align_sequences                1
+find_motifs                    1
+split_hk_rr                    1
+build_tree                     1
+cluster_tcs                    1
+homology_search_cross          1
+homology_search_hk             1
+homology_search_rr             1
+all                            1
+total                       4414
+
+Select jobs to execute...
+Execute 8 jobs...
+[Thu Mar 19 23:51:45 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_046848885.1_JezBratislava.tbl, data/genomes/GCF_046848885.1_JezBratislava/proteins.faa
+    output: results/sequences/GCF_046848885.1_JezBratislava.faa, results/classifications/GCF_046848885.1_JezBratislava_proteins.csv
+    jobid: 594
+    reason: Missing output files: results/classifications/GCF_046848885.1_JezBratislava_proteins.csv
+    wildcards: genome=GCF_046848885.1_JezBratislava
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Thu Mar 19 23:51:45 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_025232255.1_ASM2523225v1.tbl, data/genomes/GCF_025232255.1_ASM2523225v1/proteins.faa
+    output: results/sequences/GCF_025232255.1_ASM2523225v1.faa, results/classifications/GCF_025232255.1_ASM2523225v1_proteins.csv
+    jobid: 1542
+    reason: Missing output files: results/classifications/GCF_025232255.1_ASM2523225v1_proteins.csv
+    wildcards: genome=GCF_025232255.1_ASM2523225v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Thu Mar 19 23:51:45 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_003955795.1_ASM395579v1.tbl, data/genomes/GCF_003955795.1_ASM395579v1/proteins.faa
+    output: results/sequences/GCF_003955795.1_ASM395579v1.faa, results/classifications/GCF_003955795.1_ASM395579v1_proteins.csv
+    jobid: 3842
+    reason: Missing output files: results/classifications/GCF_003955795.1_ASM395579v1_proteins.csv
+    wildcards: genome=GCF_003955795.1_ASM395579v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Thu Mar 19 23:51:45 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_003368185.1_ASM336818v1.tbl, data/genomes/GCF_003368185.1_ASM336818v1/proteins.faa
+    output: results/sequences/GCF_003368185.1_ASM336818v1.faa, results/classifications/GCF_003368185.1_ASM336818v1_proteins.csv
+    jobid: 1254
+    reason: Missing output files: results/classifications/GCF_003368185.1_ASM336818v1_proteins.csv
+    wildcards: genome=GCF_003368185.1_ASM336818v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Thu Mar 19 23:51:45 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_023016385.1_ASM2301638v1.tbl, data/genomes/GCF_023016385.1_ASM2301638v1/proteins.faa
+    output: results/sequences/GCF_023016385.1_ASM2301638v1.faa, results/classifications/GCF_023016385.1_ASM2301638v1_proteins.csv
+    jobid: 490
+    reason: Missing output files: results/classifications/GCF_023016385.1_ASM2301638v1_proteins.csv
+    wildcards: genome=GCF_023016385.1_ASM2301638v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Thu Mar 19 23:51:45 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_018885225.1_ASM1888522v1.tbl, data/genomes/GCF_018885225.1_ASM1888522v1/proteins.faa
+    output: results/sequences/GCF_018885225.1_ASM1888522v1.faa, results/classifications/GCF_018885225.1_ASM1888522v1_proteins.csv
+    jobid: 1438
+    reason: Missing output files: results/classifications/GCF_018885225.1_ASM1888522v1_proteins.csv
+    wildcards: genome=GCF_018885225.1_ASM1888522v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/extract_hk_rr.smk", line 9:
+Command 'set -euo pipefail;  
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_003955795.1_ASM395579v1/proteins.faa             --hmm_table results/domains/GCF_003955795.1_ASM395579v1.tbl             --output results/sequences/GCF_003955795.1_ASM395579v1.faa             --csv_output results/classifications/GCF_003955795.1_ASM395579v1_proteins.csv' returned non-zero exit status 127.
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 3842
+    input: results/domains/GCF_003955795.1_ASM395579v1.tbl, data/genomes/GCF_003955795.1_ASM395579v1/proteins.faa
+    output: results/sequences/GCF_003955795.1_ASM395579v1.faa, results/classifications/GCF_003955795.1_ASM395579v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_003955795.1_ASM395579v1/proteins.faa             --hmm_table results/domains/GCF_003955795.1_ASM395579v1.tbl             --output results/sequences/GCF_003955795.1_ASM395579v1.faa             --csv_output results/classifications/GCF_003955795.1_ASM395579v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/extract_hk_rr.smk", line 9:
+Command 'set -euo pipefail;  
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_025232255.1_ASM2523225v1/proteins.faa             --hmm_table results/domains/GCF_025232255.1_ASM2523225v1.tbl             --output results/sequences/GCF_025232255.1_ASM2523225v1.faa             --csv_output results/classifications/GCF_025232255.1_ASM2523225v1_proteins.csv' returned non-zero exit status 127.
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 1542
+    input: results/domains/GCF_025232255.1_ASM2523225v1.tbl, data/genomes/GCF_025232255.1_ASM2523225v1/proteins.faa
+    output: results/sequences/GCF_025232255.1_ASM2523225v1.faa, results/classifications/GCF_025232255.1_ASM2523225v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_025232255.1_ASM2523225v1/proteins.faa             --hmm_table results/domains/GCF_025232255.1_ASM2523225v1.tbl             --output results/sequences/GCF_025232255.1_ASM2523225v1.faa             --csv_output results/classifications/GCF_025232255.1_ASM2523225v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/extract_hk_rr.smk", line 9:
+Command 'set -euo pipefail;  
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_046848885.1_JezBratislava/proteins.faa             --hmm_table results/domains/GCF_046848885.1_JezBratislava.tbl             --output results/sequences/GCF_046848885.1_JezBratislava.faa             --csv_output results/classifications/GCF_046848885.1_JezBratislava_proteins.csv' returned non-zero exit status 127.
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 594
+    input: results/domains/GCF_046848885.1_JezBratislava.tbl, data/genomes/GCF_046848885.1_JezBratislava/proteins.faa
+    output: results/sequences/GCF_046848885.1_JezBratislava.faa, results/classifications/GCF_046848885.1_JezBratislava_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_046848885.1_JezBratislava/proteins.faa             --hmm_table results/domains/GCF_046848885.1_JezBratislava.tbl             --output results/sequences/GCF_046848885.1_JezBratislava.faa             --csv_output results/classifications/GCF_046848885.1_JezBratislava_proteins.csv
+        
+        (command exited with non-zero exit code)
+[Thu Mar 19 23:51:45 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_001507245.1_ASM150724v1.tbl, data/genomes/GCF_001507245.1_ASM150724v1/proteins.faa
+    output: results/sequences/GCF_001507245.1_ASM150724v1.faa, results/classifications/GCF_001507245.1_ASM150724v1_proteins.csv
+    jobid: 1126
+    reason: Missing output files: results/classifications/GCF_001507245.1_ASM150724v1_proteins.csv
+    wildcards: genome=GCF_001507245.1_ASM150724v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Thu Mar 19 23:51:45 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_019930865.1_ASM1993086v1.tbl, data/genomes/GCF_019930865.1_ASM1993086v1/proteins.faa
+    output: results/sequences/GCF_019930865.1_ASM1993086v1.faa, results/classifications/GCF_019930865.1_ASM1993086v1_proteins.csv
+    jobid: 802
+    reason: Missing output files: results/classifications/GCF_019930865.1_ASM1993086v1_proteins.csv
+    wildcards: genome=GCF_019930865.1_ASM1993086v1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/extract_hk_rr.smk", line 9:
+Command 'set -euo pipefail;  
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_003368185.1_ASM336818v1/proteins.faa             --hmm_table results/domains/GCF_003368185.1_ASM336818v1.tbl             --output results/sequences/GCF_003368185.1_ASM336818v1.faa             --csv_output results/classifications/GCF_003368185.1_ASM336818v1_proteins.csv' returned non-zero exit status 127.
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 1254
+    input: results/domains/GCF_003368185.1_ASM336818v1.tbl, data/genomes/GCF_003368185.1_ASM336818v1/proteins.faa
+    output: results/sequences/GCF_003368185.1_ASM336818v1.faa, results/classifications/GCF_003368185.1_ASM336818v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_003368185.1_ASM336818v1/proteins.faa             --hmm_table results/domains/GCF_003368185.1_ASM336818v1.tbl             --output results/sequences/GCF_003368185.1_ASM336818v1.faa             --csv_output results/classifications/GCF_003368185.1_ASM336818v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/extract_hk_rr.smk", line 9:
+Command 'set -euo pipefail;  
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_023016385.1_ASM2301638v1/proteins.faa             --hmm_table results/domains/GCF_023016385.1_ASM2301638v1.tbl             --output results/sequences/GCF_023016385.1_ASM2301638v1.faa             --csv_output results/classifications/GCF_023016385.1_ASM2301638v1_proteins.csv' returned non-zero exit status 127.
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 490
+    input: results/domains/GCF_023016385.1_ASM2301638v1.tbl, data/genomes/GCF_023016385.1_ASM2301638v1/proteins.faa
+    output: results/sequences/GCF_023016385.1_ASM2301638v1.faa, results/classifications/GCF_023016385.1_ASM2301638v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_023016385.1_ASM2301638v1/proteins.faa             --hmm_table results/domains/GCF_023016385.1_ASM2301638v1.tbl             --output results/sequences/GCF_023016385.1_ASM2301638v1.faa             --csv_output results/classifications/GCF_023016385.1_ASM2301638v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/extract_hk_rr.smk", line 9:
+Command 'set -euo pipefail;  
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_018885225.1_ASM1888522v1/proteins.faa             --hmm_table results/domains/GCF_018885225.1_ASM1888522v1.tbl             --output results/sequences/GCF_018885225.1_ASM1888522v1.faa             --csv_output results/classifications/GCF_018885225.1_ASM1888522v1_proteins.csv' returned non-zero exit status 127.
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 1438
+    input: results/domains/GCF_018885225.1_ASM1888522v1.tbl, data/genomes/GCF_018885225.1_ASM1888522v1/proteins.faa
+    output: results/sequences/GCF_018885225.1_ASM1888522v1.faa, results/classifications/GCF_018885225.1_ASM1888522v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_018885225.1_ASM1888522v1/proteins.faa             --hmm_table results/domains/GCF_018885225.1_ASM1888522v1.tbl             --output results/sequences/GCF_018885225.1_ASM1888522v1.faa             --csv_output results/classifications/GCF_018885225.1_ASM1888522v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/extract_hk_rr.smk", line 9:
+Command 'set -euo pipefail;  
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_001507245.1_ASM150724v1/proteins.faa             --hmm_table results/domains/GCF_001507245.1_ASM150724v1.tbl             --output results/sequences/GCF_001507245.1_ASM150724v1.faa             --csv_output results/classifications/GCF_001507245.1_ASM150724v1_proteins.csv' returned non-zero exit status 127.
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 1126
+    input: results/domains/GCF_001507245.1_ASM150724v1.tbl, data/genomes/GCF_001507245.1_ASM150724v1/proteins.faa
+    output: results/sequences/GCF_001507245.1_ASM150724v1.faa, results/classifications/GCF_001507245.1_ASM150724v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_001507245.1_ASM150724v1/proteins.faa             --hmm_table results/domains/GCF_001507245.1_ASM150724v1.tbl             --output results/sequences/GCF_001507245.1_ASM150724v1.faa             --csv_output results/classifications/GCF_001507245.1_ASM150724v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/extract_hk_rr.smk", line 9:
+Command 'set -euo pipefail;  
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_019930865.1_ASM1993086v1/proteins.faa             --hmm_table results/domains/GCF_019930865.1_ASM1993086v1.tbl             --output results/sequences/GCF_019930865.1_ASM1993086v1.faa             --csv_output results/classifications/GCF_019930865.1_ASM1993086v1_proteins.csv' returned non-zero exit status 127.
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 802
+    input: results/domains/GCF_019930865.1_ASM1993086v1.tbl, data/genomes/GCF_019930865.1_ASM1993086v1/proteins.faa
+    output: results/sequences/GCF_019930865.1_ASM1993086v1.faa, results/classifications/GCF_019930865.1_ASM1993086v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_019930865.1_ASM1993086v1/proteins.faa             --hmm_table results/domains/GCF_019930865.1_ASM1993086v1.tbl             --output results/sequences/GCF_019930865.1_ASM1993086v1.faa             --csv_output results/classifications/GCF_019930865.1_ASM1993086v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 1254
+    input: results/domains/GCF_003368185.1_ASM336818v1.tbl, data/genomes/GCF_003368185.1_ASM336818v1/proteins.faa
+    output: results/sequences/GCF_003368185.1_ASM336818v1.faa, results/classifications/GCF_003368185.1_ASM336818v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_003368185.1_ASM336818v1/proteins.faa             --hmm_table results/domains/GCF_003368185.1_ASM336818v1.tbl             --output results/sequences/GCF_003368185.1_ASM336818v1.faa             --csv_output results/classifications/GCF_003368185.1_ASM336818v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 594
+    input: results/domains/GCF_046848885.1_JezBratislava.tbl, data/genomes/GCF_046848885.1_JezBratislava/proteins.faa
+    output: results/sequences/GCF_046848885.1_JezBratislava.faa, results/classifications/GCF_046848885.1_JezBratislava_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_046848885.1_JezBratislava/proteins.faa             --hmm_table results/domains/GCF_046848885.1_JezBratislava.tbl             --output results/sequences/GCF_046848885.1_JezBratislava.faa             --csv_output results/classifications/GCF_046848885.1_JezBratislava_proteins.csv
+        
+        (command exited with non-zero exit code)
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 1126
+    input: results/domains/GCF_001507245.1_ASM150724v1.tbl, data/genomes/GCF_001507245.1_ASM150724v1/proteins.faa
+    output: results/sequences/GCF_001507245.1_ASM150724v1.faa, results/classifications/GCF_001507245.1_ASM150724v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_001507245.1_ASM150724v1/proteins.faa             --hmm_table results/domains/GCF_001507245.1_ASM150724v1.tbl             --output results/sequences/GCF_001507245.1_ASM150724v1.faa             --csv_output results/classifications/GCF_001507245.1_ASM150724v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 1542
+    input: results/domains/GCF_025232255.1_ASM2523225v1.tbl, data/genomes/GCF_025232255.1_ASM2523225v1/proteins.faa
+    output: results/sequences/GCF_025232255.1_ASM2523225v1.faa, results/classifications/GCF_025232255.1_ASM2523225v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_025232255.1_ASM2523225v1/proteins.faa             --hmm_table results/domains/GCF_025232255.1_ASM2523225v1.tbl             --output results/sequences/GCF_025232255.1_ASM2523225v1.faa             --csv_output results/classifications/GCF_025232255.1_ASM2523225v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 3842
+    input: results/domains/GCF_003955795.1_ASM395579v1.tbl, data/genomes/GCF_003955795.1_ASM395579v1/proteins.faa
+    output: results/sequences/GCF_003955795.1_ASM395579v1.faa, results/classifications/GCF_003955795.1_ASM395579v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_003955795.1_ASM395579v1/proteins.faa             --hmm_table results/domains/GCF_003955795.1_ASM395579v1.tbl             --output results/sequences/GCF_003955795.1_ASM395579v1.faa             --csv_output results/classifications/GCF_003955795.1_ASM395579v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 490
+    input: results/domains/GCF_023016385.1_ASM2301638v1.tbl, data/genomes/GCF_023016385.1_ASM2301638v1/proteins.faa
+    output: results/sequences/GCF_023016385.1_ASM2301638v1.faa, results/classifications/GCF_023016385.1_ASM2301638v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_023016385.1_ASM2301638v1/proteins.faa             --hmm_table results/domains/GCF_023016385.1_ASM2301638v1.tbl             --output results/sequences/GCF_023016385.1_ASM2301638v1.faa             --csv_output results/classifications/GCF_023016385.1_ASM2301638v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 802
+    input: results/domains/GCF_019930865.1_ASM1993086v1.tbl, data/genomes/GCF_019930865.1_ASM1993086v1/proteins.faa
+    output: results/sequences/GCF_019930865.1_ASM1993086v1.faa, results/classifications/GCF_019930865.1_ASM1993086v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_019930865.1_ASM1993086v1/proteins.faa             --hmm_table results/domains/GCF_019930865.1_ASM1993086v1.tbl             --output results/sequences/GCF_019930865.1_ASM1993086v1.faa             --csv_output results/classifications/GCF_019930865.1_ASM1993086v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+[Thu Mar 19 23:51:45 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 1438
+    input: results/domains/GCF_018885225.1_ASM1888522v1.tbl, data/genomes/GCF_018885225.1_ASM1888522v1/proteins.faa
+    output: results/sequences/GCF_018885225.1_ASM1888522v1.faa, results/classifications/GCF_018885225.1_ASM1888522v1_proteins.csv
+    shell:
+        
+        python scripts/01_detect_domains.py             --proteins data/genomes/GCF_018885225.1_ASM1888522v1/proteins.faa             --hmm_table results/domains/GCF_018885225.1_ASM1888522v1.tbl             --output results/sequences/GCF_018885225.1_ASM1888522v1.faa             --csv_output results/classifications/GCF_018885225.1_ASM1888522v1_proteins.csv
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-19T235130.344700.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

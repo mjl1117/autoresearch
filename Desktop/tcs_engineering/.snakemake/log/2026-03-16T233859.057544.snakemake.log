@@ -1,0 +1,131 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job                    count
+-------------------  -------
+build_tree                 1
+classify_proteins          1
+cluster_tcs                1
+extract_promoters          1
+find_motifs                1
+pair_adjacent_genes        1
+all                        1
+total                      7
+
+Select jobs to execute...
+Execute 4 jobs...
+[Mon Mar 16 23:39:01 2026]
+localrule cluster_tcs:
+    input: results/tcs_sequences.faa
+    output: results/clusters/hk_clusters/clusters.tsv, results/clusters/rr_clusters/clusters.tsv
+    jobid: 5
+    reason: Updated input files: results/tcs_sequences.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 16 23:39:01 2026]
+localrule classify_proteins:
+    input: results/domains/GCF_036600855.1.tbl, data/genomes/GCF_036600855.1/proteins.faa
+    output: data/pfam/genomes/GCF_036600855.1_proteins.csv
+    jobid: 2
+    reason: Missing output files: data/pfam/genomes/GCF_036600855.1_proteins.csv
+    wildcards: genome=GCF_036600855.1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 16 23:39:01 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_036600855.1.faa, data/genomes/GCF_036600855.1/genome.gff, data/genomes/GCF_036600855.1/genome.fna
+    output: results/sequences/GCF_036600855.1_promoters.fasta
+    jobid: 11
+    reason: Missing output files: results/sequences/GCF_036600855.1_promoters.fasta
+    wildcards: genome=GCF_036600855.1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 16 23:39:01 2026]
+localrule build_tree:
+    input: results/alignment/tcs_alignment.faa
+    output: results/phylogeny/tcs_tree.treefile
+    jobid: 8
+    reason: Missing output files: results/phylogeny/tcs_tree.treefile
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/extract_hk_rr.smk", line 23:
+Command 'set -euo pipefail;  
+        source ../../tcs-env/bin/activate && python scripts/01_detect_domains.py             --proteins data/genomes/GCF_036600855.1/proteins.faa             --hmm_table results/domains/GCF_036600855.1.tbl             --csv_output data/pfam/genomes/GCF_036600855.1_proteins.csv  # Assuming the script supports this flag' returned non-zero exit status 1.
+[Mon Mar 16 23:39:01 2026]
+Error in rule classify_proteins:
+    message: None
+    jobid: 2
+    input: results/domains/GCF_036600855.1.tbl, data/genomes/GCF_036600855.1/proteins.faa
+    output: data/pfam/genomes/GCF_036600855.1_proteins.csv
+    shell:
+        
+        source ../../tcs-env/bin/activate && python scripts/01_detect_domains.py             --proteins data/genomes/GCF_036600855.1/proteins.faa             --hmm_table results/domains/GCF_036600855.1.tbl             --csv_output data/pfam/genomes/GCF_036600855.1_proteins.csv  # Assuming the script supports this flag
+        
+        (command exited with non-zero exit code)
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/phylogeny.smk", line 15:
+Command 'set -euo pipefail;  iqtree -s results/alignment/tcs_alignment.faa -nt AUTO' returned non-zero exit status 127.
+[Mon Mar 16 23:39:01 2026]
+Error in rule build_tree:
+    message: None
+    jobid: 8
+    input: results/alignment/tcs_alignment.faa
+    output: results/phylogeny/tcs_tree.treefile
+    shell:
+        iqtree -s results/alignment/tcs_alignment.faa -nt AUTO
+        (command exited with non-zero exit code)
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/promoters.smk", line 11:
+Command 'set -euo pipefail;  
+        python scripts/05_extract_promoters.py             --gff data/genomes/GCF_036600855.1/genome.gff             --fna data/genomes/GCF_036600855.1/genome.fna             --ids results/sequences/GCF_036600855.1.faa             --upstream 200             --output results/sequences/GCF_036600855.1_promoters.fasta' returned non-zero exit status 1.
+[Mon Mar 16 23:39:02 2026]
+Error in rule extract_promoters:
+    message: None
+    jobid: 11
+    input: results/sequences/GCF_036600855.1.faa, data/genomes/GCF_036600855.1/genome.gff, data/genomes/GCF_036600855.1/genome.fna
+    output: results/sequences/GCF_036600855.1_promoters.fasta
+    shell:
+        
+        python scripts/05_extract_promoters.py             --gff data/genomes/GCF_036600855.1/genome.gff             --fna data/genomes/GCF_036600855.1/genome.fna             --ids results/sequences/GCF_036600855.1.faa             --upstream 200             --output results/sequences/GCF_036600855.1_promoters.fasta
+        
+        (command exited with non-zero exit code)
+[Mon Mar 16 23:39:04 2026]
+Finished jobid: 5 (Rule: cluster_tcs)
+1 of 7 steps (14%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Mon Mar 16 23:39:04 2026]
+Error in rule extract_promoters:
+    message: None
+    jobid: 11
+    input: results/sequences/GCF_036600855.1.faa, data/genomes/GCF_036600855.1/genome.gff, data/genomes/GCF_036600855.1/genome.fna
+    output: results/sequences/GCF_036600855.1_promoters.fasta
+    shell:
+        
+        python scripts/05_extract_promoters.py             --gff data/genomes/GCF_036600855.1/genome.gff             --fna data/genomes/GCF_036600855.1/genome.fna             --ids results/sequences/GCF_036600855.1.faa             --upstream 200             --output results/sequences/GCF_036600855.1_promoters.fasta
+        
+        (command exited with non-zero exit code)
+[Mon Mar 16 23:39:04 2026]
+Error in rule classify_proteins:
+    message: None
+    jobid: 2
+    input: results/domains/GCF_036600855.1.tbl, data/genomes/GCF_036600855.1/proteins.faa
+    output: data/pfam/genomes/GCF_036600855.1_proteins.csv
+    shell:
+        
+        source ../../tcs-env/bin/activate && python scripts/01_detect_domains.py             --proteins data/genomes/GCF_036600855.1/proteins.faa             --hmm_table results/domains/GCF_036600855.1.tbl             --csv_output data/pfam/genomes/GCF_036600855.1_proteins.csv  # Assuming the script supports this flag
+        
+        (command exited with non-zero exit code)
+[Mon Mar 16 23:39:04 2026]
+Error in rule build_tree:
+    message: None
+    jobid: 8
+    input: results/alignment/tcs_alignment.faa
+    output: results/phylogeny/tcs_tree.treefile
+    shell:
+        iqtree -s results/alignment/tcs_alignment.faa -nt AUTO
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-16T233859.057544.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

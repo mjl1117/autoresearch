@@ -1,0 +1,26 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                  count
+-----------------  -------
+classify_proteins        1
+total                    1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Mon Mar 16 23:44:13 2026]
+localrule classify_proteins:
+    input: results/domains/GCF_036600855.1.tbl, data/genomes/GCF_036600855.1/proteins.faa
+    output: data/pfam/genomes/GCF_036600855.1_proteins.csv
+    jobid: 0
+    reason: Missing output files: data/pfam/genomes/GCF_036600855.1_proteins.csv
+    wildcards: genome=GCF_036600855.1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 16 23:44:14 2026]
+Finished jobid: 0 (Rule: classify_proteins)
+1 of 1 steps (100%) done
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-16T234411.163845.snakemake.log

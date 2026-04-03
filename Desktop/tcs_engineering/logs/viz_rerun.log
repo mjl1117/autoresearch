@@ -1,0 +1,59 @@
+[Snakefile] Curated genome list loaded: 10 genomes
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job              count
+-------------  -------
+viz_phylogeny        1
+viz_umap             1
+total                2
+
+Select jobs to execute...
+Execute 2 jobs...
+
+[Fri Mar 20 20:33:26 2026]
+localrule viz_umap:
+    input: results/homology/hk_homology.m8, results/homology/rr_homology.m8, results/chimera_targets/chimera_candidates.tsv, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv
+    output: results/visualization/tcs_umap.png, results/visualization/tcs_umap.pdf
+    jobid: 45
+    reason: Forced execution
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:33:26 2026]
+localrule viz_phylogeny:
+    input: results/phylogeny/tcs_tree.treefile, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/chimera_targets/chimera_candidates.tsv
+    output: results/visualization/tcs_phylogeny.png, results/visualization/tcs_phylogeny.pdf
+    jobid: 0
+    reason: Forced execution
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+  Tree has 767 tips — sampling 500 for readability
+  Saved: results/visualization/tcs_phylogeny.pdf
+  Saved: results/visualization/tcs_phylogeny.png
+[Fri Mar 20 20:33:28 2026]
+Finished jobid: 0 (Rule: viz_phylogeny)
+1 of 2 steps (50%) done
+/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/umap/umap_.py:1865: UserWarning: using precomputed metric; inverse_transform will be unavailable
+  warn("using precomputed metric; inverse_transform will be unavailable")
+/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/umap/umap_.py:1952: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(
+/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/umap/umap_.py:1865: UserWarning: using precomputed metric; inverse_transform will be unavailable
+  warn("using precomputed metric; inverse_transform will be unavailable")
+/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/umap/umap_.py:1952: UserWarning: n_jobs value 1 overridden to 1 by setting random_state. Use no seed for parallelism.
+  warn(
+Loading homology data...
+  138,310 pairwise alignments
+Building separate HK and RR distance matrices...
+  HK: 563 proteins | RR: 584 proteins
+Running UMAP (HK)...
+Running UMAP (RR)...
+Plotting UMAP...
+  Saved: results/visualization/tcs_umap.pdf
+  Saved: results/visualization/tcs_umap.png
+Done.
+[Fri Mar 20 20:33:37 2026]
+Finished jobid: 45 (Rule: viz_umap)
+2 of 2 steps (100%) done
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-20T203323.763973.snakemake.log

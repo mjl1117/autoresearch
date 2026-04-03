@@ -57,6 +57,7 @@ rule viz_umap:
         rr_hom  = "results/homology/rr_homology.m8",
         chimera = "results/chimera_targets/chimera_candidates.tsv",
         hk_ann  = "results/annotation/hk_annotation.tsv",
+        rr_ann  = "results/annotation/rr_annotation.tsv",
     output:
         png = "results/visualization/tcs_umap.png",
         pdf = "results/visualization/tcs_umap.pdf",
@@ -67,6 +68,7 @@ rule viz_umap:
             --rr_homology {input.rr_hom} \
             --chimera     {input.chimera} \
             --hk_ann      {input.hk_ann} \
+            --rr_ann      {input.rr_ann} \
             --outdir      results/visualization
         """
 

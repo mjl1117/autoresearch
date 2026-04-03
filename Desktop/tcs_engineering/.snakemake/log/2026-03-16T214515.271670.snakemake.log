@@ -1,0 +1,2 @@
+FileNotFoundError in file "/Users/matthew/Desktop/tcs_engineering/workflow/Snakefile", line 36:
+[Errno 2] No such file or directory: '/Users/matthew/Desktop/tcs_engineering/workflow/rules/extract_tcs_sequences.smk'

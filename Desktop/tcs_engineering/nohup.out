@@ -1,0 +1,26 @@
+[Snakefile] Curated genome list loaded: 10 genomes
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+MissingInputException in rule hmmsearch_hk_reps_domtbl in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/deepcoil.smk", line 1:
+Missing input files for rule hmmsearch_hk_reps_domtbl:
+    output: results/domains/hk_reps_domtbl.txt
+    affected files:
+        data/pfam_tcs.hmm
+[Snakefile] Curated genome list loaded: 10 genomes
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+MissingInputException in rule hmmsearch_hk_reps_domtbl in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/deepcoil.smk", line 1:
+Missing input files for rule hmmsearch_hk_reps_domtbl:
+    output: results/domains/hk_reps_domtbl.txt
+    affected files:
+        data/pfam_tcs.hmm
+usage: 00_download_genomes.py [-h] [--data_dir DATA_DIR]
+                              [--max_genomes MAX_GENOMES]
+                              [--manifest MANIFEST]
+00_download_genomes.py: error: argument --manifest: expected one argument
+usage: 00_download_genomes.py [-h] [--data_dir DATA_DIR]
+                              [--max_genomes MAX_GENOMES]
+                              [--manifest MANIFEST]
+00_download_genomes.py: error: argument --manifest: expected one argument

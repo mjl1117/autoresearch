@@ -1,0 +1,25 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                        count
+-----------------------  -------
+build_chimera_sequences        1
+total                          1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Mon Mar 23 22:34:18 2026]
+localrule build_chimera_sequences:
+    input: results/chimera_screen/hamp_chimera_screen_esm.tsv, results/representatives/hk_reps.faa
+    output: results/chimera_design/chimera_sequences.faa, results/chimera_design/chimera_design_manifest.tsv
+    jobid: 0
+    reason: Forced execution
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 23 22:34:18 2026]
+Finished jobid: 0 (Rule: build_chimera_sequences)
+1 of 1 steps (100%) done
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-23T223413.941161.snakemake.log

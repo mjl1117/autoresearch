@@ -1,0 +1,25 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job                         count
+------------------------  -------
+identify_chimera_targets        1
+total                           1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 23:17:47 2026]
+localrule identify_chimera_targets:
+    input: results/clusters/hk_clusters/clusters.tsv, results/clusters/rr_clusters/clusters.tsv, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/homology/hk_vs_rr_homology.m8, results/domains/hk_reps_domtbl.txt, data/reference/well_characterized_tcs.tsv, data/reference/characterized_promoters.tsv
+    output: results/chimera_targets/chimera_candidates.tsv
+    jobid: 0
+    reason: Forced execution
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 23:17:47 2026]
+Finished jobid: 0 (Rule: identify_chimera_targets)
+1 of 1 steps (100%) done
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-20T231744.487358.snakemake.log

@@ -178,8 +178,24 @@ def main():
     phase_df = build_phase_matrix(candidates)
 
     outdir = Path(args.outdir)
+    outdir.mkdir(parents=True, exist_ok=True)
+
     plot_phase_heatmap(phase_df, outdir, args.top_n)
     plot_cluster_sizes(candidates, outdir)
+
+    # Ensure output files exist even when data is absent (Snakemake requires them)
+    for fname in ("phase_coherence_heatmap.png", "phase_coherence_heatmap.pdf",
+                  "cluster_size_distribution.png", "cluster_size_distribution.pdf"):
+        p = outdir / fname
+        if not p.exists():
+            fig, ax = plt.subplots(figsize=(6, 4))
+            ax.text(0.5, 0.5, "No phase data available", ha="center", va="center",
+                    transform=ax.transAxes, fontsize=12, color="gray")
+            ax.axis("off")
+            fig.savefig(p, dpi=150, bbox_inches="tight")
+            plt.close(fig)
+            print(f"  Placeholder saved: {p}")
+
     print("Done.")
 
 

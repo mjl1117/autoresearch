@@ -1,0 +1,7 @@
+Building DAG of jobs...
+MissingInputException in rule hmmsearch_domains in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/domains.smk", line 1:
+Missing input files for rule hmmsearch_domains:
+    output: results/domains/GCF_000005845.2_ASM584v2.tbl
+    wildcards: genome=GCF_000005845.2_ASM584v2
+    affected files:
+        data/genomes/GCF_000005845.2_ASM584v2/proteins.faa

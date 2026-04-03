@@ -1,0 +1,42 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                      count
+---------------------  -------
+setup_eggnogmapper           1
+annotate_eggnogmapper        1
+total                        2
+
+Select jobs to execute...
+Execute 1 jobs...
+[Sun Mar 22 22:23:59 2026]
+localrule setup_eggnogmapper:
+    output: data/eggnog_db/eggnog.db
+    jobid: 1
+    reason: Missing output files: data/eggnog_db/eggnog.db
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Waiting at most 5 seconds for missing files:
+data/eggnog_db/eggnog.db (missing locally)
+MissingOutputException in rule setup_eggnogmapper in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/chimera.smk", line 292:
+Job 1  completed successfully, but some output files are missing. Missing files after 5 seconds. This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait:
+data/eggnog_db/eggnog.db (missing locally, parent dir contents: eggnog.db.gz, hmmer, eggnog.taxa.tar.gz)
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Sun Mar 22 23:29:30 2026]
+Error in rule setup_eggnogmapper:
+    message: None
+    jobid: 1
+    output: data/eggnog_db/eggnog.db
+    shell:
+        
+        mkdir -p data/eggnog_db
+        conda run -n esmfold-env -- download_eggnog_data.py             -y             -D             -H -d 2 --dbname Bacteria             --data_dir data/eggnog_db
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-22T222355.189889.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

@@ -1,0 +1,4 @@
+SyntaxError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/operons.smk", line 17:
+invalid syntax:
+ule merge_operons :
+

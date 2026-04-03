@@ -62,7 +62,8 @@ def parse_pdb_plddt(pdb_path: str) -> np.ndarray:
 def domain_architecture_panel(ax, row: pd.Series, plddt: np.ndarray):
     """Draw linear domain cartoon with pLDDT confidence track."""
     total_len = int(row.get("chain_length", len(plddt) or 500))
-    hamp_start = int(row.get("hamp_start", total_len // 3))
+    hs = row.get("hamp_start", None)
+    hamp_start = int(hs) if (hs is not None and not (isinstance(hs, float) and np.isnan(hs))) else total_len // 3
     sensor_end = max(1, hamp_start - 1)
     dhp_start  = hamp_start + 50   # approximate HAMP length
     ca_start   = dhp_start + 60
@@ -138,7 +139,7 @@ def phase_wheel_panel(ax, row: pd.Series):
 
     bars = ax.bar(angles, fracs, width=2 * np.pi / 7 * 0.85,
                   bottom=0.0, alpha=0.75,
-                  color=["#2166AC" if i == int(phase_dom or -1) else "#AAAAAA"
+                  color=["#2166AC" if (pd.notna(phase_dom) and i == int(phase_dom)) else "#AAAAAA"
                          for i in range(7)],
                   edgecolor="white", linewidth=0.5)
 
@@ -183,6 +184,9 @@ def candidate_heatmap(candidates: pd.DataFrame, plddt_df: pd.DataFrame, outdir: 
 
     matrix = top[[k for k in present]].values.astype(float)
     # Normalise each column to 0–1 for heatmap display
+    # Replace all-NaN columns with zeros before normalising
+    all_nan_cols = np.all(np.isnan(matrix), axis=0)
+    matrix[:, all_nan_cols] = 0.0
     vmin = np.nanmin(matrix, axis=0)
     vmax = np.nanmax(matrix, axis=0)
     norm_matrix = (matrix - vmin) / np.where(vmax - vmin > 0, vmax - vmin, 1)

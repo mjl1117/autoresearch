@@ -1,0 +1,56 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job           count
+----------  -------
+build_tree        1
+all               1
+total             2
+
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 09:10:38 2026]
+localrule build_tree:
+    input: results/alignment/tcs_alignment.faa
+    output: results/phylogeny/tcs_tree.treefile
+    jobid: 5876
+    reason: Missing output files: results/phylogeny/tcs_tree.treefile; Code has changed since last execution
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/phylogeny.smk", line 17:
+Command 'export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH;  
+        mkdir -p results/phylogeny
+        /Users/matthew/Desktop/tcs_engineering/workflow/../miniforge3/bin/FastTree             -out results/phylogeny/tcs_tree.treefile             results/alignment/tcs_alignment.faa' returned non-zero exit status 127.
+[Fri Mar 20 09:10:38 2026]
+Error in rule build_tree:
+    message: None
+    jobid: 5876
+    input: results/alignment/tcs_alignment.faa
+    output: results/phylogeny/tcs_tree.treefile
+    shell:
+        
+        mkdir -p results/phylogeny
+        /Users/matthew/Desktop/tcs_engineering/workflow/../miniforge3/bin/FastTree             -out results/phylogeny/tcs_tree.treefile             results/alignment/tcs_alignment.faa
+        
+        (command exited with non-zero exit code)
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Fri Mar 20 09:10:38 2026]
+Error in rule build_tree:
+    message: None
+    jobid: 5876
+    input: results/alignment/tcs_alignment.faa
+    output: results/phylogeny/tcs_tree.treefile
+    shell:
+        
+        mkdir -p results/phylogeny
+        /Users/matthew/Desktop/tcs_engineering/workflow/../miniforge3/bin/FastTree             -out results/phylogeny/tcs_tree.treefile             results/alignment/tcs_alignment.faa
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-20T091023.611972.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

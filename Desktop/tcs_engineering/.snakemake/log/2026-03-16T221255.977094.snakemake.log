@@ -1,0 +1,76 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job                        count
+-----------------------  -------
+hmmsearch_domains              1
+extract_hk_rr_sequences        1
+detect_genomic_operons         1
+extract_promoters              1
+merge_sequences                1
+align_sequences                1
+cluster_tcs                    1
+find_motifs                    1
+build_tree                     1
+all                            1
+total                         10
+
+Select jobs to execute...
+Execute 1 jobs...
+[Mon Mar 16 22:12:58 2026]
+localrule hmmsearch_domains:
+    input: data/genomes/GCF_036600855.1/proteins.faa
+    output: results/domains/GCF_036600855.1.tbl
+    jobid: 4
+    reason: Missing output files: results/domains/GCF_036600855.1.tbl
+    wildcards: genome=GCF_036600855.1
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 16 22:12:58 2026]
+Finished jobid: 4 (Rule: hmmsearch_domains)
+1 of 10 steps (10%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Mon Mar 16 22:12:58 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_036600855.1.tbl, data/genomes/GCF_036600855.1/proteins.faa
+    output: results/sequences/GCF_036600855.1.faa
+    jobid: 3
+    reason: Missing output files: results/sequences/GCF_036600855.1.faa; Input files updated by another job: results/domains/GCF_036600855.1.tbl
+    wildcards: genome=GCF_036600855.1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/extract_hk_rr.smk", line 8:
+Command 'set -euo pipefail;  
+        python scripts/extract_hk_rr.py             results/domains/GCF_036600855.1.tbl             data/genomes/GCF_036600855.1/proteins.faa             results/sequences/GCF_036600855.1.faa' returned non-zero exit status 2.
+[Mon Mar 16 22:12:58 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 3
+    input: results/domains/GCF_036600855.1.tbl, data/genomes/GCF_036600855.1/proteins.faa
+    output: results/sequences/GCF_036600855.1.faa
+    shell:
+        
+        python scripts/extract_hk_rr.py             results/domains/GCF_036600855.1.tbl             data/genomes/GCF_036600855.1/proteins.faa             results/sequences/GCF_036600855.1.faa
+        
+        (command exited with non-zero exit code)
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Mon Mar 16 22:12:58 2026]
+Error in rule extract_hk_rr_sequences:
+    message: None
+    jobid: 3
+    input: results/domains/GCF_036600855.1.tbl, data/genomes/GCF_036600855.1/proteins.faa
+    output: results/sequences/GCF_036600855.1.faa
+    shell:
+        
+        python scripts/extract_hk_rr.py             results/domains/GCF_036600855.1.tbl             data/genomes/GCF_036600855.1/proteins.faa             results/sequences/GCF_036600855.1.faa
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-16T221255.977094.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

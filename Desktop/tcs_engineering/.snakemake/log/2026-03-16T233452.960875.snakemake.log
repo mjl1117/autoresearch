@@ -1,0 +1,10 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+MissingInputException in rule pair_adjacent_genes in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/operons.smk", line 9:
+Missing input files for rule pair_adjacent_genes:
+    output: results/operons/GCF_036600855.1.tsv
+    wildcards: genome=GCF_036600855.1
+    affected files:
+        data/genomes/GCF_036600855.1/GCF_036600855.1.gff
+        data/pfam/genomes/GCF_036600855.1_proteins.csv

@@ -1,0 +1,122 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job                              count
+-----------------------------  -------
+identify_chimera_targets             1
+download_alphafold_structures        1
+viz_phase_coherence                  1
+viz_phylogeny                        1
+viz_regulatory_network               1
+viz_umap                             1
+analyze_af2_hamp_plddt               1
+viz_chimera_structures               1
+visualize_all                        1
+total                                9
+
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 20:21:13 2026]
+localrule identify_chimera_targets:
+    input: results/clusters/hk_clusters/clusters.tsv, results/clusters/rr_clusters/clusters.tsv, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/homology/hk_vs_rr_homology.m8, results/domains/hk_reps_domtbl.txt, data/reference/well_characterized_tcs.tsv
+    output: results/chimera_targets/chimera_candidates.tsv
+    jobid: 43
+    reason: Forced execution
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:21:13 2026]
+Finished jobid: 43 (Rule: identify_chimera_targets)
+1 of 9 steps (11%) done
+Select jobs to execute...
+Execute 4 jobs...
+[Fri Mar 20 20:21:13 2026]
+localrule viz_phase_coherence:
+    input: results/chimera_targets/chimera_candidates.tsv
+    output: results/visualization/phase_coherence_heatmap.png, results/visualization/phase_coherence_heatmap.pdf, results/visualization/cluster_size_distribution.png, results/visualization/cluster_size_distribution.pdf
+    jobid: 53
+    reason: Input files updated by another job: results/chimera_targets/chimera_candidates.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:21:13 2026]
+localrule download_alphafold_structures:
+    input: results/chimera_targets/chimera_candidates.tsv
+    output: results/alphafold/af2_manifest.tsv
+    jobid: 51
+    reason: Input files updated by another job: results/chimera_targets/chimera_candidates.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:21:13 2026]
+localrule viz_phylogeny:
+    input: results/phylogeny/tcs_tree.treefile, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/chimera_targets/chimera_candidates.tsv
+    output: results/visualization/tcs_phylogeny.png, results/visualization/tcs_phylogeny.pdf
+    jobid: 1
+    reason: Input files updated by another job: results/chimera_targets/chimera_candidates.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:21:13 2026]
+localrule viz_umap:
+    input: results/homology/hk_homology.m8, results/homology/rr_homology.m8, results/chimera_targets/chimera_candidates.tsv, results/annotation/hk_annotation.tsv
+    output: results/visualization/tcs_umap.png, results/visualization/tcs_umap.pdf
+    jobid: 46
+    reason: Input files updated by another job: results/chimera_targets/chimera_candidates.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 20:21:15 2026]
+Finished jobid: 53 (Rule: viz_phase_coherence)
+2 of 9 steps (22%) done
+Execute 1 jobs...
+[Fri Mar 20 20:21:15 2026]
+localrule viz_regulatory_network:
+    input: results/operons, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/chimera_targets/chimera_candidates.tsv, data/reference/well_characterized_tcs.tsv
+    output: results/visualization/tcs_regulatory_network.png, results/visualization/tcs_regulatory_network.pdf
+    jobid: 52
+    reason: Input files updated by another job: results/chimera_targets/chimera_candidates.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:21:15 2026]
+Finished jobid: 1 (Rule: viz_phylogeny)
+3 of 9 steps (33%) done
+[Fri Mar 20 20:21:16 2026]
+Finished jobid: 52 (Rule: viz_regulatory_network)
+4 of 9 steps (44%) done
+[Fri Mar 20 20:21:18 2026]
+Finished jobid: 51 (Rule: download_alphafold_structures)
+5 of 9 steps (56%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 20:21:18 2026]
+localrule analyze_af2_hamp_plddt:
+    input: results/alphafold/af2_manifest.tsv, results/domains/hk_reps_domtbl.txt
+    output: results/deepcoil/af2_plddt_analysis.tsv
+    jobid: 50
+    reason: Input files updated by another job: results/alphafold/af2_manifest.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:21:18 2026]
+Finished jobid: 50 (Rule: analyze_af2_hamp_plddt)
+6 of 9 steps (67%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 20:21:18 2026]
+localrule viz_chimera_structures:
+    input: results/chimera_targets/chimera_candidates.tsv, results/alphafold, results/deepcoil/af2_plddt_analysis.tsv
+    output: results/visualization/chimera_candidates_heatmap.png, results/visualization/chimera_candidates_heatmap.pdf
+    jobid: 49
+    reason: Input files updated by another job: results/deepcoil/af2_plddt_analysis.tsv, results/chimera_targets/chimera_candidates.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:21:20 2026]
+Finished jobid: 49 (Rule: viz_chimera_structures)
+7 of 9 steps (78%) done
+[Fri Mar 20 20:21:24 2026]
+Finished jobid: 46 (Rule: viz_umap)
+8 of 9 steps (89%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 20:21:24 2026]
+localrule visualize_all:
+    input: results/visualization/tcs_phylogeny.png, results/visualization/tcs_umap.png, results/visualization/chimera_candidates_heatmap.png, results/visualization/tcs_regulatory_network.png, results/visualization/phase_coherence_heatmap.png, results/visualization/cluster_size_distribution.png
+    jobid: 0
+    reason: Input files updated by another job: results/visualization/cluster_size_distribution.png, results/visualization/phase_coherence_heatmap.png, results/visualization/tcs_regulatory_network.png, results/visualization/tcs_umap.png, results/visualization/chimera_candidates_heatmap.png, results/visualization/tcs_phylogeny.png
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:21:24 2026]
+Finished jobid: 0 (Rule: visualize_all)
+9 of 9 steps (100%) done
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-20T202110.564301.snakemake.log

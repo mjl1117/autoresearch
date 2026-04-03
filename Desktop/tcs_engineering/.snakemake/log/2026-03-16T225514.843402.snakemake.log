@@ -1,0 +1,3 @@
+SyntaxError in file "/Users/matthew/Desktop/tcs_engineering/workflow/Snakefile", line 49:
+invalid syntax. Perhaps you forgot a comma?:
+				"results/operons/tcs_operons.tsv"

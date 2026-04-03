@@ -1,0 +1,10 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+InputFunctionException in rule download_genome in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/genomes.smk", line 1:
+Error:
+  KeyError: 'tcs_operons'
+Wildcards:
+  genome=tcs_operons
+Traceback:
+  File "/Users/matthew/Desktop/tcs_engineering/workflow/rules/genomes.smk", line 8, in <lambda> (rule download_genome, line 1, /Users/matthew/Desktop/tcs_engineering/workflow/rules/genomes.smk)

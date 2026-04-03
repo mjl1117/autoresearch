@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
-"""UMAP embedding of TCS sequence space.
+"""UMAP embedding of TCS sequence space — separated by protein class.
 
-Builds a UMAP from MMseqs2 pairwise identity scores (hk_homology.m8 +
-rr_homology.m8), converting identity to distance (1 - pident/100).
-Sparse matrix → UMAP 2D embedding → publication figure.
+Two-panel figure:
+  Left:  HK sensor kinases only — coloured by sensor architecture
+         (HAMP / PAS / GAF / PHY / other), sized by cluster_size.
+  Right: RR response regulators only — coloured by DBD family
+         (OmpR_PhoB / NarL_FixJ / NtrC_AAA / CheY / Spo0A / other).
 
-Coloring layers:
-  - Primary: protein type (HK blue / RR orange)
-  - Secondary: DBD family (OmpR_PhoB, NarL_FixJ, NtrC, CheY, other)
-    shown as marker shape
-  - Size: cluster_size (larger = more conserved)
-  - Labels: top-ranked chimera candidates + user working systems
-
-Output: results/visualization/tcs_umap.pdf + .png
+Stars mark user-confirmed working chimera systems (NarXL, PhoRB).
+Labels added for all annotated known TCS systems (EnvZ-OmpR, PhoQP, etc.).
+Chimera candidate labels include swap type and junction position.
 
 Dependencies: umap-learn, scipy, matplotlib, seaborn, pandas, numpy
 """
@@ -27,31 +24,92 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
 import pandas as pd
-import seaborn as sns
 
 
-HK_COLOR = "#2166AC"
-RR_COLOR = "#D6604D"
+# ─── Colour palettes ─────────────────────────────────────────────────────────
 
-DBD_PALETTE = {
-    "OmpR_PhoB": "#1A9641",
-    "NarL_FixJ": "#A6D96A",
-    "NtrC_AAA":  "#FDAE61",
-    "CheY":      "#D7191C",
-    "Spo0A":     "#762A83",
+HK_SENSOR_PALETTE = {
+    "HAMP":  "#2166AC",   # canonical membrane sensor → blue
+    "PAS":   "#74ADD1",   # cytoplasmic/periplasmic PAS → light blue
+    "GAF":   "#ABD9E9",   # GAF sensor → pale blue
+    "PHY":   "#E0F3F8",   # phytochrome → very pale blue
+    "other": "#BBBBBB",
+}
+
+RR_DBD_PALETTE = {
+    "OmpR_PhoB": "#1A9641",   # green — most common
+    "NarL_FixJ": "#A6D96A",   # light green
+    "NtrC_AAA":  "#FDAE61",   # orange
+    "CheY":      "#D7191C",   # red
+    "Spo0A":     "#762A83",   # purple
     "other":     "#BBBBBB",
 }
 
-DBD_MARKERS = {
-    "OmpR_PhoB": "o",
-    "NarL_FixJ": "s",
-    "NtrC_AAA":  "^",
-    "CheY":      "D",
-    "Spo0A":     "P",
-    "other":     ".",
+WORKING_COLOR = "gold"
+
+# ─── Keyword → class mappings ─────────────────────────────────────────────────
+
+# Sensor type inference from DIAMOND stitle
+HK_SENSOR_KEYWORDS = {
+    "PHY":  ["phytochrome", "bphp", "cph1", "bphq"],
+    "GAF":  ["gaf domain", "nreb", "nrec", "gas sensor"],
+    "PAS":  ["pas domain", "pas sensor", "ntrb", "dcus", "dpib", "arce", "arcs",
+             "nitrogen regulation", "citrate sensor"],
+    "HAMP": ["hamp", "histidine kinase", "narx", "narq", "phor", "phoq", "envz",
+             "kdpd", "cpxa", "baes", "rstb", "evgs", "tors", "rese", "ccka",
+             "sensor histidine"],
 }
 
-WORKING_SYSTEMS = {"NarXL", "PhoRB", "NarX", "NarL", "PhoR", "PhoB"}
+# DBD family inference from DIAMOND stitle
+RR_DBD_KEYWORDS = {
+    "Spo0A":     ["spo0a", "sporulation", "stage 0"],
+    "CheY":      ["chey", "chemotaxis response regulator", "chea"],
+    "NtrC_AAA":  ["ntrc", "nifa", "nifa", "luxo", "sigma-54", "aaa+",
+                  "enhancer-binding", "ntr regulator"],
+    "NarL_FixJ": ["narl", "narp", "fixj", "gera", "coma", "flhd", "luxr-type",
+                  "narL", "response regulator narl", "transcriptional regulatory protein narl",
+                  "probable transcriptional regulatory protein narl"],
+    "OmpR_PhoB": ["ompr", "phob", "phop", "rsca", "cpxr", "baer", "kdpe",
+                  "rsta", "evga", "tcrr", "rega", "resd", "degu", "ctra",
+                  "vpst", "gaca", "nrec", "rcsb", "uvry", "arca", "torr",
+                  "ompR", "phob", "response regulator phob", "response regulator ompr"],
+}
+
+# Known system label lookup — keyword in stitle → display label
+KNOWN_SYSTEM_LABELS = {
+    "narx":       "NarXL",     "narl":   "NarXL",
+    "narq":       "NarQP",     "narp":   "NarQP",
+    "phor ":      "PhoRB",     "phob":   "PhoRB",
+    "envz":       "EnvZ-OmpR", "ompr":   "EnvZ-OmpR",
+    "phoq":       "PhoQP",     "phop":   "PhoQP",
+    "kdpd":       "KdpDE",     "kdpe":   "KdpDE",
+    "rstb":       "RstBA",     "rsta":   "RstBA",
+    "ntrb":       "NtrBC",     "ntrc":   "NtrBC",
+    "chea":       "CheAY",     "chey":   "CheAY",
+    "cpxa":       "CpxAR",     "cpxr":   "CpxAR",
+    "kina":       "KinA-Spo0A","spo0a":  "KinA-Spo0A",
+    "ccka":       "CckA-CtrA", "ctra":   "CckA-CtrA",
+    "bphp":       "BphP1",
+    "cph1":       "Cph1-Rcp1",
+}
+
+
+def classify_from_stitle(stitle: str, keyword_map: dict, default: str = "other") -> str:
+    """Return class label by scanning stitle against keyword groups (order = priority)."""
+    t = str(stitle).lower()
+    for label, keywords in keyword_map.items():
+        if any(k in t for k in keywords):
+            return label
+    return default
+
+
+def known_system_label(stitle: str) -> str | None:
+    """Return known system shorthand if stitle matches, else None."""
+    t = str(stitle).lower()
+    for keyword, label in KNOWN_SYSTEM_LABELS.items():
+        if keyword in t:
+            return label
+    return None
 
 
 def load_homology(hk_m8: str, rr_m8: str) -> pd.DataFrame:
@@ -69,12 +127,16 @@ def load_homology(hk_m8: str, rr_m8: str) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 
-def build_distance_matrix(edges: pd.DataFrame):
+def build_distance_matrix(edges: pd.DataFrame, ptype_filter: str = None):
     """Build sparse distance matrix from pairwise identity edges.
 
+    If ptype_filter is 'HK' or 'RR', only include edges of that type.
     Returns (protein_ids array, scipy sparse matrix).
     """
     from scipy.sparse import csr_matrix
+
+    if ptype_filter:
+        edges = edges[edges["ptype"] == ptype_filter]
 
     proteins = pd.unique(pd.concat([edges["query"], edges["target"]]))
     idx = {p: i for i, p in enumerate(proteins)}
@@ -82,11 +144,9 @@ def build_distance_matrix(edges: pd.DataFrame):
 
     rows = edges["query"].map(idx).values
     cols = edges["target"].map(idx).values
-    # Distance = 1 - identity/100; clip to [0, 1]
     dists = np.clip(1.0 - edges["pident"].values / 100.0, 0, 1)
 
     mat = csr_matrix((dists, (rows, cols)), shape=(n, n))
-    # Symmetrise (take minimum distance for each pair)
     mat = mat.minimum(mat.T)
     return proteins, mat
 
@@ -105,88 +165,158 @@ def run_umap(dist_matrix, n_neighbors: int = 15, min_dist: float = 0.1):
     return reducer.fit_transform(dist_matrix.toarray())
 
 
-def plot_umap(embedding: np.ndarray, proteins: np.ndarray,
-              chimera_df: pd.DataFrame, hk_ids: set, outdir: Path):
-    """Publication-quality UMAP scatter plot with annotation layers."""
+def chimera_label(row: pd.Series) -> str:
+    """Build chimera annotation label with swap type and junction info."""
+    system = str(row.get("known_tcs_system", "") or "")
+    ctype = str(row.get("chimera_type", "") or "")
+    hamp = row.get("hamp_start", None)
 
-    n = len(proteins)
-    ptypes = np.array(["HK" if p in hk_ids else "RR" for p in proteins])
+    if "sensor_swap" in ctype:
+        if hamp and pd.notna(hamp):
+            suffix = f" [sensor↔HAMP@{int(hamp)}]"
+        else:
+            suffix = " [sensor swap]"
+    elif "DBD_swap" in ctype:
+        suffix = " [DBD swap]"
+    else:
+        suffix = ""
 
-    # DBD family from chimera_df
-    dbd_map = {}
-    if chimera_df is not None and "dbd_family" in chimera_df.columns:
-        dbd_map = chimera_df.set_index("protein_id")["dbd_family"].fillna("other").to_dict()
+    return f"{system}{suffix}" if system else row["protein_id"][:12]
 
-    dbd = np.array([dbd_map.get(p, "other") for p in proteins])
 
-    # Cluster size for point size
+def plot_panel(ax, embedding, proteins, ann_df, chimera_df,
+               ptype: str, color_by: str, palette: dict, title: str,
+               keyword_map: dict = None):
+    """Draw one UMAP panel for a single protein type."""
+
+    # Classify each protein
+    stitle_map = {}
+    if ann_df is not None:
+        stitle_map = ann_df.set_index("qseqid")["stitle"].to_dict()
+
+    kmap = keyword_map if keyword_map is not None else (
+        HK_SENSOR_KEYWORDS if ptype == "HK" else RR_DBD_KEYWORDS
+    )
+    classes = []
+    for p in proteins:
+        stitle = stitle_map.get(p, "")
+        cls = classify_from_stitle(stitle, kmap)
+        classes.append(cls)
+    classes = np.array(classes)
+
+    # Sizes from cluster_size
     size_map = {}
     if chimera_df is not None and "cluster_size" in chimera_df.columns:
         size_map = chimera_df.set_index("protein_id")["cluster_size"].to_dict()
-    sizes = np.array([np.clip(size_map.get(p, 5), 2, 200) for p in proteins])
-    sizes = np.sqrt(sizes) * 2  # sqrt scale to prevent huge points
+    sizes = np.array([np.clip(np.sqrt(size_map.get(p, 5)), 1, 14) * 2
+                      for p in proteins])
 
-    fig, axes = plt.subplots(1, 2, figsize=(18, 8))
+    # Draw background scatter by class
+    drawn_labels = set()
+    for cls, color in palette.items():
+        mask = classes == cls
+        if not mask.any():
+            continue
+        label = cls if cls not in drawn_labels else "_nolegend_"
+        ax.scatter(embedding[mask, 0], embedding[mask, 1],
+                   c=color, s=sizes[mask], alpha=0.5, linewidths=0,
+                   label=label, rasterized=True)
+        drawn_labels.add(cls)
 
-    for ax_idx, (ax, color_by) in enumerate(zip(axes, ["type", "dbd"])):
-        if color_by == "type":
-            colors = np.where(ptypes == "HK", HK_COLOR, RR_COLOR)
-            title = "Coloured by protein type (HK / RR)"
-        else:
-            colors = np.array([DBD_PALETTE.get(d, "#BBBBBB") for d in dbd])
-            title = "Coloured by DBD family"
+    # Grey for "other" if not in palette
+    other_mask = np.array([c not in palette for c in classes])
+    if other_mask.any():
+        ax.scatter(embedding[other_mask, 0], embedding[other_mask, 1],
+                   c="#BBBBBB", s=sizes[other_mask], alpha=0.3, linewidths=0,
+                   label="other", rasterized=True)
 
-        # Background points
-        ax.scatter(embedding[:, 0], embedding[:, 1],
-                   c=colors, s=sizes, alpha=0.45, linewidths=0,
-                   rasterized=True)
-
-        # Highlight working systems
-        if chimera_df is not None and "known_tcs_system" in chimera_df.columns:
-            working = chimera_df[chimera_df["working_in_user_system"] == True]
-            for _, row in working.iterrows():
-                pid = row["protein_id"]
-                if pid in {p: i for i, p in enumerate(proteins)}:
-                    pidx = np.where(proteins == pid)[0]
-                    if len(pidx):
-                        i = pidx[0]
-                        ax.scatter(embedding[i, 0], embedding[i, 1],
-                                   c="gold", s=120, marker="*",
-                                   edgecolors="black", linewidths=0.5, zorder=5)
-                        ax.annotate(
-                            row.get("known_tcs_system", pid),
+    # Annotate known systems from annotation
+    labeled_systems = set()
+    protein_to_idx = {p: i for i, p in enumerate(proteins)}
+    if ann_df is not None:
+        for _, row in ann_df.iterrows():
+            pid = row["qseqid"]
+            if pid not in protein_to_idx:
+                continue
+            sys_label = known_system_label(row.get("stitle", ""))
+            if sys_label and sys_label not in labeled_systems:
+                i = protein_to_idx[pid]
+                ax.scatter(embedding[i, 0], embedding[i, 1],
+                           c="#444444", s=30, marker="D",
+                           edgecolors="white", linewidths=0.5, zorder=4)
+                ax.annotate(sys_label,
                             (embedding[i, 0], embedding[i, 1]),
-                            fontsize=7, fontweight="bold",
-                            xytext=(5, 5), textcoords="offset points",
-                            arrowprops=dict(arrowstyle="-", color="black", lw=0.5),
-                        )
+                            fontsize=6.5, fontweight="bold", color="#222222",
+                            xytext=(6, 4), textcoords="offset points",
+                            arrowprops=dict(arrowstyle="-", color="#888888", lw=0.4))
+                labeled_systems.add(sys_label)
 
-        ax.set_xlabel("UMAP 1", fontsize=10)
-        ax.set_ylabel("UMAP 2", fontsize=10)
-        ax.set_title(title, fontsize=10)
-        ax.spines["top"].set_visible(False)
-        ax.spines["right"].set_visible(False)
+    # Gold stars for user working systems — with chimera swap label
+    if chimera_df is not None and "working_in_user_system" in chimera_df.columns:
+        working = chimera_df[chimera_df["working_in_user_system"] == True]
+        for _, row in working.iterrows():
+            pid = row["protein_id"]
+            if pid not in protein_to_idx:
+                continue
+            i = protein_to_idx[pid]
+            ax.scatter(embedding[i, 0], embedding[i, 1],
+                       c=WORKING_COLOR, s=150, marker="*",
+                       edgecolors="black", linewidths=0.6, zorder=6)
+            lbl = chimera_label(row)
+            ax.annotate(lbl,
+                        (embedding[i, 0], embedding[i, 1]),
+                        fontsize=7, fontweight="bold", color="#1a1a1a",
+                        xytext=(7, 5), textcoords="offset points",
+                        arrowprops=dict(arrowstyle="-", color="black", lw=0.5))
+
+    ax.set_xlabel("UMAP 1", fontsize=10)
+    ax.set_ylabel("UMAP 2", fontsize=10)
+    ax.set_title(title, fontsize=10)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+
+def plot_umap(hk_embedding, hk_proteins,
+              rr_embedding, rr_proteins,
+              hk_ann_df, rr_ann_df, chimera_df, outdir: Path):
+    """Two-panel UMAP: HK (sensor type) | RR (DBD family)."""
+
+    fig, axes = plt.subplots(1, 2, figsize=(20, 8))
+
+    # Left panel: HK coloured by sensor class
+    plot_panel(axes[0], hk_embedding, hk_proteins, hk_ann_df, chimera_df,
+               ptype="HK", color_by="sensor",
+               palette=HK_SENSOR_PALETTE,
+               keyword_map=HK_SENSOR_KEYWORDS,
+               title=f"Sensor histidine kinases (n={len(hk_proteins):,})\nColoured by sensor architecture")
+
+    # Right panel: RR coloured by DBD family
+    plot_panel(axes[1], rr_embedding, rr_proteins, rr_ann_df, chimera_df,
+               ptype="RR", color_by="dbd",
+               palette=RR_DBD_PALETTE,
+               keyword_map=RR_DBD_KEYWORDS,
+               title=f"Response regulators (n={len(rr_proteins):,})\nColoured by DBD family")
 
     # Legends
-    type_legend = [
-        mpatches.Patch(color=HK_COLOR, label=f"HK (n={np.sum(ptypes=='HK'):,})"),
-        mpatches.Patch(color=RR_COLOR, label=f"RR (n={np.sum(ptypes=='RR'):,})"),
-        plt.Line2D([0], [0], marker="*", color="w", markerfacecolor="gold",
-                   markeredgecolor="black", markersize=10,
-                   label="User confirmed working chimera"),
-    ]
-    axes[0].legend(handles=type_legend, fontsize=8, loc="lower left", framealpha=0.9)
+    hk_legend = [mpatches.Patch(color=c, label=l) for l, c in HK_SENSOR_PALETTE.items()]
+    hk_legend += [plt.Line2D([0], [0], marker="*", color="w", markerfacecolor=WORKING_COLOR,
+                              markeredgecolor="black", markersize=11,
+                              label="Working chimera (confirmed)"),
+                  plt.Line2D([0], [0], marker="D", color="w", markerfacecolor="#444444",
+                              markersize=7, label="Known TCS system")]
+    axes[0].legend(handles=hk_legend, fontsize=8, loc="lower left", framealpha=0.9)
 
-    dbd_legend = [
-        mpatches.Patch(color=DBD_PALETTE[d], label=d)
-        for d in DBD_PALETTE if d != "other"
-    ] + [mpatches.Patch(color=DBD_PALETTE["other"], label="other / unknown")]
-    axes[1].legend(handles=dbd_legend, fontsize=8, loc="lower left",
-                   framealpha=0.9, ncol=2)
+    rr_legend = [mpatches.Patch(color=c, label=l) for l, c in RR_DBD_PALETTE.items()]
+    rr_legend += [plt.Line2D([0], [0], marker="*", color="w", markerfacecolor=WORKING_COLOR,
+                              markeredgecolor="black", markersize=11,
+                              label="Working chimera (confirmed)"),
+                  plt.Line2D([0], [0], marker="D", color="w", markerfacecolor="#444444",
+                              markersize=7, label="Known TCS system")]
+    axes[1].legend(handles=rr_legend, fontsize=8, loc="lower left", framealpha=0.9, ncol=2)
 
     fig.suptitle(
-        f"TCS Sequence Space — UMAP of pairwise MMseqs2 identity\n"
-        f"(n = {n:,} cluster representatives; distance = 1 − pident)",
+        "TCS Sequence Space — Separate UMAP embeddings from MMseqs2 pairwise identity\n"
+        "(distance = 1 − pident; labels show chimera swap type and junction position)",
         fontsize=11, y=1.01,
     )
     plt.tight_layout()
@@ -206,8 +336,9 @@ def main():
     parser.add_argument("--rr_homology", required=True)
     parser.add_argument("--chimera",     required=True)
     parser.add_argument("--hk_ann",      required=True)
+    parser.add_argument("--rr_ann",      required=True)
     parser.add_argument("--outdir",      required=True)
-    parser.add_argument("--n_neighbors", type=int, default=15)
+    parser.add_argument("--n_neighbors", type=int,   default=15)
     parser.add_argument("--min_dist",    type=float, default=0.1)
     args = parser.parse_args()
 
@@ -216,28 +347,37 @@ def main():
     if edges.empty:
         print("ERROR: no homology data found", file=sys.stderr)
         sys.exit(1)
+    print(f"  {len(edges):,} pairwise alignments")
 
-    print(f"  {len(edges):,} pairwise alignments → building distance matrix")
-    proteins, dist_mat = build_distance_matrix(edges)
-    print(f"  {len(proteins):,} proteins × {len(proteins):,} distance matrix")
+    print("Building separate HK and RR distance matrices...")
+    hk_proteins, hk_mat = build_distance_matrix(edges, ptype_filter="HK")
+    rr_proteins, rr_mat = build_distance_matrix(edges, ptype_filter="RR")
+    print(f"  HK: {len(hk_proteins):,} proteins | RR: {len(rr_proteins):,} proteins")
 
-    print("Running UMAP...")
-    embedding = run_umap(dist_mat, args.n_neighbors, args.min_dist)
+    print("Running UMAP (HK)...")
+    hk_embedding = run_umap(hk_mat, args.n_neighbors, args.min_dist)
+    print("Running UMAP (RR)...")
+    rr_embedding = run_umap(rr_mat, args.n_neighbors, args.min_dist)
 
-    # Load annotation
-    hk_ids = set()
+    ann_cols = ["qseqid", "sseqid", "pident", "length",
+                "qcovhsp", "evalue", "bitscore", "stitle"]
+
+    hk_ann_df = None
     if Path(args.hk_ann).exists():
-        ann = pd.read_csv(args.hk_ann, sep="\t", header=None,
-                          names=["qseqid","sseqid","pident","length",
-                                 "qcovhsp","evalue","bitscore","stitle"])
-        hk_ids = set(ann["qseqid"].unique())
+        hk_ann_df = pd.read_csv(args.hk_ann, sep="\t", header=None, names=ann_cols)
+
+    rr_ann_df = None
+    if Path(args.rr_ann).exists():
+        rr_ann_df = pd.read_csv(args.rr_ann, sep="\t", header=None, names=ann_cols)
 
     chimera_df = None
     if Path(args.chimera).exists():
         chimera_df = pd.read_csv(args.chimera, sep="\t")
 
     print("Plotting UMAP...")
-    plot_umap(embedding, proteins, chimera_df, hk_ids, Path(args.outdir))
+    plot_umap(hk_embedding, hk_proteins,
+              rr_embedding, rr_proteins,
+              hk_ann_df, rr_ann_df, chimera_df, Path(args.outdir))
     print("Done.")
 
 

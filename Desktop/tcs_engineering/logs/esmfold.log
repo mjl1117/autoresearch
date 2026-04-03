@@ -1,0 +1,27 @@
+Loading screen TSV: results/chimera_screen/hamp_chimera_screen.tsv
+Loading HK representative sequences: results/representatives/hk_reps.faa
+Loading HAMP domain positions: results/deepcoil/hamp_linker_regions.faa
+  HAMP start positions for 579 proteins
+
+56 unique protein IDs across acceptor + donor columns
+  [skip] WP_185274327.1: 1239 aa > max_length 800
+
+Proteins to run ESMFold:     0
+  Skipped (length > 800): 1
+  Skipped (not in hk_reps):   0
+  Skipped (PDB exists):       55
+
+Nothing to run (all proteins skipped or already processed).
+
+Written: results/chimera_screen/esmfold/esmfold_plddt.tsv (empty — no proteins processed)
+
+Annotating screen TSV with ESMFold pLDDT ...
+Written: results/chimera_screen/hamp_chimera_screen_esm.tsv
+
+=== ESMFold annotation summary (50 candidate pairs) ===
+  ESMFold structural OK (HAMP + kinase >= 70.0): 0
+
+  Note: TM pLDDT intentionally excluded — low TM confidence
+        is expected for membrane-embedded HKs and is NOT a
+        chimera design concern (see module docstring).
+ESMFold run complete.

@@ -1,0 +1,111 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job                       count
+----------------------  -------
+viz_chimera_structures        1
+viz_phase_coherence           1
+viz_phylogeny                 1
+viz_regulatory_network        1
+visualize_all                 1
+total                         5
+
+Select jobs to execute...
+Execute 4 jobs...
+[Fri Mar 20 20:00:19 2026]
+localrule viz_regulatory_network:
+    input: results/operons, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/chimera_targets/chimera_candidates.tsv, data/reference/well_characterized_tcs.tsv
+    output: results/visualization/tcs_regulatory_network.png, results/visualization/tcs_regulatory_network.pdf
+    jobid: 52
+    reason: Missing output files: results/visualization/tcs_regulatory_network.png
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:00:19 2026]
+localrule viz_phase_coherence:
+    input: results/chimera_targets/chimera_candidates.tsv
+    output: results/visualization/phase_coherence_heatmap.png, results/visualization/phase_coherence_heatmap.pdf, results/visualization/cluster_size_distribution.png, results/visualization/cluster_size_distribution.pdf
+    jobid: 53
+    reason: Missing output files: results/visualization/cluster_size_distribution.png, results/visualization/phase_coherence_heatmap.png
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:00:19 2026]
+localrule viz_chimera_structures:
+    input: results/chimera_targets/chimera_candidates.tsv, results/alphafold, results/deepcoil/af2_plddt_analysis.tsv
+    output: results/visualization/chimera_candidates_heatmap.png, results/visualization/chimera_candidates_heatmap.pdf
+    jobid: 49
+    reason: Missing output files: results/visualization/chimera_candidates_heatmap.png
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:00:19 2026]
+localrule viz_phylogeny:
+    input: results/phylogeny/tcs_tree.treefile, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/chimera_targets/chimera_candidates.tsv
+    output: results/visualization/tcs_phylogeny.png, results/visualization/tcs_phylogeny.pdf
+    jobid: 1
+    reason: Missing output files: results/visualization/tcs_phylogeny.png
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/visualize.smk", line 37:
+Command 'export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH;  
+        python scripts/visualize/plot_tcs_phylogeny.py             --tree    results/phylogeny/tcs_tree.treefile             --hk_ann  results/annotation/hk_annotation.tsv             --rr_ann  results/annotation/rr_annotation.tsv             --chimera results/chimera_targets/chimera_candidates.tsv             --outdir  results/visualization             --max_tips 500' returned non-zero exit status 1.
+[Fri Mar 20 20:00:19 2026]
+Error in rule viz_phylogeny:
+    message: None
+    jobid: 1
+    input: results/phylogeny/tcs_tree.treefile, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/chimera_targets/chimera_candidates.tsv
+    output: results/visualization/tcs_phylogeny.png, results/visualization/tcs_phylogeny.pdf
+    shell:
+        
+        python scripts/visualize/plot_tcs_phylogeny.py             --tree    results/phylogeny/tcs_tree.treefile             --hk_ann  results/annotation/hk_annotation.tsv             --rr_ann  results/annotation/rr_annotation.tsv             --chimera results/chimera_targets/chimera_candidates.tsv             --outdir  results/visualization             --max_tips 500
+        
+        (command exited with non-zero exit code)
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/visualize.smk", line 88:
+Command 'export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH;  
+        python scripts/visualize/plot_chimera_structures.py             --chimera   results/chimera_targets/chimera_candidates.tsv             --af2_dir   results/alphafold             --plddt_tsv results/deepcoil/af2_plddt_analysis.tsv             --outdir    results/visualization             --top_n     8' returned non-zero exit status 1.
+[Fri Mar 20 20:00:20 2026]
+Error in rule viz_chimera_structures:
+    message: None
+    jobid: 49
+    input: results/chimera_targets/chimera_candidates.tsv, results/alphafold, results/deepcoil/af2_plddt_analysis.tsv
+    output: results/visualization/chimera_candidates_heatmap.png, results/visualization/chimera_candidates_heatmap.pdf
+    shell:
+        
+        python scripts/visualize/plot_chimera_structures.py             --chimera   results/chimera_targets/chimera_candidates.tsv             --af2_dir   results/alphafold             --plddt_tsv results/deepcoil/af2_plddt_analysis.tsv             --outdir    results/visualization             --top_n     8
+        
+        (command exited with non-zero exit code)
+Removing output files of failed job viz_chimera_structures since they might be corrupted:
+results/visualization/chimera_candidates_heatmap.png, results/visualization/chimera_candidates_heatmap.pdf
+[Fri Mar 20 20:00:20 2026]
+Finished jobid: 53 (Rule: viz_phase_coherence)
+1 of 5 steps (20%) done
+[Fri Mar 20 20:00:21 2026]
+Finished jobid: 52 (Rule: viz_regulatory_network)
+2 of 5 steps (40%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Fri Mar 20 20:00:21 2026]
+Error in rule viz_phylogeny:
+    message: None
+    jobid: 1
+    input: results/phylogeny/tcs_tree.treefile, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/chimera_targets/chimera_candidates.tsv
+    output: results/visualization/tcs_phylogeny.png, results/visualization/tcs_phylogeny.pdf
+    shell:
+        
+        python scripts/visualize/plot_tcs_phylogeny.py             --tree    results/phylogeny/tcs_tree.treefile             --hk_ann  results/annotation/hk_annotation.tsv             --rr_ann  results/annotation/rr_annotation.tsv             --chimera results/chimera_targets/chimera_candidates.tsv             --outdir  results/visualization             --max_tips 500
+        
+        (command exited with non-zero exit code)
+[Fri Mar 20 20:00:21 2026]
+Error in rule viz_chimera_structures:
+    message: None
+    jobid: 49
+    input: results/chimera_targets/chimera_candidates.tsv, results/alphafold, results/deepcoil/af2_plddt_analysis.tsv
+    output: results/visualization/chimera_candidates_heatmap.png, results/visualization/chimera_candidates_heatmap.pdf
+    shell:
+        
+        python scripts/visualize/plot_chimera_structures.py             --chimera   results/chimera_targets/chimera_candidates.tsv             --af2_dir   results/alphafold             --plddt_tsv results/deepcoil/af2_plddt_analysis.tsv             --outdir    results/visualization             --top_n     8
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-20T200017.019899.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

@@ -1,0 +1,55 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job              count
+-------------  -------
+fold_chimeras        1
+total                1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Mon Mar 23 18:18:46 2026]
+localrule fold_chimeras:
+    input: results/chimera_design/chimera_fold_screen.tsv, results/chimera_design/chimera_sequences.faa, results/chimera_design/chimera_hamp_positions.faa
+    output: results/chimera_design/esmfold/esmfold_plddt.tsv, results/chimera_design/chimera_validated.tsv
+    jobid: 0
+    reason: Missing output files: results/chimera_design/chimera_validated.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/chimera.smk", line 411:
+Command 'export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH;  
+        mkdir -p results/chimera_design/esmfold
+        conda run -n esmfold-env -- python scripts/run_esmfold.py             --screen_tsv    results/chimera_design/chimera_fold_screen.tsv             --hk_reps       results/chimera_design/chimera_sequences.faa             --hamp_fasta    results/chimera_design/chimera_hamp_positions.faa             --outdir        results/chimera_design/esmfold             --device        cpu             --max_length    1000             --output_screen results/chimera_design/chimera_validated.tsv' returned non-zero exit status 1.
+[Mon Mar 23 18:34:32 2026]
+Error in rule fold_chimeras:
+    message: None
+    jobid: 0
+    input: results/chimera_design/chimera_fold_screen.tsv, results/chimera_design/chimera_sequences.faa, results/chimera_design/chimera_hamp_positions.faa
+    output: results/chimera_design/esmfold/esmfold_plddt.tsv, results/chimera_design/chimera_validated.tsv
+    shell:
+        
+        mkdir -p results/chimera_design/esmfold
+        conda run -n esmfold-env -- python scripts/run_esmfold.py             --screen_tsv    results/chimera_design/chimera_fold_screen.tsv             --hk_reps       results/chimera_design/chimera_sequences.faa             --hamp_fasta    results/chimera_design/chimera_hamp_positions.faa             --outdir        results/chimera_design/esmfold             --device        cpu             --max_length    1000             --output_screen results/chimera_design/chimera_validated.tsv
+        
+        (command exited with non-zero exit code)
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Mon Mar 23 18:34:32 2026]
+Error in rule fold_chimeras:
+    message: None
+    jobid: 0
+    input: results/chimera_design/chimera_fold_screen.tsv, results/chimera_design/chimera_sequences.faa, results/chimera_design/chimera_hamp_positions.faa
+    output: results/chimera_design/esmfold/esmfold_plddt.tsv, results/chimera_design/chimera_validated.tsv
+    shell:
+        
+        mkdir -p results/chimera_design/esmfold
+        conda run -n esmfold-env -- python scripts/run_esmfold.py             --screen_tsv    results/chimera_design/chimera_fold_screen.tsv             --hk_reps       results/chimera_design/chimera_sequences.faa             --hamp_fasta    results/chimera_design/chimera_hamp_positions.faa             --outdir        results/chimera_design/esmfold             --device        cpu             --max_length    1000             --output_screen results/chimera_design/chimera_validated.tsv
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-23T181840.338946.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

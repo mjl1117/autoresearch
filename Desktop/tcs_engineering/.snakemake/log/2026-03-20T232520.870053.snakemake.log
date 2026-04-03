@@ -1,0 +1,25 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                         count
+------------------------  -------
+prepare_af3_dbd_promoter        1
+total                           1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 23:25:23 2026]
+localrule prepare_af3_dbd_promoter:
+    input: results/chimera_targets/chimera_candidates.tsv, data/reference/characterized_promoters.tsv, results/representatives/rr_reps.faa
+    output: results/af3_screening/af3_dbd_promoter_scores.tsv, results/af3_screening/inputs
+    jobid: 0
+    reason: Forced execution
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 23:25:23 2026]
+Finished jobid: 0 (Rule: prepare_af3_dbd_promoter)
+1 of 1 steps (100%) done
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-20T232520.870053.snakemake.log

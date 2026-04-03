@@ -38,8 +38,8 @@ def load_assembly_summary(path):
     """Load NCBI assembly_summary.txt, return DataFrame."""
     return pd.read_csv(
         path, sep="\t", skiprows=2, header=None,
-        usecols=[0, 7, 11, 15, 5],
-        names=["accession", "organism_name", "assembly_level", "asm_name", "taxid"],
+        usecols=[0, 5, 7, 11, 15],
+        names=["accession", "taxid", "organism_name", "assembly_level", "asm_name"],
         low_memory=False,
     )
 

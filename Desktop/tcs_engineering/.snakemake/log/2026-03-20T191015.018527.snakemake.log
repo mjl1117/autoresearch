@@ -1,0 +1,133 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                              count
+-----------------------------  -------
+align_sequences                      1
+annotate_hk                          1
+annotate_rr                          1
+find_motifs                          1
+hmmsearch_hk_reps_domtbl             1
+audit_species_diversity              1
+build_tree                           1
+extract_hamp_linkers                 1
+identify_chimera_targets             1
+download_alphafold_structures        1
+hamp_register_analysis               1
+validate_ground_truth                1
+analyze_af2_hamp_plddt               1
+prepare_rfdiffusion_inputs           1
+all                                  1
+total                               15
+
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 19:10:17 2026]
+localrule hmmsearch_hk_reps_domtbl:
+    input: results/representatives/hk_reps.faa, data/pfam_tcs.hmm
+    output: results/domains/hk_reps_domtbl.txt
+    jobid: 68
+    reason: Missing output files: results/domains/hk_reps_domtbl.txt
+    threads: 8
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 19:11:32 2026]
+Finished jobid: 68 (Rule: hmmsearch_hk_reps_domtbl)
+1 of 15 steps (7%) done
+Execute 5 jobs...
+[Fri Mar 20 19:11:32 2026]
+localrule annotate_hk:
+    input: results/representatives/hk_reps.faa, data/databases/swissprot.dmnd
+    output: results/annotation/hk_annotation.tsv
+    jobid: 65
+    reason: Missing output files: results/annotation/hk_annotation.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:11:32 2026]
+localrule align_sequences:
+    input: results/representatives/tcs_reps.faa
+    output: results/alignment/tcs_alignment.faa
+    jobid: 45
+    reason: Missing output files: results/alignment/tcs_alignment.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:11:32 2026]
+localrule find_motifs:
+    input: results/promoters/promoters_for_meme.fasta
+    output: results/promoters/meme.html
+    jobid: 49
+    reason: Missing output files: results/promoters/meme.html
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:11:32 2026]
+localrule extract_hamp_linkers:
+    input: results/representatives/hk_reps.faa, results/domains/hk_reps_domtbl.txt
+    output: results/deepcoil/hamp_linker_regions.faa
+    jobid: 72
+    reason: Missing output files: results/deepcoil/hamp_linker_regions.faa; Input files updated by another job: results/domains/hk_reps_domtbl.txt
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:11:32 2026]
+localrule annotate_rr:
+    input: results/representatives/rr_reps.faa, data/databases/swissprot.dmnd
+    output: results/annotation/rr_annotation.tsv
+    jobid: 67
+    reason: Missing output files: results/annotation/rr_annotation.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:11:33 2026]
+Finished jobid: 72 (Rule: extract_hamp_linkers)
+2 of 15 steps (13%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 19:11:33 2026]
+localrule hamp_register_analysis:
+    input: results/deepcoil/hamp_linker_regions.faa
+    output: results/deepcoil/hamp_register_predictions.tsv
+    jobid: 71
+    reason: Missing output files: results/deepcoil/hamp_register_predictions.tsv; Input files updated by another job: results/deepcoil/hamp_linker_regions.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/deepcoil.smk", line 75:
+Command 'export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH;  
+        python scripts/hamp_register_analysis.py             --hamp_linkers results/deepcoil/hamp_linker_regions.faa             --output results/deepcoil/hamp_register_predictions.tsv' returned non-zero exit status 1.
+[Fri Mar 20 19:11:34 2026]
+Error in rule hamp_register_analysis:
+    message: None
+    jobid: 71
+    input: results/deepcoil/hamp_linker_regions.faa
+    output: results/deepcoil/hamp_register_predictions.tsv
+    shell:
+        
+        python scripts/hamp_register_analysis.py             --hamp_linkers results/deepcoil/hamp_linker_regions.faa             --output results/deepcoil/hamp_register_predictions.tsv
+        
+        (command exited with non-zero exit code)
+Removing output files of failed job hamp_register_analysis since they might be corrupted:
+results/deepcoil/hamp_register_predictions.tsv
+[Fri Mar 20 19:12:08 2026]
+Finished jobid: 45 (Rule: align_sequences)
+3 of 15 steps (20%) done
+[Fri Mar 20 19:12:12 2026]
+Finished jobid: 67 (Rule: annotate_rr)
+4 of 15 steps (27%) done
+[Fri Mar 20 19:12:12 2026]
+Finished jobid: 65 (Rule: annotate_hk)
+5 of 15 steps (33%) done
+[Fri Mar 20 19:14:41 2026]
+Finished jobid: 49 (Rule: find_motifs)
+6 of 15 steps (40%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Fri Mar 20 19:14:41 2026]
+Error in rule hamp_register_analysis:
+    message: None
+    jobid: 71
+    input: results/deepcoil/hamp_linker_regions.faa
+    output: results/deepcoil/hamp_register_predictions.tsv
+    shell:
+        
+        python scripts/hamp_register_analysis.py             --hamp_linkers results/deepcoil/hamp_linker_regions.faa             --output results/deepcoil/hamp_register_predictions.tsv
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-20T191015.018527.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

@@ -1,0 +1,4 @@
+IndentationError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/genomes.smk", line 3:
+unexpected indent:
+        """
+

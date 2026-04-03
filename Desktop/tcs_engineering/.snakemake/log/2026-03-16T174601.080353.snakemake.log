@@ -1,0 +1,6 @@
+Building DAG of jobs...
+MissingInputException in rule cluster_tcs in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/clustering.smk", line 1:
+Missing input files for rule cluster_tcs:
+    output: results/tcs_clusters.tsv
+    affected files:
+        results/tcs_sequences.faa

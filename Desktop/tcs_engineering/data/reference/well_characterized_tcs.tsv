@@ -1,0 +1,30 @@
+system_name	hk_gene	hk_uniprot	rr_gene	rr_uniprot	organism	signal	sensor_family	dbd_family	characterization_level	working_in_user_system	hk_swiss_prot_keywords	rr_swiss_prot_keywords	notes
+NarXL	NarX	P0AFA2	NarL	P0AF28	Escherichia coli K-12	Nitrate/nitrite	HAMP	NarL_FixJ	excellent	yes	narx	narl	User confirmed working chimera; Skerker 2008 DHp specificity characterized
+NarQP	NarQ	P0AFA4	NarP	P0AF30	Escherichia coli K-12	Nitrate/nitrite	HAMP	NarL_FixJ	excellent	no	narq	narp	Paralog of NarXL; distinct affinity for nitrite vs nitrate
+PhoRB	PhoR	P0AEJ4	PhoB	P0AFJ9	Escherichia coli K-12	Phosphate limitation	HAMP	OmpR_PhoB	excellent	yes	phor	phob	User confirmed working chimera; Schmidl 2019 DBD swap characterized
+EnvZ-OmpR	EnvZ	P0AEJ2	OmpR	P0AFJ2	Escherichia coli K-12	Osmolarity	HAMP	OmpR_PhoB	excellent	no	envz	ompr	Most-studied OmpR/PhoB system; Skerker 2008 specificity residues characterized
+PhoQP	PhoQ	P23837	PhoP	P23836	Escherichia coli K-12	Mg2+ / antimicrobial peptides	HAMP+PAS	OmpR_PhoB	excellent	no	phoq	phop	PAS sensor; cross-phylum chimera potential; virulence regulator
+CheAY	CheA	P07363	CheY	P0AE67	Escherichia coli K-12	Chemotaxis (MCPs)	none	CheY_standalone	excellent	no	chea	chey	Standalone RR DBD; no chimera target for DBD swap
+KdpDE	KdpD	P0AEE8	KdpE	P0AEF9	Escherichia coli K-12	Potassium limitation	HAMP+PAS+REC	OmpR_PhoB	good	no	kdpd	kdpe	Hybrid HK (has REC domain); unusual sensor architecture
+ArcBA	ArcB	P0AE67	ArcA	P0A9Q1	Escherichia coli K-12	Anaerobiosis / redox	HAMP+PAS	OmpR_PhoB	good	no	arcb	arca	Redox-sensing PAS; hybrid HK
+TorSR	TorS	P39453	TorR	P39831	Escherichia coli K-12	TMAO (trimethylamine N-oxide)	HAMP	OmpR_PhoB	good	no	tors	torr	Well-characterized induction signal
+CpxAR	CpxA	P0AE67	CpxR	P0AE67	Escherichia coli K-12	Envelope stress / misfolded proteins	HAMP	OmpR_PhoB	good	no	cpxa	cpxr
+BaeSR	BaeS	P30845	BaeR	P0DMC7	Escherichia coli K-12	Envelope stress / indole	HAMP	OmpR_PhoB	good	no	baes	baer
+DcuSR	DcuS	P0AFB8	DcuR	P0AEA7	Escherichia coli K-12	Fumarate/succinate (C4-dicarboxylates)	PAS	OmpR_PhoB	good	no	dcus	dcur	Periplasmic PAS sensor — good sensor swap candidate
+DpiBA	DpiB	P77510	DpiA	P32695	Escherichia coli K-12	Citrate / citric acid cycle	PAS	OmpR_PhoB	good	no	dpib	dpia	Periplasmic PAS; citrate sensor
+RstBA	RstB	P18392	RstA	P0ACQ4	Escherichia coli K-12	Unknown (acid/indole)	HAMP	OmpR_PhoB	moderate	no	rstb	rsta
+EvgSA	EvgS	P31227	EvgA	P31224	Escherichia coli K-12	Unknown (acid stress)	HAMP+PAS+REC	OmpR_PhoB	moderate	no	evgs	evga	Hybrid HK; large multi-domain sensor
+KinA-Spo0A	KinA	P16497	Spo0A	P06534	Bacillus subtilis 168	Sporulation trigger (unknown)	PAS_x3	Spo0A_unique	excellent	no	kina	spo0a	Phosphorelay; not direct HK-RR pair; unique DBD architecture
+ResED	ResE	P37487	ResD	P37488	Bacillus subtilis 168	Anaerobiosis / redox	HAMP	OmpR_PhoB	good	no	rese	resd	Schmidl 2019 DBD swap demonstrated E.coli-B.subtilis cross-phylum
+PhoRB_Bs	PhoR	P23545	PhoP	P23546	Bacillus subtilis 168	Phosphate limitation	HAMP	OmpR_PhoB	excellent	no	phor	phop	B.subtilis PhoRB; homologous system to E.coli; Schmidl 2019 used this
+ComPA	ComP	P14204	ComA	P14203	Bacillus subtilis 168	Competence-stimulating factor (CSF)	HAMP	NarL_FixJ	good	no	comp	coma	NarL/FixJ DBD; competence quorum sensing
+DegSU	DegS	P13800	DegU	P13801	Bacillus subtilis 168	Motility / competence	HAMP	OmpR_PhoB	good	no	degs	degu
+CckA-CtrA	CckA	Q9A7H9	CtrA	P0CAX2	Caulobacter crescentus NA1000	Cell cycle (PleC/DivJ cascade)	HAMP+PAS	OmpR_PhoB	excellent	no	ccka	ctra	Paradigm cell-cycle TCS; Phosphorelay
+VpsRT	VpsR	Q9KNA5	VpsT	Q9KNA4	Vibrio cholerae O1	c-di-GMP / biofilm	HAMP	OmpR_PhoB	good	no	vpsr	vpst	c-di-GMP-responsive RR; unusual signaling input
+GacSA	GacS	Q51494	GacA	P0A3G6	Pseudomonas fluorescens	Biofilm / secondary metabolites	HAMP+PAS	OmpR_PhoB	good	no	gacs	gaca	Well-studied in Pseudomonas; LuxR-type response
+LuxNO	LuxN	P19781	LuxO	P19785	Vibrio harveyi	Quorum sensing (HAI-1)	HAMP	NtrC_AAA	excellent	no	luxn	luxo	Quorum sensing; NtrC-class RR; unusual sigma factor activation
+NtrBC	NtrB	P0AFB9	NtrC	P0A9F0	Escherichia coli K-12	Nitrogen limitation	PAS	NtrC_AAA	excellent	no	ntrb	ntrc	AAA+ enhancer-binding RR; sigma54 activation
+RegBA	RegB	P27212	RegA	P27213	Rhodobacter capsulatus SB1003	Photosynthesis / redox	HAMP	OmpR_PhoB	excellent	no	regb	rega	Redox-sensing; photosynthesis control
+NreBC	NreB	Q6FDZ5	NreC	Q8CRW6	Staphylococcus carnosus TM300	Nitrate/oxygen	GAF	OmpR_PhoB	good	no	nreb	nrec	GAF domain oxygen sensor; gram-positive; unusual sensor type
+BphP1	BphP1	Q6N9K8	null	null	Rhodopseudomonas palustris CGA009	Near-infrared light (biliverdin)	PAS+GAF+PHY	OmpR_PhoB	excellent	no	bphp	null	Bacteriophytochrome; canonical light-sensing HK for synthetic biology
+Cph1-Rcp1	Cph1	P42212	Rcp1	Q55387	Synechocystis sp. PCC 6803	Red/far-red light (phycocyanobilin)	PAS+GAF+PHY	OmpR_PhoB	excellent	no	cph1	rcp1	Canonical cyanobacterial phytochrome; extensively used in optogenetics

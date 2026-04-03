@@ -1,0 +1,39 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                           count
+--------------------------  -------
+annotate_chimera_functions        1
+search_reference_analogs          1
+total                             2
+
+Select jobs to execute...
+Execute 1 jobs...
+[Mon Mar 23 18:14:07 2026]
+localrule annotate_chimera_functions:
+    input: results/chimera_screen/hamp_chimera_screen_esm.tsv, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/domains/hk_reps_domtbl.txt
+    output: results/chimera_screen/chimera_functions_esm.tsv
+    jobid: 1
+    reason: Missing output files: results/chimera_screen/chimera_functions_esm.tsv; Updated input files: results/chimera_screen/hamp_chimera_screen_esm.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 23 18:14:10 2026]
+Finished jobid: 1 (Rule: annotate_chimera_functions)
+1 of 2 steps (50%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Mon Mar 23 18:14:10 2026]
+localrule search_reference_analogs:
+    input: results/chimera_screen/chimera_functions_esm.tsv, results/representatives/hk_reps.faa
+    output: results/chimera_screen/chimera_annotated.tsv, results/chimera_screen/reference_analogs/reference_analog_hits.m8
+    jobid: 0
+    reason: Input files updated by another job: results/chimera_screen/chimera_functions_esm.tsv
+    threads: 4
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 23 18:14:12 2026]
+Finished jobid: 0 (Rule: search_reference_analogs)
+2 of 2 steps (100%) done
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-23T181358.448256.snakemake.log

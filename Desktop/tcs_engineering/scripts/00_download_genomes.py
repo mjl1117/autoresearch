@@ -9,7 +9,7 @@ import shutil
 
 REFSEQ_SUMMARY = "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/bacteria/assembly_summary.txt"
 
-THREADS = 10
+THREADS = 4  # NCBI rate-limits heavy parallel FTP requests
 
 
 def ensure_dirs(base):
@@ -24,6 +24,9 @@ def ensure_dirs(base):
     return genome_dir, metadata_dir
 
 
+import re
+
+
 def download_file(url, outfile):
 
     subprocess.run(
@@ -35,6 +38,27 @@ def download_file(url, outfile):
     if outfile.stat().st_size < 10000:
         outfile.unlink(missing_ok=True)
         raise RuntimeError(f"Download failed or truncated: {url}")
+
+
+def list_ftp_directory(ftp_url: str) -> list[str] | None:
+    """Return filenames in an NCBI FTP directory, or None if inaccessible.
+
+    NCBI serves FTP over HTTPS which returns Apache-style HTML directory pages.
+    Parses href attributes from the HTML to extract actual filenames.
+    Returns None on any error (404, timeout, etc).
+    """
+    result = subprocess.run(
+        ["curl", "-s", "--fail", "--max-time", "20", "--connect-timeout", "10",
+         ftp_url.rstrip("/") + "/"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        return None
+    # Parse Apache-style HTML directory listing — extract href values that
+    # look like filenames (not parent dir "..", sort query strings "?...", etc.)
+    hrefs = re.findall(r'href="([^"]+)"', result.stdout)
+    filenames = [h for h in hrefs if not h.startswith("?") and h != "../" and h != "/"]
+    return filenames if filenames else None
 
 
 def download_assembly_summary(metadata_dir):
@@ -61,33 +85,50 @@ def parse_summary(summary_file, max_genomes):
 
 
 def download_genome(row, genome_dir):
+    """Download genome, protein, and GFF files for one assembly.
 
+    Uses FTP directory listing to discover actual filenames — handles naming
+    variations and fast-fails (with a clear error) if the directory is gone.
+    """
     ftp = row["ftp_path"].rstrip("/")
     assembly = ftp.split("/")[-1]
 
     outdir = genome_dir / assembly
     outdir.mkdir(exist_ok=True)
 
-    files = {
-        "genome.fna": f"{assembly}_genomic.fna.gz",
-        "proteins.faa": f"{assembly}_protein.faa.gz",
-        "genome.gff": f"{assembly}_genomic.gff.gz"
-    }
+    # Fetch directory listing once; fail fast if the path doesn't exist on NCBI.
+    listing = list_ftp_directory(ftp)
+    if listing is None:
+        raise RuntimeError(f"FTP directory not found (404 or timeout): {ftp}")
 
-    for name, filename in files.items():
+    wanted = [
+        ("genome.fna",   "_genomic.fna.gz"),
+        ("proteins.faa", "_protein.faa.gz"),
+        ("genome.gff",   "_genomic.gff.gz"),
+    ]
 
-        outfile = outdir / name
-
+    for outname, suffix in wanted:
+        outfile = outdir / outname
         if outfile.exists():
             continue
 
+        # Find the actual filename in the listing. Exclude derived files
+        # (_cds_from_genomic.fna.gz, _rna_from_genomic.fna.gz) that share
+        # the _genomic.fna.gz suffix but contain only CDS/RNA sequences.
+        match = next(
+            (f for f in listing
+             if f.endswith(suffix)
+             and "_cds_from_" not in f
+             and "_rna_from_" not in f),
+            None,
+        )
+        if match is None:
+            raise RuntimeError(f"No {suffix} file in {ftp}; listing: {listing[:5]}")
+
         gz = outfile.with_suffix(outfile.suffix + ".gz")
-        url = f"{ftp}/{filename}"
-
+        filename = match.split("/")[-1]
         print("Downloading", assembly, filename)
-
-        download_file(url, gz)
-
+        download_file(f"{ftp}/{filename}", gz)
         subprocess.run(["gunzip", "-f", str(gz)], check=True)
 
     return outdir
@@ -132,13 +173,33 @@ def write_metadata(df, metadata_dir):
     print("Metadata written:", outfile)
 
 
+BLACKLIST_PATH = "data/reference/ftp_blacklist.txt"
+
+
+def _append_blacklist(full_id: str, reason: str) -> None:
+    """Record a permanently-broken assembly so future selection skips it."""
+    Path(BLACKLIST_PATH).parent.mkdir(parents=True, exist_ok=True)
+    with open(BLACKLIST_PATH, "a") as fh:
+        fh.write(f"{full_id}\t{reason}\n")
+
+
+def _load_blacklist() -> set[str]:
+    """Return the set of full_ids known to have broken FTP paths."""
+    p = Path(BLACKLIST_PATH)
+    if not p.exists():
+        return set()
+    return {line.split("\t")[0] for line in p.read_text().splitlines() if line.strip()}
+
+
 def _download_from_manifest(manifest_path: str, genome_dir: Path) -> None:
     """Download genomes listed in a two-column TSV (full_id, ftp_path).
 
-    Skips entries whose folder already exists in genome_dir (idempotent).
-    Uses the same download_genome() logic as the standard path.
-    Does NOT run TCS detection — manifested genomes are pre-selected.
+    Skips entries whose folder already exists (idempotent).
+    Skips entries in ftp_blacklist.txt (confirmed bad FTP paths).
+    Failed downloads are added to the blacklist so future runs skip them.
     """
+    blacklist = _load_blacklist()
+
     rows = []
     with open(manifest_path) as fh:
         for line in fh:
@@ -150,12 +211,15 @@ def _download_from_manifest(manifest_path: str, genome_dir: Path) -> None:
                 print(f"  Skipping malformed manifest line: {line!r}")
                 continue
             full_id, ftp_path = parts[0], parts[1]
-            if (genome_dir / full_id).exists():
+            if full_id in blacklist:
+                continue  # silently skip; was printed in detail when first blacklisted
+            assembly = ftp_path.rstrip("/").split("/")[-1]
+            if (genome_dir / full_id).exists() or (genome_dir / assembly).exists():
                 print(f"  Already present, skipping: {full_id}")
                 continue
             rows.append({"full_id": full_id, "ftp_path": ftp_path})
 
-    print(f"Manifest: {len(rows)} genomes to download")
+    print(f"Manifest: {len(rows)} new genomes to download")
 
     with ThreadPoolExecutor(max_workers=THREADS) as executor:
         futures = {
@@ -168,7 +232,8 @@ def _download_from_manifest(manifest_path: str, genome_dir: Path) -> None:
                 future.result()
                 print(f"  Downloaded: {row['full_id']}")
             except Exception as e:
-                print(f"  FAILED: {row['full_id']}: {e}")
+                _append_blacklist(row["full_id"], f"download_failed: {e}")
+                print(f"  FAILED (blacklisted): {row['full_id']}: {e}")
 
 
 def main():

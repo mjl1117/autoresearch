@@ -1,0 +1,131 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job                       count
+----------------------  -------
+viz_chimera_structures        1
+viz_phase_coherence           1
+viz_phylogeny                 1
+viz_regulatory_network        1
+viz_umap                      1
+visualize_all                 1
+total                         6
+
+Select jobs to execute...
+Execute 4 jobs...
+[Fri Mar 20 19:58:07 2026]
+localrule viz_regulatory_network:
+    input: results/operons, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/chimera_targets/chimera_candidates.tsv, data/reference/well_characterized_tcs.tsv
+    output: results/visualization/tcs_regulatory_network.png, results/visualization/tcs_regulatory_network.pdf
+    jobid: 52
+    reason: Missing output files: results/visualization/tcs_regulatory_network.png
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:58:07 2026]
+localrule viz_phase_coherence:
+    input: results/chimera_targets/chimera_candidates.tsv
+    output: results/visualization/phase_coherence_heatmap.png, results/visualization/phase_coherence_heatmap.pdf, results/visualization/cluster_size_distribution.png, results/visualization/cluster_size_distribution.pdf
+    jobid: 53
+    reason: Missing output files: results/visualization/phase_coherence_heatmap.png, results/visualization/cluster_size_distribution.png
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:58:07 2026]
+localrule viz_umap:
+    input: results/homology/hk_homology.m8, results/homology/rr_homology.m8, results/chimera_targets/chimera_candidates.tsv, results/annotation/hk_annotation.tsv
+    output: results/visualization/tcs_umap.png, results/visualization/tcs_umap.pdf
+    jobid: 46
+    reason: Missing output files: results/visualization/tcs_umap.png
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:58:07 2026]
+localrule viz_chimera_structures:
+    input: results/chimera_targets/chimera_candidates.tsv, results/alphafold, results/deepcoil/af2_plddt_analysis.tsv
+    output: results/visualization/chimera_candidates_heatmap.png, results/visualization/chimera_candidates_heatmap.pdf
+    jobid: 49
+    reason: Missing output files: results/visualization/chimera_candidates_heatmap.png
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/visualize.smk", line 114:
+Command 'export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH;  
+        python scripts/visualize/plot_regulatory_network.py             --operon_dir    results/operons             --hk_ann        results/annotation/hk_annotation.tsv             --rr_ann        results/annotation/rr_annotation.tsv             --chimera       results/chimera_targets/chimera_candidates.tsv             --reference_tcs data/reference/well_characterized_tcs.tsv             --outdir        results/visualization' returned non-zero exit status 1.
+[Fri Mar 20 19:58:08 2026]
+Error in rule viz_regulatory_network:
+    message: None
+    jobid: 52
+    input: results/operons, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/chimera_targets/chimera_candidates.tsv, data/reference/well_characterized_tcs.tsv
+    output: results/visualization/tcs_regulatory_network.png, results/visualization/tcs_regulatory_network.pdf
+    shell:
+        
+        python scripts/visualize/plot_regulatory_network.py             --operon_dir    results/operons             --hk_ann        results/annotation/hk_annotation.tsv             --rr_ann        results/annotation/rr_annotation.tsv             --chimera       results/chimera_targets/chimera_candidates.tsv             --reference_tcs data/reference/well_characterized_tcs.tsv             --outdir        results/visualization
+        
+        (command exited with non-zero exit code)
+Waiting at most 5 seconds for missing files:
+results/visualization/phase_coherence_heatmap.png (missing locally)
+results/visualization/phase_coherence_heatmap.pdf (missing locally)
+results/visualization/cluster_size_distribution.png (missing locally)
+results/visualization/cluster_size_distribution.pdf (missing locally)
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/visualize.smk", line 88:
+Command 'export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH;  
+        python scripts/visualize/plot_chimera_structures.py             --chimera   results/chimera_targets/chimera_candidates.tsv             --af2_dir   results/alphafold             --plddt_tsv results/deepcoil/af2_plddt_analysis.tsv             --outdir    results/visualization             --top_n     8' returned non-zero exit status 1.
+[Fri Mar 20 19:58:09 2026]
+Error in rule viz_chimera_structures:
+    message: None
+    jobid: 49
+    input: results/chimera_targets/chimera_candidates.tsv, results/alphafold, results/deepcoil/af2_plddt_analysis.tsv
+    output: results/visualization/chimera_candidates_heatmap.png, results/visualization/chimera_candidates_heatmap.pdf
+    shell:
+        
+        python scripts/visualize/plot_chimera_structures.py             --chimera   results/chimera_targets/chimera_candidates.tsv             --af2_dir   results/alphafold             --plddt_tsv results/deepcoil/af2_plddt_analysis.tsv             --outdir    results/visualization             --top_n     8
+        
+        (command exited with non-zero exit code)
+MissingOutputException in rule viz_phase_coherence in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/visualize.smk", line 125:
+Job 53  completed successfully, but some output files are missing. Missing files after 5 seconds. This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait:
+results/visualization/phase_coherence_heatmap.png (missing locally, parent dir contents: chimera_candidates_heatmap.pdf, chimera_candidates_heatmap.png)
+results/visualization/phase_coherence_heatmap.pdf (missing locally, parent dir contents: chimera_candidates_heatmap.pdf, chimera_candidates_heatmap.png)
+results/visualization/cluster_size_distribution.png (missing locally, parent dir contents: chimera_candidates_heatmap.pdf, chimera_candidates_heatmap.png)
+results/visualization/cluster_size_distribution.pdf (missing locally, parent dir contents: chimera_candidates_heatmap.pdf, chimera_candidates_heatmap.png)
+Removing output files of failed job viz_chimera_structures since they might be corrupted:
+results/visualization/chimera_candidates_heatmap.png, results/visualization/chimera_candidates_heatmap.pdf
+[Fri Mar 20 19:58:18 2026]
+Finished jobid: 46 (Rule: viz_umap)
+1 of 6 steps (17%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Fri Mar 20 19:58:18 2026]
+Error in rule viz_phase_coherence:
+    message: None
+    jobid: 53
+    input: results/chimera_targets/chimera_candidates.tsv
+    output: results/visualization/phase_coherence_heatmap.png, results/visualization/phase_coherence_heatmap.pdf, results/visualization/cluster_size_distribution.png, results/visualization/cluster_size_distribution.pdf
+    shell:
+        
+        python scripts/visualize/plot_phase_coherence.py             --chimera results/chimera_targets/chimera_candidates.tsv             --outdir  results/visualization             --top_n   50
+        
+        (command exited with non-zero exit code)
+[Fri Mar 20 19:58:18 2026]
+Error in rule viz_chimera_structures:
+    message: None
+    jobid: 49
+    input: results/chimera_targets/chimera_candidates.tsv, results/alphafold, results/deepcoil/af2_plddt_analysis.tsv
+    output: results/visualization/chimera_candidates_heatmap.png, results/visualization/chimera_candidates_heatmap.pdf
+    shell:
+        
+        python scripts/visualize/plot_chimera_structures.py             --chimera   results/chimera_targets/chimera_candidates.tsv             --af2_dir   results/alphafold             --plddt_tsv results/deepcoil/af2_plddt_analysis.tsv             --outdir    results/visualization             --top_n     8
+        
+        (command exited with non-zero exit code)
+[Fri Mar 20 19:58:18 2026]
+Error in rule viz_regulatory_network:
+    message: None
+    jobid: 52
+    input: results/operons, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/chimera_targets/chimera_candidates.tsv, data/reference/well_characterized_tcs.tsv
+    output: results/visualization/tcs_regulatory_network.png, results/visualization/tcs_regulatory_network.pdf
+    shell:
+        
+        python scripts/visualize/plot_regulatory_network.py             --operon_dir    results/operons             --hk_ann        results/annotation/hk_annotation.tsv             --rr_ann        results/annotation/rr_annotation.tsv             --chimera       results/chimera_targets/chimera_candidates.tsv             --reference_tcs data/reference/well_characterized_tcs.tsv             --outdir        results/visualization
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-20T195805.482977.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

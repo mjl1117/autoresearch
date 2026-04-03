@@ -99,6 +99,10 @@ rule all:
         # 6. Chimera engineering candidates (with bioinformatics linker phase scoring)
         "results/chimera_targets/chimera_candidates.tsv",
 
+        # 6c. HAMP-centric sensor-swap candidates (strict HAMP conservation,
+        #     decoupled from full-protein clustering — engineering selection layer)
+        "results/chimera_targets/hamp_swap_candidates.tsv",
+
         # 6b. Species diversity + reference TCS coverage audit
         "results/diversity_audit/diversity_audit_summary.txt",
 

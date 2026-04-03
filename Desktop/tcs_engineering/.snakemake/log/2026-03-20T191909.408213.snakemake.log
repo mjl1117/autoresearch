@@ -1,0 +1,131 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                              count
+-----------------------------  -------
+audit_species_diversity              1
+build_tree                           1
+hmmsearch_hk_reps_domtbl             1
+extract_hamp_linkers                 1
+identify_chimera_targets             1
+download_alphafold_structures        1
+hamp_register_analysis               1
+validate_ground_truth                1
+analyze_af2_hamp_plddt               1
+prepare_rfdiffusion_inputs           1
+all                                  1
+total                               11
+
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Mar 20 19:19:12 2026]
+localrule hmmsearch_hk_reps_domtbl:
+    input: results/representatives/hk_reps.faa, data/pfam_tcs.hmm
+    output: results/domains/hk_reps_domtbl.txt
+    jobid: 68
+    reason: Updated input files: data/pfam_tcs.hmm
+    threads: 8
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Select jobs to execute...
+[Fri Mar 20 19:20:27 2026]
+Finished jobid: 68 (Rule: hmmsearch_hk_reps_domtbl)
+1 of 11 steps (9%) done
+Execute 4 jobs...
+[Fri Mar 20 19:20:27 2026]
+localrule identify_chimera_targets:
+    input: results/clusters/hk_clusters/clusters.tsv, results/clusters/rr_clusters/clusters.tsv, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/homology/hk_vs_rr_homology.m8, results/domains/hk_reps_domtbl.txt, data/reference/well_characterized_tcs.tsv
+    output: results/chimera_targets/chimera_candidates.tsv
+    jobid: 64
+    reason: Missing output files: results/chimera_targets/chimera_candidates.tsv; Input files updated by another job: results/domains/hk_reps_domtbl.txt
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:20:27 2026]
+localrule build_tree:
+    input: results/alignment/tcs_alignment.faa
+    output: results/phylogeny/tcs_tree.treefile
+    jobid: 44
+    reason: Missing output files: results/phylogeny/tcs_tree.treefile
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:20:27 2026]
+localrule extract_hamp_linkers:
+    input: results/representatives/hk_reps.faa, results/domains/hk_reps_domtbl.txt
+    output: results/deepcoil/hamp_linker_regions.faa
+    jobid: 72
+    reason: Input files updated by another job: results/domains/hk_reps_domtbl.txt
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 19:20:27 2026]
+localrule audit_species_diversity:
+    input: results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, data/reference/well_characterized_tcs.tsv
+    output: results/diversity_audit/diversity_audit_summary.txt, results/diversity_audit/diversity_genus_counts.tsv, results/diversity_audit/recommended_genomes_status.tsv, results/diversity_audit/reference_tcs_coverage.tsv
+    jobid: 69
+    reason: Missing output files: results/diversity_audit/diversity_audit_summary.txt
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/phylogeny.smk", line 17:
+Command 'export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH;  
+        mkdir -p results/phylogeny
+        /Users/matthew/Desktop/tcs_engineering/workflow/../miniforge3/bin/FastTree             -out results/phylogeny/tcs_tree.treefile             results/alignment/tcs_alignment.faa' returned non-zero exit status 127.
+[Fri Mar 20 19:20:27 2026]
+Error in rule build_tree:
+    message: None
+    jobid: 44
+    input: results/alignment/tcs_alignment.faa
+    output: results/phylogeny/tcs_tree.treefile
+    shell:
+        
+        mkdir -p results/phylogeny
+        /Users/matthew/Desktop/tcs_engineering/workflow/../miniforge3/bin/FastTree             -out results/phylogeny/tcs_tree.treefile             results/alignment/tcs_alignment.faa
+        
+        (command exited with non-zero exit code)
+[Fri Mar 20 19:20:28 2026]
+Finished jobid: 72 (Rule: extract_hamp_linkers)
+2 of 11 steps (18%) done
+[Fri Mar 20 19:20:28 2026]
+Finished jobid: 64 (Rule: identify_chimera_targets)
+3 of 11 steps (27%) done
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/audit.smk", line 33:
+Command 'export PATH=/Users/matthew/Desktop/tcs_engineering/tcs-env/bin:/opt/homebrew/bin:$PATH;  
+        python scripts/audit_species_diversity.py             --genome_dir data/genomes             --assembly_summary data/metadata/assembly_summary.txt             --reference_tcs data/reference/well_characterized_tcs.tsv             --outdir results/diversity_audit             --hk_annotation results/annotation/hk_annotation.tsv             --rr_annotation results/annotation/rr_annotation.tsv' returned non-zero exit status 1.
+[Fri Mar 20 19:20:28 2026]
+Error in rule audit_species_diversity:
+    message: None
+    jobid: 69
+    input: results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, data/reference/well_characterized_tcs.tsv
+    output: results/diversity_audit/diversity_audit_summary.txt, results/diversity_audit/diversity_genus_counts.tsv, results/diversity_audit/recommended_genomes_status.tsv, results/diversity_audit/reference_tcs_coverage.tsv
+    shell:
+        
+        python scripts/audit_species_diversity.py             --genome_dir data/genomes             --assembly_summary data/metadata/assembly_summary.txt             --reference_tcs data/reference/well_characterized_tcs.tsv             --outdir results/diversity_audit             --hk_annotation results/annotation/hk_annotation.tsv             --rr_annotation results/annotation/rr_annotation.tsv
+        
+        (command exited with non-zero exit code)
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Fri Mar 20 19:20:28 2026]
+Error in rule audit_species_diversity:
+    message: None
+    jobid: 69
+    input: results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, data/reference/well_characterized_tcs.tsv
+    output: results/diversity_audit/diversity_audit_summary.txt, results/diversity_audit/diversity_genus_counts.tsv, results/diversity_audit/recommended_genomes_status.tsv, results/diversity_audit/reference_tcs_coverage.tsv
+    shell:
+        
+        python scripts/audit_species_diversity.py             --genome_dir data/genomes             --assembly_summary data/metadata/assembly_summary.txt             --reference_tcs data/reference/well_characterized_tcs.tsv             --outdir results/diversity_audit             --hk_annotation results/annotation/hk_annotation.tsv             --rr_annotation results/annotation/rr_annotation.tsv
+        
+        (command exited with non-zero exit code)
+[Fri Mar 20 19:20:28 2026]
+Error in rule build_tree:
+    message: None
+    jobid: 44
+    input: results/alignment/tcs_alignment.faa
+    output: results/phylogeny/tcs_tree.treefile
+    shell:
+        
+        mkdir -p results/phylogeny
+        /Users/matthew/Desktop/tcs_engineering/workflow/../miniforge3/bin/FastTree             -out results/phylogeny/tcs_tree.treefile             results/alignment/tcs_alignment.faa
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-20T191909.408213.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

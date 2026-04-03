@@ -1,0 +1,148 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job                        count
+-----------------------  -------
+extract_hk_rr_sequences        1
+detect_genomic_operons         1
+extract_promoters              1
+merge_sequences                1
+align_sequences                1
+cluster_tcs                    1
+find_motifs                    1
+build_tree                     1
+all                            1
+total                          9
+
+Select jobs to execute...
+Execute 1 jobs...
+[Mon Mar 16 22:37:21 2026]
+localrule extract_hk_rr_sequences:
+    input: results/domains/GCF_036600855.1.tbl, data/genomes/GCF_036600855.1/proteins.faa
+    output: results/sequences/GCF_036600855.1.faa
+    jobid: 3
+    reason: Missing output files: results/sequences/GCF_036600855.1.faa
+    wildcards: genome=GCF_036600855.1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 16 22:37:21 2026]
+Finished jobid: 3 (Rule: extract_hk_rr_sequences)
+1 of 9 steps (11%) done
+Select jobs to execute...
+Execute 3 jobs...
+[Mon Mar 16 22:37:21 2026]
+localrule merge_sequences:
+    input: results/sequences/GCF_036600855.1.faa
+    output: results/tcs_sequences.faa
+    jobid: 2
+    reason: Missing output files: results/tcs_sequences.faa; Input files updated by another job: results/sequences/GCF_036600855.1.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 16 22:37:21 2026]
+localrule extract_promoters:
+    input: results/sequences/GCF_036600855.1.faa, data/genomes/GCF_036600855.1/genome.gff, data/genomes/GCF_036600855.1/genome.fna
+    output: results/sequences/GCF_036600855.1_promoters.fasta
+    jobid: 9
+    reason: Missing output files: results/sequences/GCF_036600855.1_promoters.fasta; Input files updated by another job: results/sequences/GCF_036600855.1.faa
+    wildcards: genome=GCF_036600855.1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 16 22:37:21 2026]
+localrule detect_genomic_operons:
+    input: data/genomes/GCF_036600855.1/genome.gff, results/sequences/GCF_036600855.1.faa
+    output: results/operons/GCF_036600855.1.tsv
+    jobid: 10
+    reason: Missing output files: results/operons/GCF_036600855.1.tsv; Input files updated by another job: results/sequences/GCF_036600855.1.faa
+    wildcards: genome=GCF_036600855.1
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 16 22:37:21 2026]
+Finished jobid: 2 (Rule: merge_sequences)
+2 of 9 steps (22%) done
+Select jobs to execute...
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/operons.smk", line 8:
+Command 'set -euo pipefail;  
+        python scripts/detect_operons.py             data/genomes/GCF_036600855.1/genome.gff             results/sequences/GCF_036600855.1.faa             results/operons/GCF_036600855.1.tsv' returned non-zero exit status 2.
+[Mon Mar 16 22:37:21 2026]
+Error in rule detect_genomic_operons:
+    message: None
+    jobid: 10
+    input: data/genomes/GCF_036600855.1/genome.gff, results/sequences/GCF_036600855.1.faa
+    output: results/operons/GCF_036600855.1.tsv
+    shell:
+        
+        python scripts/detect_operons.py             data/genomes/GCF_036600855.1/genome.gff             results/sequences/GCF_036600855.1.faa             results/operons/GCF_036600855.1.tsv
+        
+        (command exited with non-zero exit code)
+Execute 2 jobs...
+[Mon Mar 16 22:37:21 2026]
+localrule cluster_tcs:
+    input: results/tcs_sequences.faa
+    output: results/clusters/tcs_clusters.tsv
+    jobid: 1
+    reason: Missing output files: results/clusters/tcs_clusters.tsv; Input files updated by another job: results/tcs_sequences.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 16 22:37:21 2026]
+localrule align_sequences:
+    input: results/tcs_sequences.faa
+    output: results/alignment/tcs_alignment.faa
+    jobid: 7
+    reason: Missing output files: results/alignment/tcs_alignment.faa; Input files updated by another job: results/tcs_sequences.faa
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+Waiting at most 5 seconds for missing files:
+results/clusters/tcs_clusters.tsv (missing locally)
+RuleException:
+CalledProcessError in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/promoters.smk", line 11:
+Command 'set -euo pipefail;  
+        python scripts/05_extract_promoters.py             --gff data/genomes/GCF_036600855.1/genome.gff             --fna data/genomes/GCF_036600855.1/genome.fna             --ids results/sequences/GCF_036600855.1.faa             --upstream 200             --output results/sequences/GCF_036600855.1_promoters.fasta' returned non-zero exit status 2.
+[Mon Mar 16 22:37:21 2026]
+Error in rule extract_promoters:
+    message: None
+    jobid: 9
+    input: results/sequences/GCF_036600855.1.faa, data/genomes/GCF_036600855.1/genome.gff, data/genomes/GCF_036600855.1/genome.fna
+    output: results/sequences/GCF_036600855.1_promoters.fasta
+    shell:
+        
+        python scripts/05_extract_promoters.py             --gff data/genomes/GCF_036600855.1/genome.gff             --fna data/genomes/GCF_036600855.1/genome.fna             --ids results/sequences/GCF_036600855.1.faa             --upstream 200             --output results/sequences/GCF_036600855.1_promoters.fasta
+        
+        (command exited with non-zero exit code)
+MissingOutputException in rule cluster_tcs in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/clustering.smk", line 1:
+Job 1  completed successfully, but some output files are missing. Missing files after 5 seconds. This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait:
+results/clusters/tcs_clusters.tsv (missing locally, parent dir contents: rr_clusters, hk_clusters)
+[Mon Mar 16 22:37:56 2026]
+Finished jobid: 7 (Rule: align_sequences)
+3 of 9 steps (33%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Mon Mar 16 22:37:56 2026]
+Error in rule cluster_tcs:
+    message: None
+    jobid: 1
+    input: results/tcs_sequences.faa
+    output: results/clusters/tcs_clusters.tsv
+[Mon Mar 16 22:37:56 2026]
+Error in rule extract_promoters:
+    message: None
+    jobid: 9
+    input: results/sequences/GCF_036600855.1.faa, data/genomes/GCF_036600855.1/genome.gff, data/genomes/GCF_036600855.1/genome.fna
+    output: results/sequences/GCF_036600855.1_promoters.fasta
+    shell:
+        
+        python scripts/05_extract_promoters.py             --gff data/genomes/GCF_036600855.1/genome.gff             --fna data/genomes/GCF_036600855.1/genome.fna             --ids results/sequences/GCF_036600855.1.faa             --upstream 200             --output results/sequences/GCF_036600855.1_promoters.fasta
+        
+        (command exited with non-zero exit code)
+[Mon Mar 16 22:37:56 2026]
+Error in rule detect_genomic_operons:
+    message: None
+    jobid: 10
+    input: data/genomes/GCF_036600855.1/genome.gff, results/sequences/GCF_036600855.1.faa
+    output: results/operons/GCF_036600855.1.tsv
+    shell:
+        
+        python scripts/detect_operons.py             data/genomes/GCF_036600855.1/genome.gff             results/sequences/GCF_036600855.1.faa             results/operons/GCF_036600855.1.tsv
+        
+        (command exited with non-zero exit code)
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-16T223718.439070.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

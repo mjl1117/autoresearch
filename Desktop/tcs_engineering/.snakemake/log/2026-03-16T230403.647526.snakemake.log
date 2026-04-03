@@ -1,0 +1,7 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+MissingInputException in rule all in file "/Users/matthew/Desktop/tcs_engineering/workflow/Snakefile", line 43:
+Missing input files for rule all:
+    affected files:
+        results/operons/GCF_036600855.1.tsv

@@ -1,0 +1,7 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+MissingInputException in rule all in file "/Users/matthew/Desktop/tcs_engineering/workflow/Snakefile", line 22:
+Missing input files for rule all:
+    affected files:
+        results/promoters/meme.html

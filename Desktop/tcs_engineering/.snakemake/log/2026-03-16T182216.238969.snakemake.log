@@ -1,0 +1,8 @@
+IndexError in file "/Users/matthew/Desktop/tcs_engineering/workflow/Snakefile", line 7:
+list index out of range
+  File "/Users/matthew/Desktop/tcs_engineering/workflow/Snakefile", line 7, in <module>
+  File "/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/pandas/io/parsers/readers.py", line 873, in read_csv
+  File "/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/pandas/io/parsers/readers.py", line 306, in _read
+  File "/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/pandas/io/parsers/readers.py", line 1947, in read
+  File "/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 217, in read
+  File "/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 361, in _concatenate_chunks

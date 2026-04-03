@@ -84,7 +84,7 @@ def build_graph(operons: pd.DataFrame,
     if ref_tcs is not None:
         for _, row in ref_tcs.iterrows():
             for gene in [row.get("hk_gene", ""), row.get("rr_gene", "")]:
-                if gene:
+                if gene and isinstance(gene, str) and gene.strip():
                     signal_map[gene.lower()] = row.get("signal", "unknown")
 
     # Working system set

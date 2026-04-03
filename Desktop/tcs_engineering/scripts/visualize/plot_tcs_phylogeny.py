@@ -80,9 +80,12 @@ def draw_tree(tree_path: str, annotation: dict, outdir: Path, max_tips: int = 50
         keep = [t for t in terminals if any(h.lower() in t.name.lower() for h in HIGHLIGHT_SYSTEMS)]
         rest = [t for t in terminals if t not in keep]
         rng = np.random.default_rng(42)
-        sampled = list(rng.choice(rest, min(max_tips - len(keep), len(rest)), replace=False))
-        keep_names = {t.name for t in keep + list(sampled)}
-        tree.prune([t for t in terminals if t.name not in keep_names])
+        n_sample = min(max_tips - len(keep), len(rest))
+        idx = rng.choice(len(rest), n_sample, replace=False)
+        sampled = [rest[i] for i in idx]
+        keep_names = {t.name for t in keep + sampled}
+        for t in [t for t in terminals if t.name not in keep_names]:
+            tree.prune(t)
         terminals = tree.get_terminals()
 
     n_tips = len(terminals)
@@ -144,22 +147,53 @@ def draw_tree(tree_path: str, annotation: dict, outdir: Path, max_tips: int = 50
     plt.close(fig)
 
 
+_RR_DBD_KEYWORDS = {
+    "Spo0A":     ["spo0a", "sporulation", "stage 0"],
+    "CheY":      ["chey ", "chemotaxis response regulator", " chey"],
+    "NtrC_AAA":  ["ntrc", "nifa", "luxo", "sigma-54", "aaa+", "enhancer-binding",
+                  "ntr regulator", "nitrogen regulatory protein"],
+    "NarL_FixJ": ["narl", "narp", "fixj", "gera", "coma", "flhd",
+                  "transcriptional regulatory protein narl",
+                  "probable transcriptional regulatory protein narl"],
+    "OmpR_PhoB": ["ompr", "phob", "phop", "rsca", "cpxr", "baer", "kdpe",
+                  "rsta", "evga", "tcrr", "rega", "resd", "degu", "ctra",
+                  "vpst", "gaca", "nrec", "rcsb", "uvry", "arca", "torr"],
+}
+
+
+def _classify_dbd(stitle: str) -> str:
+    t = str(stitle).lower()
+    for fam, keywords in _RR_DBD_KEYWORDS.items():
+        if any(k in t for k in keywords):
+            return fam
+    return "other"
+
+
 def build_annotation(chimera_tsv: str, hk_ann: str, rr_ann: str) -> dict:
     """Build annotation dict from pipeline outputs."""
     import pandas as pd
 
     hk_ids, dbd_map = set(), {}
+    ann_cols = ["qseqid", "sseqid", "pident", "length",
+                "qcovhsp", "evalue", "bitscore", "stitle"]
 
     if Path(hk_ann).exists():
-        df = pd.read_csv(hk_ann, sep="\t", header=None,
-                         names=["qseqid", "sseqid", "pident", "length",
-                                "qcovhsp", "evalue", "bitscore", "stitle"])
+        df = pd.read_csv(hk_ann, sep="\t", header=None, names=ann_cols)
         hk_ids = set(df["qseqid"].unique())
 
+    # Build DBD map from RR annotation stitle (covers all RR proteins)
+    if Path(rr_ann).exists():
+        df = pd.read_csv(rr_ann, sep="\t", header=None, names=ann_cols)
+        for _, row in df.iterrows():
+            dbd_map[row["qseqid"]] = _classify_dbd(row["stitle"])
+
+    # Chimera candidates override with curated dbd_family where available
     if Path(chimera_tsv).exists():
         df = pd.read_csv(chimera_tsv, sep="\t")
         if "dbd_family" in df.columns and "protein_id" in df.columns:
-            dbd_map = df.set_index("protein_id")["dbd_family"].to_dict()
+            for pid, fam in df.set_index("protein_id")["dbd_family"].items():
+                if pd.notna(fam) and fam != "N/A":
+                    dbd_map[pid] = fam
 
     return {"hk_ids": hk_ids, "dbd_map": dbd_map}
 

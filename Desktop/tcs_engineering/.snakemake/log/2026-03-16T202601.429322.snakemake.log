@@ -1,0 +1,4 @@
+KeyError in file "/Users/matthew/Desktop/tcs_engineering/workflow/Snakefile", line 14:
+"None of ['# assembly_accession'] are in the columns"
+  File "/Users/matthew/Desktop/tcs_engineering/workflow/Snakefile", line 14, in <module>
+  File "/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/pandas/core/frame.py", line 6977, in set_index

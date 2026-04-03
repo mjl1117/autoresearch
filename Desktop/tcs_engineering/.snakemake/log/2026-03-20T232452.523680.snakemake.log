@@ -1,0 +1,19 @@
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                         count
+------------------------  -------
+prepare_af3_dbd_promoter        1
+total                           1
+
+Select jobs to execute...
+Execute 1 jobs...
+RuleException in rule prepare_af3_dbd_promoter in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/af3_screening.smk", line 1:
+NameError: The name '("--run_af3 --af3_dir " + str(params' is unknown in this context. Please make sure that you defined that variable. Also note that braces not used for variable access have to be escaped by repeating them, i.e. {{print $1}}, when formatting the following:
+
+        python scripts/af3_dbd_promoter.py             --candidates {input.candidates}             --promoters  {input.promoters}             --rr_fasta   {input.rr_fasta}             --outdir     results/af3_screening             --top_n      {params.top_n}             {("--run_af3 --af3_dir " + str(params.af3_dir)) if params.run_af3 else ""}
+        

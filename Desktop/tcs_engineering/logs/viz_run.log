@@ -1,0 +1,43 @@
+[Snakefile] Curated genome list loaded: 10 genomes
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job stats:
+job              count
+-------------  -------
+viz_phylogeny        1
+visualize_all        1
+total                2
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Fri Mar 20 20:04:24 2026]
+localrule viz_phylogeny:
+    input: results/phylogeny/tcs_tree.treefile, results/annotation/hk_annotation.tsv, results/annotation/rr_annotation.tsv, results/chimera_targets/chimera_candidates.tsv
+    output: results/visualization/tcs_phylogeny.png, results/visualization/tcs_phylogeny.pdf
+    jobid: 1
+    reason: Missing output files: results/visualization/tcs_phylogeny.png
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+  Tree has 767 tips — sampling 500 for readability
+  Saved: results/visualization/tcs_phylogeny.pdf
+  Saved: results/visualization/tcs_phylogeny.png
+[Fri Mar 20 20:04:26 2026]
+Finished jobid: 1 (Rule: viz_phylogeny)
+1 of 2 steps (50%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Fri Mar 20 20:04:26 2026]
+localrule visualize_all:
+    input: results/visualization/tcs_phylogeny.png, results/visualization/tcs_umap.png, results/visualization/chimera_candidates_heatmap.png, results/visualization/tcs_regulatory_network.png, results/visualization/phase_coherence_heatmap.png, results/visualization/cluster_size_distribution.png
+    jobid: 0
+    reason: Input files updated by another job: results/visualization/tcs_phylogeny.png
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Fri Mar 20 20:04:26 2026]
+Finished jobid: 0 (Rule: visualize_all)
+2 of 2 steps (100%) done
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-20T200422.022236.snakemake.log

@@ -37,8 +37,8 @@ from tcs_constants import ASSEMBLY_LEVEL_PRIORITY, RECOMMENDED_GENOMES
 def load_assembly_summary(path: str) -> pd.DataFrame:
     df = pd.read_csv(
         path, sep="\t", skiprows=2, header=None,
-        usecols=[0, 7, 11, 15, 5],
-        names=["accession", "organism_name", "assembly_level", "asm_name", "taxid"],
+        usecols=[0, 5, 7, 11, 15],
+        names=["accession", "taxid", "organism_name", "assembly_level", "asm_name"],
         low_memory=False,
     )
     df["full_id"] = df["accession"] + "_" + df["asm_name"]

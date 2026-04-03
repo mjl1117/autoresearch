@@ -1,0 +1,13 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+InputFunctionException in rule download_genome in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/genomes.smk", line 1:
+Error:
+  KeyError: 'GCF_000005845.2_ASM584v2'
+Wildcards:
+  genome=GCF_000005845.2_ASM584v2
+Traceback:
+  File "/Users/matthew/Desktop/tcs_engineering/workflow/rules/genomes.smk", line 8, in <lambda>
+  File "/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/pandas/core/indexing.py", line 1199, in __getitem__
+  File "/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/pandas/core/frame.py", line 4495, in _get_value
+  File "/Users/matthew/Desktop/tcs_engineering/tcs-env/lib/python3.14/site-packages/pandas/core/indexes/base.py", line 3648, in get_loc (rule download_genome, line 1, /Users/matthew/Desktop/tcs_engineering/workflow/rules/genomes.smk)

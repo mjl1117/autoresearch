@@ -1,0 +1,147 @@
+[Snakefile] Curated genome list loaded: 198 genomes
+Assuming unrestricted shared filesystem usage.
+host: Matthews-MacBook-Pro-638.local
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job              count
+-------------  -------
+fold_chimeras        1
+total                1
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon Mar 23 22:34:55 2026]
+localrule fold_chimeras:
+    input: results/chimera_design/chimera_fold_screen.tsv, results/chimera_design/chimera_sequences.faa, results/chimera_design/chimera_hamp_positions.faa
+    output: results/chimera_design/esmfold/esmfold_plddt.tsv, results/chimera_design/chimera_validated.tsv
+    jobid: 0
+    reason: Missing output files: results/chimera_design/chimera_validated.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+
+Loading weights:   0%|          | 0/4533 [00:00<?, ?it/s]
+Loading weights:   1%|          | 39/4533 [00:00<00:23, 193.86it/s]
+Loading weights:   2%|▏         | 73/4533 [00:00<00:25, 176.76it/s]
+Loading weights:   2%|▏         | 107/4533 [00:00<00:29, 148.16it/s]
+Loading weights:   3%|▎         | 124/4533 [00:00<00:33, 131.95it/s]
+Loading weights:   3%|▎         | 141/4533 [00:01<00:42, 103.06it/s]
+Loading weights:   3%|▎         | 158/4533 [00:01<00:44, 99.11it/s] 
+Loading weights:   4%|▍         | 175/4533 [00:01<00:51, 84.24it/s]
+Loading weights:   4%|▍         | 192/4533 [00:01<00:50, 86.14it/s]
+Loading weights:   5%|▍         | 209/4533 [00:02<00:55, 78.16it/s]
+Loading weights:   5%|▍         | 226/4533 [00:02<00:52, 81.89it/s]
+Loading weights:   5%|▌         | 243/4533 [00:02<00:58, 73.23it/s]
+Loading weights:   6%|▌         | 260/4533 [00:02<00:56, 75.35it/s]
+Loading weights:   6%|▌         | 277/4533 [00:03<01:02, 67.92it/s]
+Loading weights:   6%|▋         | 294/4533 [00:03<00:58, 71.92it/s]
+Loading weights:   7%|▋         | 311/4533 [00:03<01:01, 68.31it/s]
+Loading weights:   7%|▋         | 328/4533 [00:03<00:54, 76.66it/s]
+Loading weights:   8%|▊         | 345/4533 [00:03<00:56, 73.62it/s]
+Loading weights:   8%|▊         | 362/4533 [00:04<00:51, 80.33it/s]
+Loading weights:   8%|▊         | 379/4533 [00:04<00:59, 69.59it/s]
+Loading weights:   9%|▊         | 396/4533 [00:04<00:55, 74.24it/s]
+Loading weights:   9%|▉         | 413/4533 [00:04<01:04, 64.02it/s]
+Loading weights:   9%|▉         | 430/4533 [00:05<01:02, 66.04it/s]
+Loading weights:  10%|▉         | 447/4533 [00:05<01:19, 51.71it/s]
+Loading weights:  10%|█         | 464/4533 [00:05<01:09, 58.18it/s]
+Loading weights:  11%|█         | 481/4533 [00:06<01:15, 53.57it/s]
+Loading weights:  11%|█         | 498/4533 [00:06<01:07, 59.61it/s]
+Loading weights:  11%|█▏        | 515/4533 [00:06<01:14, 54.25it/s]
+Loading weights:  12%|█▏        | 532/4533 [00:07<01:03, 62.59it/s]
+Loading weights:  12%|█▏        | 549/4533 [00:07<01:07, 59.17it/s]
+Loading weights:  12%|█▏        | 566/4533 [00:07<01:01, 64.61it/s]
+Loading weights:  13%|█▎        | 583/4533 [00:07<01:00, 65.33it/s]
+Loading weights:  13%|█▎        | 600/4533 [00:08<00:55, 70.79it/s]
+Loading weights:  14%|█▎        | 617/4533 [00:08<00:48, 81.14it/s]
+Loading weights: 100%|██████████| 4533/4533 [00:08<00:00, 552.33it/s]
+[1mEsmForProteinFolding LOAD REPORT[0m from: facebook/esmfold_v1
+Key                                | Status     | 
+-----------------------------------+------------+-
+esm.embeddings.position_ids        | UNEXPECTED | 
+esm.contact_head.regression.bias   | MISSING    | 
+esm.contact_head.regression.weight | MISSING    | 
+
+[3mNotes:
+- UNEXPECTED[3m	:can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING[3m	:those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.[0m
+Loading screen TSV: results/chimera_design/chimera_fold_screen.tsv
+Loading HK representative sequences: results/chimera_design/chimera_sequences.faa
+Loading HAMP domain positions: results/chimera_design/chimera_hamp_positions.faa
+  HAMP start positions for 47 proteins
+
+47 unique protein IDs across acceptor + donor columns
+
+Proteins to run ESMFold:     47
+  Skipped (length > 1000): 0
+  Skipped (not in hk_reps):   0
+
+Loading ESMFold model (facebook/esmfold_v1) ...
+  This downloads ~2.7 GB on first use and may take a minute.
+
+Running ESMFold on 47 proteins ...
+  [1/47] CHI_028162_488459_j225_218 (456 aa) ... mean=80.0 | PDB+pLDDT
+  [2/47] CHI_028162_495326_j225_232 (461 aa) ... mean=80.9 | PDB+pLDDT
+  [3/47] CHI_099516_720429_j231_252 (502 aa) ... mean=80.4 | PDB+pLDDT
+  [4/47] CHI_102237_433410_j227_66 (463 aa) ... mean=82.8 | PDB+pLDDT
+  [5/47] CHI_102237_646931_j227_227 (487 aa) ... mean=79.8 | PDB+pLDDT
+  [6/47] CHI_102237_782162_j227_213 (455 aa) ... mean=83.0 | PDB+pLDDT
+  [7/47] CHI_102237_916479_j227_262 (463 aa) ... mean=81.3 | PDB+pLDDT
+  [8/47] CHI_113318_490474_j237_230 (481 aa) ... mean=83.6 | PDB+pLDDT
+  [9/47] CHI_214461_433486_j311_206 (715 aa) ... mean=81.9 | PDB+pLDDT
+  [10/47] CHI_217373_371407_j257_215 (483 aa) ... mean=81.7 | PDB+pLDDT
+  [11/47] CHI_217373_543131_j257_222 (494 aa) ... mean=82.7 | PDB+pLDDT
+  [12/47] CHI_217373_863027_j257_145 (495 aa) ... mean=81.4 | PDB+pLDDT
+  [13/47] CHI_241529_105551_j226_240 (484 aa) ... mean=82.5 | PDB+pLDDT
+  [14/47] CHI_241529_344045_j226_219 (580 aa) ... mean=75.2 | PDB+pLDDT
+  [15/47] CHI_241529_396279_j226_219 (444 aa) ... mean=81.8 | PDB+pLDDT
+  [16/47] CHI_241529_641689_j226_212 (456 aa) ... mean=83.9 | PDB+pLDDT
+  [17/47] CHI_275657_181335_j150_241 (381 aa) ... mean=81.7 | PDB+pLDDT
+  [18/47] CHI_328770_344045_j233_219 (587 aa) ... mean=74.6 | PDB+pLDDT
+  [19/47] CHI_415647_427133_j255_227 (470 aa) ... mean=79.9 | PDB+pLDDT
+  [20/47] CHI_435741_278059_j213_199 (455 aa) ... mean=82.7 | PDB+pLDDT
+  [21/47] CHI_482146_488007_j208_222 (439 aa) ... mean=80.3 | PDB+pLDDT
+  [22/47] CHI_484004_183520_j226_240 (291 aa) ... mean=82.1 | PDB+pLDDT
+  [23/47] CHI_484004_713718_j226_233 (450 aa) ... mean=80.5 | PDB+pLDDT
+  [24/47] CHI_484515_270537_j235_221 (472 aa) ... mean=83.0 | PDB+pLDDT
+  [25/47] CHI_484515_570247_j235_228 (474 aa) ... mean=83.1 | PDB+pLDDT
+  [26/47] CHI_486069_105551_j219_240 (477 aa) ... mean=80.1 | PDB+pLDDT
+  [27/47] CHI_486069_241529_j219_226 (456 aa) ... mean=79.5 | PDB+pLDDT
+  [28/47] CHI_486069_344045_j219_219 (573 aa) ... mean=73.6 | PDB+pLDDT
+  [29/47] CHI_486069_641689_j219_212 (449 aa) ... mean=81.1 | PDB+pLDDT
+  [30/47] CHI_488459_495326_j218_232 (454 aa) ... mean=82.7 | PDB+pLDDT
+  [31/47] CHI_488459_516736_j218_225 (445 aa) ... mean=81.6 | PDB+pLDDT
+  [32/47] CHI_488459_706998_j218_246 (451 aa) ... mean=84.1 | PDB+pLDDT
+  [33/47] CHI_488459_855339_j218_218 (452 aa) ... mean=81.9 | PDB+pLDDT
+  [34/47] CHI_489719_217373_j250_257 (485 aa) ... mean=81.2 | PDB+pLDDT
+  [35/47] CHI_570247_270537_j228_221 (465 aa) ... mean=81.8 | PDB+pLDDT
+  [36/47] CHI_570247_657816_j228_228 (456 aa) ... mean=82.7 | PDB+pLDDT
+  [37/47] CHI_570247_712893_j228_228 (463 aa) ... mean=83.3 | PDB+pLDDT
+  [38/47] CHI_641689_344045_j212_219 (566 aa) ... mean=75.6 | PDB+pLDDT
+  [39/47] CHI_641689_555179_j212_254 (448 aa) ... mean=83.3 | PDB+pLDDT
+  [40/47] CHI_646931_916479_j227_262 (463 aa) ... mean=82.0 | PDB+pLDDT
+  [41/47] CHI_657816_712893_j228_228 (463 aa) ... mean=80.0 | PDB+pLDDT
+  [42/47] CHI_720429_148146_j252_189 (459 aa) ... mean=81.5 | PDB+pLDDT
+  [43/47] CHI_720429_481229_j252_252 (491 aa) ... mean=81.9 | PDB+pLDDT
+  [44/47] CHI_720429_820232_j252_189 (479 aa) ... mean=82.0 | PDB+pLDDT
+  [45/47] CHI_720429_841823_j252_273 (494 aa) ... mean=80.2 | PDB+pLDDT
+  [46/47] CHI_720429_863606_j252_245 (486 aa) ... mean=83.8 | PDB+pLDDT
+  [47/47] CHI_820232_485435_j189_224 (425 aa) ... mean=84.7 | PDB+pLDDT
+
+Written: results/chimera_design/esmfold/esmfold_plddt.tsv (47 proteins)
+
+Annotating screen TSV with ESMFold pLDDT ...
+Written: results/chimera_design/chimera_validated.tsv
+
+=== ESMFold annotation summary (47 candidate pairs) ===
+  ESMFold structural OK (HAMP + kinase >= 70.0): 46
+
+  Note: TM pLDDT intentionally excluded — low TM confidence
+        is expected for membrane-embedded HKs and is NOT a
+        chimera design concern (see module docstring).
+[Tue Mar 24 11:32:14 2026]
+Finished jobid: 0 (Rule: fold_chimeras)
+1 of 1 steps (100%) done
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-23T223451.635634.snakemake.log

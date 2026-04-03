@@ -1,0 +1,25 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                        count
+-----------------------  -------
+build_chimera_sequences        1
+total                          1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Mon Mar 23 18:15:56 2026]
+localrule build_chimera_sequences:
+    input: results/chimera_screen/hamp_chimera_screen_esm.tsv, results/representatives/hk_reps.faa
+    output: results/chimera_design/chimera_sequences.faa, results/chimera_design/chimera_design_manifest.tsv
+    jobid: 0
+    reason: Missing output files: results/chimera_design/chimera_design_manifest.tsv
+    resources: tmpdir=/var/folders/nc/ksbzr4_x02ldv_0d67zq0m3r0000gn/T
+[Mon Mar 23 18:15:57 2026]
+Finished jobid: 0 (Rule: build_chimera_sequences)
+1 of 1 steps (100%) done
+Complete log(s): /Users/matthew/Desktop/tcs_engineering/.snakemake/log/2026-03-23T181550.864406.snakemake.log

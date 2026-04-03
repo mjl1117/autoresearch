@@ -1,0 +1,20 @@
+Assuming unrestricted shared filesystem usage.
+host: dhcp-10-105-125-148.wireless.northwestern.private
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                        count
+-----------------------  -------
+build_chimera_sequences        1
+total                          1
+
+Select jobs to execute...
+Execute 1 jobs...
+RuleException in rule build_chimera_sequences in file "/Users/matthew/Desktop/tcs_engineering/workflow/rules/chimera.smk", line 353:
+NameError: The name '("--cross_sensor_only" if params' is unknown in this context. Please make sure that you defined that variable. Also note that braces not used for variable access have to be escaped by repeating them, i.e. {{print $1}}, when formatting the following:
+
+        mkdir -p results/chimera_design
+        python scripts/build_chimera_sequences.py             --screen_tsv  {input.screen_tsv}             --hk_reps     {input.hk_reps}             --outdir      results/chimera_design             {("--cross_sensor_only" if params.cross_sensor_only else "")}
+        

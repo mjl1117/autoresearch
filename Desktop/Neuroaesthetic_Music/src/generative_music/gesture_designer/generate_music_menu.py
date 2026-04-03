@@ -58,6 +58,15 @@ TOOLS = [
         'key':   'human_feedback',
         'ready': True,
     },
+    {
+        'label': 'Dorico Bridge',
+        'desc':  'Bidirectional notation integration with Dorico. Export gestures '
+                 'as MusicXML (quarter-tone aware), import your compositional edits '
+                 'back as spectral gestures, and train a MIDI encoder for '
+                 'notation-based valence/arousal prediction without re-synthesising audio.',
+        'key':   'dorico_integration',
+        'ready': True,
+    },
 ]
 
 

@@ -415,6 +415,13 @@ def run_generate_music_mode(app):
             win.raise_()
             win.activateWindow()
             app.exec()
+        elif menu.selected_tool == 'dorico_integration':
+            from src.dorico_bridge.dorico_bridge_ui import DoricoBridgeWindow
+            win = DoricoBridgeWindow()
+            win.show()
+            win.raise_()
+            win.activateWindow()
+            app.exec()
 
     # SC is only needed inside the generate-music tab — shut it down on exit.
     cleanup_supercollider()

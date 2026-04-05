@@ -1,0 +1,17 @@
+[context]
+dissonance_threshold = 0.65
+tempo_threshold = 0.35
+style_hold_seconds = 4.0
+blend_duration_seconds = 3.0
+ema_alpha = 0.15
+
+[export]
+fps = 24
+resolution = [1920, 1080]
+crf = 18
+codec = "libx264"
+
+[renderer]
+realtime_fps = 60
+bloom_intensity = 0.4
+motion_blur_alpha = 0.15

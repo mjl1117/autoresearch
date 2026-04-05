@@ -90,6 +90,20 @@ class _ClickableLabel(QLabel):
         self._callback(self._n)
         super().mousePressEvent(event)
 
+    def enterEvent(self, event):
+        current = self.text()
+        if current == '☆':   # only change color on unfilled stars
+            self.setStyleSheet(
+                f'color:{ACCENT}; font-size:20pt; background:{PANEL_BG};')
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        current = self.text()
+        if current == '☆':
+            self.setStyleSheet(
+                f'color:#B8B5A4; font-size:20pt; background:{PANEL_BG};')
+        super().leaveEvent(event)
+
 
 def _btn(text, bg=CARD_BG, col=TEXT, border='#D0CCAC') -> QPushButton:
     b = QPushButton(text)

@@ -565,10 +565,10 @@ class _MusicTab(_EvalWidget):
 
     def __init__(self, store, ranker, pid_fn, player: GesturePlayer,
                  predictor: ChordPredictor, parent=None):
-        self._player = player
+        # player accepted for API compatibility but _MusicTab manages its own per-layer players
         self._predictor = predictor
         self._lib = GestureLibrary()
-        self._layers: list[dict] = []   # [{name, gesture}]
+        self._layers: list[dict] = []
         self._layer_players: list[GesturePlayer] = []
         self._target_va: tuple[float, float] = (50.0, 50.0)
         super().__init__(store, ranker, pid_fn, 'music_layer', parent)
@@ -585,7 +585,7 @@ class _MusicTab(_EvalWidget):
         self._layers = _select_music_layers(
             self._lib, self._predictor, self._ranker, pid, (tv, ta), n_layers)
 
-        if not self._layers:
+        if len(self._layers) < 2:   # need at least 2 layers for meaningful congruency data
             return None
 
         layer_names = ',  '.join(layer['name'] for layer in self._layers)

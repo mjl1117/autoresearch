@@ -24,6 +24,7 @@ Usage (future training script):
 """
 
 import sys
+import copy
 import argparse
 from pathlib import Path
 
@@ -323,3 +324,219 @@ def build_training_dataset(model: BMCBindingModel) -> tuple:
         torch.tensor(ddg_labels, dtype=torch.float32).to(device),
         metadata,
     )
+
+
+# ── Training helpers ──────────────────────────────────────────────────────────
+
+def _one_epoch(model: BMCBindingModel, embeddings: torch.Tensor,
+               labels: torch.Tensor, metadata: list,
+               optimizer=None) -> tuple:
+    """One pass over the 76-point dataset.  Returns (mse, spearman_rho).
+
+    Embeddings are pre-computed, so no ProteinMPNN forward pass is needed here —
+    this is fast (~1 s per epoch on MPS/CPU).
+    """
+    training = optimizer is not None
+    model.train(training)
+
+    losses, preds, targets = [], [], []
+    indices = list(range(len(metadata)))
+    if training:
+        np.random.shuffle(indices)
+
+    for i in indices:
+        emb    = embeddings[i]
+        label  = labels[i]
+        wt_aa  = metadata[i]["wt_aa"]
+        mut_aa = metadata[i]["mut_aa"]
+
+        with torch.set_grad_enabled(training):
+            ddg_pred = model.predict_binding_from_embedding(emb, wt_aa, mut_aa)
+            loss = (ddg_pred - label) ** 2
+
+        if training:
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+        losses.append(loss.item())
+        preds.append(ddg_pred.detach().cpu().item())
+        targets.append(label.cpu().item())
+
+    mse = float(np.mean(losses))
+    rho = spearmanr(preds, targets).statistic if len(preds) > 2 else float("nan")
+    return mse, rho
+
+
+def train_binding_head(model: BMCBindingModel,
+                       embeddings: torch.Tensor,
+                       labels: torch.Tensor,
+                       metadata: list) -> Path:
+    """Train binding_out + binding_ddg_out on all 76 points.  Save best by MSE."""
+    trainable = [p for p in model.parameters() if p.requires_grad]
+    optimizer = torch.optim.Adam(trainable, lr=BINDING_LR)
+
+    best_mse, best_epoch = float("inf"), 0
+    history = []
+    print(f"\n{'Epoch':>5}  {'MSE':>8}  {'rho':>6}")
+    print("-" * 24)
+
+    for epoch in range(1, BINDING_EPOCHS + 1):
+        mse, rho = _one_epoch(model, embeddings, labels, metadata, optimizer)
+        history.append({"epoch": epoch, "mse": mse, "rho": rho})
+        if epoch % 10 == 0:
+            print(f"{epoch:>5}  {mse:>8.4f}  {rho:>6.3f}")
+        if mse < best_mse:
+            best_mse, best_epoch = mse, epoch
+            torch.save({
+                "binding_out":     model.binding_out.state_dict(),
+                "binding_ddg_out": model.binding_ddg_out.state_dict(),
+            }, BINDING_CKPT)
+
+    pd.DataFrame(history).to_csv(
+        "PduA_ThermoMPNN_results/binding_head_training_history.csv", index=False)
+    print(f"\nBest MSE = {best_mse:.4f} at epoch {best_epoch}  →  {BINDING_CKPT}")
+    return BINDING_CKPT
+
+
+def loo_cv(model: BMCBindingModel,
+           embeddings: torch.Tensor,
+           labels: torch.Tensor,
+           metadata: list) -> "pd.DataFrame":
+    """Leave-one-out cross-validation over all 76 training points.
+
+    For each point i: re-initialises the binding head, trains on the other 75,
+    predicts the held-out point.  Reports per-position and overall Spearman ρ.
+
+    Returns a DataFrame with columns: position_key, mutant, ddg_true, ddg_pred
+    """
+    results = []
+    print("\nRunning LOO-CV (76 folds × 100 epochs each) ...")
+
+    for i in range(len(metadata)):
+        train_idx = [j for j in range(len(metadata)) if j != i]
+        emb_tr    = embeddings[train_idx]
+        lbl_tr    = labels[train_idx]
+        meta_tr   = [metadata[j] for j in train_idx]
+
+        # Fresh binding head — deepcopy then reset parameters
+        loo_model = copy.deepcopy(model)
+        for layer in loo_model.binding_out:
+            if hasattr(layer, "reset_parameters"):
+                layer.reset_parameters()
+        loo_model.binding_ddg_out.reset_parameters()
+
+        trainable = [p for p in loo_model.parameters() if p.requires_grad]
+        opt = torch.optim.Adam(trainable, lr=BINDING_LR)
+        for _ in range(BINDING_EPOCHS):
+            _one_epoch(loo_model, emb_tr, lbl_tr, meta_tr, opt)
+
+        loo_model.eval()
+        with torch.no_grad():
+            ddg_pred = loo_model.predict_binding_from_embedding(
+                embeddings[i], metadata[i]["wt_aa"], metadata[i]["mut_aa"]
+            ).cpu().item()
+
+        results.append({
+            "position_key": metadata[i]["position_key"],
+            "mutant":       metadata[i]["mutant"],
+            "ddg_true":     labels[i].cpu().item(),
+            "ddg_pred":     ddg_pred,
+        })
+        if (i + 1) % 10 == 0:
+            print(f"  {i+1}/76 complete")
+
+    df = pd.DataFrame(results)
+    overall_rho = spearmanr(df["ddg_true"], df["ddg_pred"]).statistic
+    print(f"\nLOO-CV overall Spearman ρ = {overall_rho:.3f}")
+    for pk, grp in df.groupby("position_key"):
+        rho = spearmanr(grp["ddg_true"], grp["ddg_pred"]).statistic
+        print(f"  {pk}: ρ = {rho:.3f}  (n={len(grp)})")
+    df.to_csv("PduA_ThermoMPNN_results/binding_head_loo_cv.csv", index=False)
+    return df
+
+
+def predict_all_positions(model: BMCBindingModel) -> "pd.DataFrame":
+    """Run trained binding head over all 4 positions × 19 AAs."""
+    ALL_AAS = list("ACDEFGHIKLMNPQRSTVWY")
+    structure_cache = {}
+    for protein, pdb_path in [("PduA", PDUA_PDB), ("PduJ", PDUJ_PDB)]:
+        chain_dicts, pdb_to_seq_idx = parse_hexamer_pdb(pdb_path)
+        wt_seq = chain_dicts[0]["seq"]
+        structure_cache[protein] = (chain_dicts, pdb_to_seq_idx, wt_seq)
+
+    model.eval()
+    rows = []
+    for pos_key, (csv_path, protein, pdb_resnum) in DOCKING_SUMMARIES.items():
+        chain_dicts, pdb_to_seq_idx, wt_seq = structure_cache[protein]
+        seq_pos = pdb_to_seq_idx[pdb_resnum]
+        wt_aa   = wt_seq[seq_pos]
+        emb     = model.extract_embedding(chain_dicts, pdb_to_seq_idx, pdb_resnum)
+
+        for mut_aa in ALL_AAS:
+            if mut_aa == wt_aa:
+                continue
+            with torch.no_grad():
+                ddg = model.predict_binding_from_embedding(
+                    emb, wt_aa, mut_aa
+                ).cpu().item()
+            rows.append({
+                "position_key":          pos_key,
+                "protein":               protein,
+                "pdb_resnum":            pdb_resnum,
+                "wt_aa":                 wt_aa,
+                "mut_aa":                mut_aa,
+                "mutant":                f"{wt_aa}{pdb_resnum}{mut_aa}",
+                "ddg_binding_predicted": ddg,
+            })
+
+    df = pd.DataFrame(rows)
+    df.to_csv("PduA_ThermoMPNN_results/binding_head_all_predictions.csv", index=False)
+    print(f"Saved {len(df)} predictions → binding_head_all_predictions.csv")
+    return df
+
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+def main(infer_only: bool = False) -> None:
+    cfg   = make_cfg()
+    model = BMCBindingModel(cfg).to(device)
+    trainable_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(f"Trainable binding head params: {trainable_count:,}")
+
+    print("\nBuilding training dataset (extracts embeddings from WT structures)...")
+    embeddings, labels, metadata = build_training_dataset(model)
+
+    if not infer_only:
+        print("\nRunning LOO-CV (76 folds × 100 epochs each)...")
+        loo_cv(model, embeddings, labels, metadata)
+
+        print("\nTraining final binding head on all 76 points...")
+        ckpt = train_binding_head(model, embeddings, labels, metadata)
+        ckpt_data = torch.load(ckpt, map_location=device)
+        model.binding_out.load_state_dict(ckpt_data["binding_out"])
+        model.binding_ddg_out.load_state_dict(ckpt_data["binding_ddg_out"])
+
+    elif BINDING_CKPT.exists():
+        ckpt_data = torch.load(BINDING_CKPT, map_location=device)
+        model.binding_out.load_state_dict(ckpt_data["binding_out"])
+        model.binding_ddg_out.load_state_dict(ckpt_data["binding_ddg_out"])
+        print(f"Loaded checkpoint: {BINDING_CKPT}")
+    else:
+        raise FileNotFoundError(
+            f"No checkpoint at {BINDING_CKPT}. Run without --infer first."
+        )
+
+    print("\nPredicting all positions × 19 AAs...")
+    pred_df = predict_all_positions(model)
+    print(pred_df.head())
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Train and run BMC binding prediction head"
+    )
+    parser.add_argument("--infer", action="store_true",
+                        help="Skip training; load checkpoint and run predictions only.")
+    args = parser.parse_args()
+    main(infer_only=args.infer)

@@ -34,6 +34,7 @@ from .library_ranker import LibraryRanker
 from .gesture_library import GestureLibrary
 from .gesture_player import GesturePlayer
 from .chord_predictor import ChordPredictor
+from .gesture_model import Gesture, NoteEvent, ChordConfig, PartialWeights
 
 logger = logging.getLogger(__name__)
 
@@ -207,7 +208,6 @@ def _build_chord_gesture(chords: list[dict], bpm: float = 72.0) -> 'Gesture':
     Beat durations cycle through [1, 2, 3, 2] to give varied, gesture-like rhythm.
     The root is always A4 (440 Hz) — matching the existing chord preview behaviour.
     """
-    from .gesture_model import Gesture, NoteEvent, ChordConfig, PartialWeights
     BEAT_CYCLE = [1, 2, 3, 2]
     events = []
     for i, chord in enumerate(chords):
@@ -230,17 +230,6 @@ def _build_chord_gesture(chords: list[dict], bpm: float = 72.0) -> 'Gesture':
         )
         events.append(ev)
     return Gesture(name='chord_gesture', bpm=bpm, events=events)
-
-
-def _play_chord_via_player(player: GesturePlayer, chord: dict):
-    from .gesture_model import Gesture, NoteEvent, PartialWeights
-    pw = PartialWeights()
-    for i, w in enumerate(chord.get('weights', [1.0] * 16)[:16]):
-        pw.set_index(i, float(w))
-    ev = NoteEvent(note='A', accidental='', octave=4,
-                   amplitude=0.25, brightness=0.5, partials=pw)
-    g = Gesture(name='chord_preview', bpm=60, events=[ev])
-    player.play_gesture(g)
 
 
 # ── Shared evaluation widget ──────────────────────────────────────────────────
@@ -559,7 +548,6 @@ class _MusicTab(_EvalWidget):
         return {'name': f'{len(self._sequence)}-gesture sequence', '_seq': True}
 
     def _play_item(self, item: dict):
-        from .gesture_model import Gesture
         all_events = []
         bpm = 80.0
         for i, g_item in enumerate(self._sequence):

@@ -283,3 +283,45 @@ def test_build_chord_gesture_empty_input():
     from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
     g = _build_chord_gesture([], bpm=80.0)
     assert g.events == []
+
+
+# ── Music layer helpers ───────────────────────────────────────────────────────
+
+def test_music_layer_rating_stored_as_music_layer_type(tmp_path):
+    """Music congruency ratings are stored with item_type='music_layer'."""
+    store = FeedbackStore(directory=tmp_path)
+    record = store.save_rating(
+        participant_id='alice',
+        item_type='music_layer',
+        item_id='sweep+chord_42+arp',
+        user_valence=60.0,
+        user_arousal=40.0,
+        user_stars=4,
+        ml_valence=65.0,
+        ml_arousal=38.0,
+    )
+    assert record['item_type'] == 'music_layer'
+    assert record['item_id'] == 'sweep+chord_42+arp'
+
+def test_music_layer_item_id_format(tmp_path):
+    """item_id is '+'-joined layer names."""
+    store = FeedbackStore(directory=tmp_path)
+    record = store.save_rating(
+        participant_id='bob',
+        item_type='music_layer',
+        item_id='gesture_a+chord_001+gesture_b',
+        user_valence=50.0, user_arousal=50.0, user_stars=3,
+        ml_valence=50.0, ml_arousal=50.0,
+    )
+    parts = record['item_id'].split('+')
+    assert len(parts) == 3
+
+def test_music_layer_pipeline_export_included(tmp_path):
+    """music_layer records are included in pipeline export (same threshold as others)."""
+    store = FeedbackStore(directory=tmp_path)
+    for i in range(3):
+        store.save_rating('alice', 'music_layer', f'a+b+c_{i}',
+                          50, 50, 3, 50, 50)
+    exported = store.export_for_pipeline()
+    types = {r['item_type'] for r in exported}
+    assert 'music_layer' in types

@@ -232,6 +232,42 @@ def _build_chord_gesture(chords: list[dict], bpm: float = 72.0) -> 'Gesture':
     return Gesture(name='chord_gesture', bpm=bpm, events=events)
 
 
+def _select_music_layers(lib: GestureLibrary, predictor: ChordPredictor,
+                          ranker: LibraryRanker, pid: str,
+                          target_va: tuple[float, float], n: int) -> list[dict]:
+    """Pick n layers near target_va from the gesture library and chord predictor.
+
+    Each layer is a dict: {'name': str, 'gesture': Gesture}
+
+    Selection is 50/50 gesture vs chord gesture when both sources are available,
+    falling back to gesture-only when the chord predictor has no data.
+    GestureLibrary.weighted_random() already applies LibraryRanker weights so
+    under-explored items surface more often — no extra weighting needed here.
+    """
+    tv, ta = target_va
+    layers: list[dict] = []
+
+    for _ in range(n):
+        use_chord = bool(predictor.chords) and random.random() < 0.5
+        if use_chord:
+            steps = random.randint(3, 5)
+            chords = predictor.find_path((tv, ta), (tv, ta), steps=steps)
+            if chords:
+                gesture = _build_chord_gesture(chords)
+                layers.append({
+                    'name': f'chord_{chords[0]["chord_id"]}',
+                    'gesture': gesture,
+                })
+        else:
+            item = lib.weighted_random(participant_id=pid)
+            if item:
+                gesture = lib.load(item['path'])
+                if gesture:
+                    layers.append({'name': item['name'], 'gesture': gesture})
+
+    return layers
+
+
 # ── Shared evaluation widget ──────────────────────────────────────────────────
 
 class _EvalWidget(QWidget):
@@ -518,61 +554,67 @@ class _ChordTab(_EvalWidget):
         pass  # chord gesture ratings stored by item_id; no per-chord ranker update
 
 
-# ── Music (sequence) tab ──────────────────────────────────────────────────────
+# ── Music (simultaneous layers) tab ──────────────────────────────────────────
 
 class _MusicTab(_EvalWidget):
-    """Plays a randomised sequence of 3–5 gestures as a short musical phrase."""
+    """Plays 2–3 simultaneous gesture/chord layers targeted at one V/A point.
 
-    def __init__(self, store, ranker, pid_fn, player: GesturePlayer, parent=None):
+    Stores ratings as item_type='music_layer' so the ML can learn combination
+    congruency independently of single-gesture quality.
+    """
+
+    def __init__(self, store, ranker, pid_fn, player: GesturePlayer,
+                 predictor: ChordPredictor, parent=None):
         self._player = player
+        self._predictor = predictor
         self._lib = GestureLibrary()
-        self._sequence: list[dict] = []
-        super().__init__(store, ranker, pid_fn, 'music', parent)
+        self._layers: list[dict] = []   # [{name, gesture}]
+        self._layer_players: list[GesturePlayer] = []
+        self._target_va: tuple[float, float] = (50.0, 50.0)
+        super().__init__(store, ranker, pid_fn, 'music_layer', parent)
 
     def _load_item(self) -> Optional[dict]:
         pid = self._get_pid()
-        n = random.randint(3, 5)
-        self._sequence = []
-        for _ in range(n):
-            item = self._lib.weighted_random(participant_id=pid)
-            if item:
-                self._sequence.append(item)
-        if not self._sequence:
+        tv = random.uniform(10.0, 90.0)
+        ta = random.uniform(10.0, 90.0)
+        self._target_va = (tv, ta)
+        self._ml_valence = tv
+        self._ml_arousal = ta
+
+        n_layers = random.randint(2, 3)
+        self._layers = _select_music_layers(
+            self._lib, self._predictor, self._ranker, pid, (tv, ta), n_layers)
+
+        if not self._layers:
             return None
-        vals, arousals = [], []
-        for item in self._sequence:
-            v, a = _gesture_va_prediction(item['path'])
-            vals.append(v); arousals.append(a)
-        self._ml_valence = sum(vals) / len(vals)
-        self._ml_arousal = sum(arousals) / len(arousals)
-        return {'name': f'{len(self._sequence)}-gesture sequence', '_seq': True}
+
+        layer_names = ',  '.join(layer['name'] for layer in self._layers)
+        return {
+            'name': (f'V={tv:.0f}  A={ta:.0f}\n'
+                     f'Layers:  {layer_names}'),
+        }
 
     def _play_item(self, item: dict):
-        all_events = []
-        bpm = 80.0
-        for i, g_item in enumerate(self._sequence):
-            gesture = self._lib.load(g_item['path'])
-            if gesture:
-                if i == 0:
-                    bpm = gesture.bpm
-                all_events.extend(gesture.events)
-        if all_events:
-            seq = Gesture(name='feedback_sequence', bpm=bpm, events=all_events)
-            self._player.play_gesture(seq)
+        self._stop_item()
+        self._layer_players = []
+        for layer in self._layers:
+            p = GesturePlayer()
+            self._layer_players.append(p)
+            p.play_gesture(layer['gesture'])   # GesturePlayer runs its own thread
 
     def _stop_item(self):
-        self._player.stop_gesture()
+        for p in self._layer_players:
+            p.stop_gesture()
+        self._layer_players = []
 
     def _item_id(self, item: dict) -> str:
-        return '+'.join(g['name'] for g in self._sequence)
+        return '+'.join(layer['name'] for layer in self._layers)
 
     def _item_display_name(self, item: dict) -> str:
-        names = ', '.join(g['name'] for g in self._sequence)
-        return f'Sequence: {names}'
+        return item.get('name', '—')
 
     def _after_submit(self, item_id, participant_id, stars):
-        for g_item in self._sequence:
-            self._ranker.update_gesture_rating(g_item['name'], participant_id, stars)
+        pass   # congruency stored as music_layer; no per-item ranker update
 
 
 # ── Main window ───────────────────────────────────────────────────────────────
@@ -644,7 +686,7 @@ class HumanFeedbackWindow(QMainWindow):
 
         tabs.addTab(_GestureTab(store, ranker, pid_fn, player), 'Gesture')
         tabs.addTab(_ChordTab(store, ranker, pid_fn, player, predictor), 'Chord Gesture')
-        tabs.addTab(_MusicTab(store, ranker, pid_fn, player), 'Music')
+        tabs.addTab(_MusicTab(store, ranker, pid_fn, player, predictor), 'Music')
 
         root.addWidget(tabs)
         self._player = player

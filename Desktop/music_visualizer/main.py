@@ -1,14 +1,16 @@
 import os
+from pathlib import Path
 import pygame
 import tomllib
 
-def load_config(path: str = "config.toml") -> dict:
+def load_config(path: Path | str | None = None) -> dict:
+    if path is None:
+        path = Path(__file__).parent / "config.toml"
     with open(path, "rb") as f:
         return tomllib.load(f)
 
 def main() -> None:
     config = load_config()
-    os.environ.setdefault("SDL_VIDEODRIVER", "x11")
 
     pygame.init()
     width, height = config["export"]["resolution"]

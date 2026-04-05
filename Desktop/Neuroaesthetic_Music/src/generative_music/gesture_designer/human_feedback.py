@@ -21,27 +21,19 @@ import random
 from pathlib import Path
 from typing import Optional
 
-_QT_AVAILABLE = False
-try:
-    from PyQt6.QtWidgets import (
-        QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-        QPushButton, QSlider, QTabWidget, QLineEdit, QFrame,
-        QSizePolicy, QMessageBox
-    )
-    from PyQt6.QtCore import Qt, QTimer
-    from PyQt6.QtGui import QFont
-    _QT_AVAILABLE = True
-except ImportError:  # allow import without Qt for unit-testing pure helpers
-    pass
+from PyQt6.QtWidgets import (
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
+    QPushButton, QSlider, QTabWidget, QLineEdit, QFrame,
+    QSizePolicy, QMessageBox
+)
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QFont
 
-try:
-    from .feedback_store import FeedbackStore
-    from .library_ranker import LibraryRanker
-    from .gesture_library import GestureLibrary
-    from .gesture_player import GesturePlayer
-    from .chord_predictor import ChordPredictor
-except ImportError:  # allow import without runtime deps for unit-testing pure helpers
-    pass
+from .feedback_store import FeedbackStore
+from .library_ranker import LibraryRanker
+from .gesture_library import GestureLibrary
+from .gesture_player import GesturePlayer
+from .chord_predictor import ChordPredictor
 
 logger = logging.getLogger(__name__)
 
@@ -81,34 +73,35 @@ def _compute_star_states(n: int, total: int = 5) -> list[tuple[str, str]]:
             for i in range(total)]
 
 
-if _QT_AVAILABLE:
-    class _ClickableLabel(QLabel):
-        """A QLabel that fires a callback when clicked — used for star ratings."""
+class _ClickableLabel(QLabel):
+    """A QLabel that fires a callback when clicked — used for star ratings."""
 
-        def __init__(self, n: int, callback, parent=None):
-            super().__init__('☆', parent)
-            self._n = n
-            self._callback = callback
-            self.setFixedSize(40, 40)
-            self.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.setCursor(Qt.CursorShape.PointingHandCursor)
-            self.setStyleSheet(
-                f'color:#B8B5A4; font-size:20pt; background:{PANEL_BG};')
+    def __init__(self, n: int, callback, parent=None):
+        super().__init__('☆', parent)
+        self._n = n
+        self._callback = callback
+        self.setFixedSize(40, 40)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setStyleSheet(
+            f'color:#B8B5A4; font-size:20pt; background:{PANEL_BG};')
 
-        def mousePressEvent(self, event):
-            self._callback(self._n)
-            super().mousePressEvent(event)
+    def mousePressEvent(self, event):
+        self._callback(self._n)
+        super().mousePressEvent(event)
 
-    def _btn(text, bg=CARD_BG, col=TEXT, border='#D0CCAC') -> QPushButton:
-        b = QPushButton(text)
-        b.setStyleSheet(_BTN.format(bg=bg, col=col, border=border))
-        return b
 
-    def _sep() -> QFrame:
-        f = QFrame()
-        f.setFrameShape(QFrame.Shape.HLine)
-        f.setStyleSheet('color:#D0CCAC; background:#D0CCAC;')
-        return f
+def _btn(text, bg=CARD_BG, col=TEXT, border='#D0CCAC') -> QPushButton:
+    b = QPushButton(text)
+    b.setStyleSheet(_BTN.format(bg=bg, col=col, border=border))
+    return b
+
+
+def _sep() -> QFrame:
+    f = QFrame()
+    f.setFrameShape(QFrame.Shape.HLine)
+    f.setStyleSheet('color:#D0CCAC; background:#D0CCAC;')
+    return f
 
 
 # ── Helper functions ──────────────────────────────────────────────────────────

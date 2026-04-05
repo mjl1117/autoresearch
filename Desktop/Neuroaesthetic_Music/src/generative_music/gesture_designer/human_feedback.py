@@ -21,19 +21,27 @@ import random
 from pathlib import Path
 from typing import Optional
 
-from PyQt6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QSlider, QTabWidget, QLineEdit, QFrame,
-    QSizePolicy, QMessageBox
-)
-from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QFont
+_QT_AVAILABLE = False
+try:
+    from PyQt6.QtWidgets import (
+        QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
+        QPushButton, QSlider, QTabWidget, QLineEdit, QFrame,
+        QSizePolicy, QMessageBox
+    )
+    from PyQt6.QtCore import Qt, QTimer
+    from PyQt6.QtGui import QFont
+    _QT_AVAILABLE = True
+except ImportError:  # allow import without Qt for unit-testing pure helpers
+    pass
 
-from .feedback_store import FeedbackStore
-from .library_ranker import LibraryRanker
-from .gesture_library import GestureLibrary
-from .gesture_player import GesturePlayer
-from .chord_predictor import ChordPredictor
+try:
+    from .feedback_store import FeedbackStore
+    from .library_ranker import LibraryRanker
+    from .gesture_library import GestureLibrary
+    from .gesture_player import GesturePlayer
+    from .chord_predictor import ChordPredictor
+except ImportError:  # allow import without runtime deps for unit-testing pure helpers
+    pass
 
 logger = logging.getLogger(__name__)
 
@@ -61,18 +69,46 @@ QSlider::handle:horizontal {
 }
 """
 
+# ── Star widget helpers ───────────────────────────────────────────────────────
 
-def _btn(text, bg=CARD_BG, col=TEXT, border='#D0CCAC') -> QPushButton:
-    b = QPushButton(text)
-    b.setStyleSheet(_BTN.format(bg=bg, col=col, border=border))
-    return b
+def _compute_star_states(n: int, total: int = 5) -> list[tuple[str, str]]:
+    """Return (character, color) for each star position given n filled stars.
+
+    Filled stars use gold; empty stars use muted gray.
+    Pure function — no Qt dependency — so it can be unit-tested directly.
+    """
+    return [('★', '#C0A020') if i < n else ('☆', '#B8B5A4')
+            for i in range(total)]
 
 
-def _sep() -> QFrame:
-    f = QFrame()
-    f.setFrameShape(QFrame.Shape.HLine)
-    f.setStyleSheet('color:#D0CCAC; background:#D0CCAC;')
-    return f
+if _QT_AVAILABLE:
+    class _ClickableLabel(QLabel):
+        """A QLabel that fires a callback when clicked — used for star ratings."""
+
+        def __init__(self, n: int, callback, parent=None):
+            super().__init__('☆', parent)
+            self._n = n
+            self._callback = callback
+            self.setFixedSize(40, 40)
+            self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.setCursor(Qt.CursorShape.PointingHandCursor)
+            self.setStyleSheet(
+                f'color:#B8B5A4; font-size:20pt; background:{PANEL_BG};')
+
+        def mousePressEvent(self, event):
+            self._callback(self._n)
+            super().mousePressEvent(event)
+
+    def _btn(text, bg=CARD_BG, col=TEXT, border='#D0CCAC') -> QPushButton:
+        b = QPushButton(text)
+        b.setStyleSheet(_BTN.format(bg=bg, col=col, border=border))
+        return b
+
+    def _sep() -> QFrame:
+        f = QFrame()
+        f.setFrameShape(QFrame.Shape.HLine)
+        f.setStyleSheet('color:#D0CCAC; background:#D0CCAC;')
+        return f
 
 
 # ── Helper functions ──────────────────────────────────────────────────────────
@@ -240,18 +276,11 @@ class _EvalWidget(QWidget):
         star_lbl.setWordWrap(True)
         star_row.addWidget(star_lbl)
         star_row.addStretch()
-        self._star_btns: list[QPushButton] = []
+        self._star_btns: list[_ClickableLabel] = []
         for i in range(1, 6):
-            b = QPushButton('★')
-            b.setFixedSize(36, 36)
-            b.setStyleSheet(
-                f'QPushButton {{ background:transparent; color:#B8B5A4; '
-                f'border:none; font-size:18pt; }}'
-                f'QPushButton:hover {{ color:{ACCENT}; }}'
-            )
-            b.clicked.connect(lambda _, n=i: self._set_stars(n))
-            star_row.addWidget(b)
-            self._star_btns.append(b)
+            lbl = _ClickableLabel(i, self._set_stars)
+            star_row.addWidget(lbl)
+            self._star_btns.append(lbl)
         lay.addLayout(star_row)
         self._stars = 0
 
@@ -338,13 +367,10 @@ class _EvalWidget(QWidget):
 
     def _set_stars(self, n: int):
         self._stars = n
-        for i, b in enumerate(self._star_btns):
-            b.setStyleSheet(
-                f'QPushButton {{ background:transparent; '
-                f'color:{"#C0A020" if i < n else "#B8B5A4"}; '
-                f'border:none; font-size:18pt; }}'
-                f'QPushButton:hover {{ color:{ACCENT}; }}'
-            )
+        for lbl, (char, color) in zip(self._star_btns, _compute_star_states(n)):
+            lbl.setText(char)
+            lbl.setStyleSheet(
+                f'color:{color}; font-size:20pt; background:{PANEL_BG};')
 
     def _submit(self):
         if self._current_item is None:
@@ -573,7 +599,8 @@ class HumanFeedbackWindow(QMainWindow):
             QTabWidget::pane { border:none; background:#EDEADF; }
             QTabBar::tab {
                 background:#E3DFD2; color:#7C809B;
-                padding:7px 18px; border-radius:4px 4px 0 0; font-size:11pt;
+                padding:8px 24px; border-radius:4px 4px 0 0; font-size:11pt;
+                min-width:130px;
             }
             QTabBar::tab:selected { background:#F8F6EF; color:#1E1A14; }
         """)

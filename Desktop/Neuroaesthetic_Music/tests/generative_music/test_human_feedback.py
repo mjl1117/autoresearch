@@ -194,3 +194,33 @@ def test_ml_delta_rows_sample_weight(tmp_path):
 
     exported = store.export_for_pipeline()
     assert all(r['sample_weight'] == 0.3 for r in exported)
+
+
+# ── Star state logic ──────────────────────────────────────────────────────────
+
+def test_star_states_all_empty():
+    from src.generative_music.gesture_designer.human_feedback import _compute_star_states
+    result = _compute_star_states(0)
+    assert [t for t, _ in result] == ['☆', '☆', '☆', '☆', '☆']
+
+def test_star_states_three_filled():
+    from src.generative_music.gesture_designer.human_feedback import _compute_star_states
+    result = _compute_star_states(3)
+    assert [t for t, _ in result] == ['★', '★', '★', '☆', '☆']
+
+def test_star_states_click_down():
+    """After clicking 5 then 2, stars 3-5 must unfill."""
+    from src.generative_music.gesture_designer.human_feedback import _compute_star_states
+    result = _compute_star_states(2)
+    assert [t for t, _ in result] == ['★', '★', '☆', '☆', '☆']
+
+def test_star_states_all_filled():
+    from src.generative_music.gesture_designer.human_feedback import _compute_star_states
+    result = _compute_star_states(5)
+    assert all(t == '★' for t, _ in result)
+
+def test_star_states_colors():
+    from src.generative_music.gesture_designer.human_feedback import _compute_star_states
+    result = _compute_star_states(2)
+    colors = [c for _, c in result]
+    assert colors == ['#C0A020', '#C0A020', '#B8B5A4', '#B8B5A4', '#B8B5A4']

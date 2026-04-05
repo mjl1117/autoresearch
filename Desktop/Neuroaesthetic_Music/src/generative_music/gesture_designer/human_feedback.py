@@ -200,6 +200,38 @@ def _weighted_random_chord(chords: list[dict], participant_id: str,
     return random.choices(chords, weights=weights, k=1)[0]
 
 
+def _build_chord_gesture(chords: list[dict], bpm: float = 72.0) -> 'Gesture':
+    """Convert a sequence of chord records into a playable gestural Gesture.
+
+    Each chord becomes one NoteEvent with chord.enabled=True.
+    Beat durations cycle through [1, 2, 3, 2] to give varied, gesture-like rhythm.
+    The root is always A4 (440 Hz) — matching the existing chord preview behaviour.
+    """
+    from .gesture_model import Gesture, NoteEvent, ChordConfig, PartialWeights
+    BEAT_CYCLE = [1, 2, 3, 2]
+    events = []
+    for i, chord in enumerate(chords):
+        pw = PartialWeights()
+        for j, w in enumerate(chord.get('weights', [1.0] * 16)[:16]):
+            pw.set_index(j, float(w))
+        cc = ChordConfig(
+            enabled=True,
+            chord_type=int(chord.get('chord_type', 0)),
+            num_voices=int(chord.get('num_voices', 3)),
+            balance=float(chord.get('balance', 0.7)),
+            inversion=int(chord.get('inversion', 0)),
+        )
+        ev = NoteEvent(
+            note='A', accidental='', octave=4,
+            amplitude=0.25, brightness=0.5,
+            beats=BEAT_CYCLE[i % len(BEAT_CYCLE)],
+            partials=pw,
+            chord=cc,
+        )
+        events.append(ev)
+    return Gesture(name='chord_gesture', bpm=bpm, events=events)
+
+
 def _play_chord_via_player(player: GesturePlayer, chord: dict):
     from .gesture_model import Gesture, NoteEvent, PartialWeights
     pw = PartialWeights()
@@ -461,32 +493,40 @@ class _ChordTab(_EvalWidget):
                  predictor: ChordPredictor, parent=None):
         self._player = player
         self._predictor = predictor
+        self._current_gesture = None
         super().__init__(store, ranker, pid_fn, 'chord', parent)
 
     def _load_item(self) -> Optional[dict]:
         if not self._predictor.chords:
             return None
-        pid = self._get_pid()
-        chord = _weighted_random_chord(self._predictor.chords, pid, self._ranker)
-        self._ml_valence = chord.get('norm_valence', 50.0)
-        self._ml_arousal = chord.get('norm_arousal', 50.0)
-        return chord
+        tv = random.uniform(10.0, 90.0)
+        ta = random.uniform(10.0, 90.0)
+        self._ml_valence = tv
+        self._ml_arousal = ta
+        steps = random.randint(4, 6)
+        chords = self._predictor.find_path((tv, ta), (tv, ta), steps=steps)
+        if not chords:
+            return None
+        self._current_gesture = _build_chord_gesture(chords)
+        chord_ids = ' · '.join(c['chord_id'] for c in chords[:3])
+        return {'name': f'Chord Gesture  (V={tv:.0f} A={ta:.0f})  {chord_ids}',
+                'chords': chords}
 
     def _play_item(self, item: dict):
-        _play_chord_via_player(self._player, item)
+        if self._current_gesture:
+            self._player.play_gesture(self._current_gesture)
 
     def _stop_item(self):
         self._player.stop_gesture()
 
     def _item_id(self, item: dict) -> str:
-        return item.get('chord_id', 'unknown')
+        return item.get('name', 'chord_gesture')
 
     def _item_display_name(self, item: dict) -> str:
-        ctype = item.get('chord_type_name', item.get('chord_type', '?'))
-        return f"{item.get('chord_id', '?')}  ({ctype})"
+        return item.get('name', 'Chord Gesture')
 
     def _after_submit(self, item_id, participant_id, stars):
-        self._ranker.update_chord_rating(item_id, participant_id, stars)
+        pass  # chord gesture ratings stored by item_id; no per-chord ranker update
 
 
 # ── Music (sequence) tab ──────────────────────────────────────────────────────

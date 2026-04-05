@@ -226,3 +226,60 @@ def test_star_states_colors():
     result = _compute_star_states(2)
     colors = [c for _, c in result]
     assert colors == ['#C0A020', '#C0A020', '#B8B5A4', '#B8B5A4', '#B8B5A4']
+
+
+# ── Chord gesture builder ─────────────────────────────────────────────────────
+
+def test_build_chord_gesture_event_count():
+    """Each chord record produces exactly one NoteEvent."""
+    from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
+    chords = [
+        {'chord_id': 'A', 'chord_type': 0, 'num_voices': 3,
+         'balance': 0.7, 'inversion': 0, 'weights': []},
+        {'chord_id': 'B', 'chord_type': 1, 'num_voices': 3,
+         'balance': 0.7, 'inversion': 0, 'weights': []},
+        {'chord_id': 'C', 'chord_type': 7, 'num_voices': 4,
+         'balance': 0.7, 'inversion': 0, 'weights': []},
+    ]
+    g = _build_chord_gesture(chords, bpm=80.0)
+    assert len(g.events) == 3
+
+def test_build_chord_gesture_chord_enabled():
+    """All events must have chord.enabled = True."""
+    from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
+    chords = [
+        {'chord_id': 'X', 'chord_type': 6, 'num_voices': 4,
+         'balance': 0.6, 'inversion': 1, 'weights': []},
+    ]
+    g = _build_chord_gesture(chords, bpm=72.0)
+    assert g.events[0].chord.enabled is True
+    assert g.events[0].chord.chord_type == 6
+    assert g.events[0].chord.num_voices == 4
+    assert g.events[0].chord.inversion == 1
+
+def test_build_chord_gesture_beat_durations():
+    """All beat durations must come from [1, 2, 3]."""
+    from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
+    chords = [
+        {'chord_id': str(i), 'chord_type': 0, 'num_voices': 3,
+         'balance': 0.7, 'inversion': 0, 'weights': []}
+        for i in range(6)
+    ]
+    g = _build_chord_gesture(chords, bpm=80.0)
+    assert all(ev.beats in (1, 2, 3) for ev in g.events)
+
+def test_build_chord_gesture_bpm():
+    """BPM is preserved on the returned Gesture."""
+    from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
+    g = _build_chord_gesture(
+        [{'chord_id': 'Z', 'chord_type': 0, 'num_voices': 3,
+          'balance': 0.7, 'inversion': 0, 'weights': []}],
+        bpm=120.0,
+    )
+    assert g.bpm == 120.0
+
+def test_build_chord_gesture_empty_input():
+    """Empty chord list returns a Gesture with no events."""
+    from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
+    g = _build_chord_gesture([], bpm=80.0)
+    assert g.events == []

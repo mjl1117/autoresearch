@@ -201,14 +201,29 @@ def _weighted_random_chord(chords: list[dict], participant_id: str,
     return random.choices(chords, weights=weights, k=1)[0]
 
 
+_RHYTHM_MOTIFS = [
+    [1, 2, 3, 2],
+    [2, 1, 1, 2],
+    [1, 1, 2, 1],
+    [3, 1, 2],
+    [1, 3, 1, 1],
+    [2, 2, 1, 1],
+    [1, 1, 1, 2],
+    [2, 1, 3],
+    [1, 2, 1, 1],
+    [3, 2, 1],
+]
+
+
 def _build_chord_gesture(chords: list[dict], bpm: float = 72.0) -> 'Gesture':
     """Convert a sequence of chord records into a playable gestural Gesture.
 
     Each chord becomes one NoteEvent with chord.enabled=True.
-    Beat durations cycle through [1, 2, 3, 2] to give varied, gesture-like rhythm.
+    A random rhythmic motif is chosen per gesture and cycled over the events,
+    giving each chord gesture a distinct feel.
     The root is always A4 (440 Hz) — matching the existing chord preview behaviour.
     """
-    BEAT_CYCLE = [1, 2, 3, 2]
+    motif = random.choice(_RHYTHM_MOTIFS)
     events = []
     for i, chord in enumerate(chords):
         pw = PartialWeights()
@@ -224,7 +239,7 @@ def _build_chord_gesture(chords: list[dict], bpm: float = 72.0) -> 'Gesture':
         ev = NoteEvent(
             note='A', accidental='', octave=4,
             amplitude=0.25, brightness=0.5,
-            beats=BEAT_CYCLE[i % len(BEAT_CYCLE)],
+            beats=motif[i % len(motif)],
             partials=pw,
             chord=cc,
         )
@@ -534,7 +549,7 @@ class _ChordTab(_EvalWidget):
             return None
         self._current_gesture = _build_chord_gesture(chords)
         chord_ids = ' · '.join(c['chord_id'] for c in chords[:3])
-        return {'name': f'Chord Gesture  (V={tv:.0f} A={ta:.0f})  {chord_ids}',
+        return {'name': f'Chord Gesture  ·  {chord_ids}',
                 'chords': chords}
 
     def _play_item(self, item: dict):
@@ -589,10 +604,7 @@ class _MusicTab(_EvalWidget):
             return None
 
         layer_names = ',  '.join(layer['name'] for layer in self._layers)
-        return {
-            'name': (f'V={tv:.0f}  A={ta:.0f}\n'
-                     f'Layers:  {layer_names}'),
-        }
+        return {'name': f'Layers:  {layer_names}'}
 
     def _play_item(self, item: dict):
         self._stop_item()

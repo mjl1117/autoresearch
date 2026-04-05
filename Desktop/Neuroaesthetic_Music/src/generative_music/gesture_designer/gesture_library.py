@@ -88,12 +88,22 @@ class GestureLibrary:
     # ── Listing ──────────────────────────────────────────────────────────────
 
     def list_gestures(self) -> List[dict]:
-        """Return list of {name, path, bpm, event_count, tags, ratings} dicts, sorted by name."""
+        """Return list of {name, path, bpm, event_count, tags, ratings} dicts, sorted by name.
+
+        Searches both the library root and the generated_gestures/ subdirectory.
+        Files that do not contain a valid gesture (missing 'events' key) are skipped.
+        """
+        all_paths = sorted(
+            set(self.directory.glob('*.json')) |
+            set(self.directory.glob('generated_gestures/*.json'))
+        )
         items = []
-        for p in sorted(self.directory.glob('*.json')):
+        for p in all_paths:
             try:
                 with open(p, 'r', encoding='utf-8') as f:
                     d = json.load(f)
+                if 'events' not in d:   # not a gesture (e.g. dataset_summary.json)
+                    continue
                 items.append({
                     'name':        d.get('name', p.stem),
                     'path':        str(p),

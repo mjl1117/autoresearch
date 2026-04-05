@@ -196,8 +196,8 @@ def test_ml_delta_rows_sample_weight(tmp_path):
     assert all(r['sample_weight'] == 0.3 for r in exported)
 
 
-# NOTE: All tests in this file require the qt-env conda environment
-# (PyQt6 + python-osc). Run with: conda run -n qt-env python -m pytest ...
+# NOTE: All tests in this file require the membrane-image conda environment
+# (PyQt6 + python-osc). Run with: conda run -n membrane-image python -m pytest ...
 # ── Star state logic ──────────────────────────────────────────────────────────
 
 def test_star_states_all_empty():

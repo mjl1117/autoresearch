@@ -196,14 +196,48 @@ def main() -> None:
         os.unlink(tmp.name)
         launcher.status_text = f"Saved → {out_path}"
 
-    _export_pending = False
+    _exporting = False
 
     def request_headless_export() -> None:
-        nonlocal _export_pending
-        if not launcher.file_path or not analysis:
+        nonlocal _exporting
+        if not launcher.file_path or not analysis or _exporting:
             return
-        _export_pending = True
-        launcher.status_text = "Export queued…"
+        _exporting = True
+        out = launcher.file_path.rsplit(".", 1)[0] + "_viz.mp4"
+        file_path = launcher.file_path
+        fps = config["export"]["fps"]
+        launcher.status_text = "Exporting…"
+
+        def _export_thread() -> None:
+            nonlocal _exporting
+            try:
+                # Own standalone GL context — never touches the display context
+                import moderngl as mgl
+                exp_ctx = mgl.create_standalone_context()
+                exp_renderer = Renderer(exp_ctx, export_w, export_h)
+                exp_engine = ContextEngine(ctx_cfg)
+                exporter = Exporter()
+
+                def _progress(pct: float) -> None:
+                    launcher.status_text = f"Exporting {int(pct * 100)}%…"
+
+                exporter.export_headless(
+                    analysis, exp_renderer, exp_engine,
+                    source_audio_path=file_path,
+                    output_path=out,
+                    fps=fps,
+                    on_progress=_progress,
+                )
+                exp_renderer.release()
+                exp_ctx.release()
+                launcher.status_text = f"Saved → {out}"
+            except Exception as e:
+                print(f"[export] {e}")
+                launcher.status_text = f"Export failed: {e}"
+            finally:
+                _exporting = False
+
+        threading.Thread(target=_export_thread, daemon=True).start()
 
     launcher.on_play_requested = start_prerecorded
     launcher.on_go_live_requested = start_live
@@ -276,13 +310,6 @@ def main() -> None:
                 sd.play(audio, samplerate=sr)
             except Exception as e:
                 print(f"[audio] {e}")
-
-        # Run pending export synchronously on the main thread (safe: single GL context)
-        if _export_pending and analysis and launcher.file_path:
-            _export_pending = False
-            out = launcher.file_path.rsplit(".", 1)[0] + "_viz.mp4"
-            _run_headless_export(analysis, renderer, ContextEngine(ctx_cfg),
-                                 launcher.file_path, out, config, launcher)
 
         params = engine.update(audio_frame, dt=dt)
         renderer.render_frame(params, elapsed_time=elapsed_time)

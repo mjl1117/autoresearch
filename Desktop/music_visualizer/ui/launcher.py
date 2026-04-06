@@ -2,6 +2,16 @@ from __future__ import annotations
 from enum import Enum, auto
 from typing import Callable
 
+_CLEAN_FONTS = ["Helvetica Neue", "Helvetica", "Arial", "Trebuchet MS", None]
+
+def _font(size: int):
+    import pygame
+    for name in _CLEAN_FONTS:
+        f = pygame.font.SysFont(name, size)
+        if f is not None:
+            return f
+    return pygame.font.Font(None, size)
+
 
 class LauncherState(Enum):
     EXPANDED = auto()
@@ -9,8 +19,8 @@ class LauncherState(Enum):
     TRANSITIONING = auto()
 
 
-_EXPANDED_H = 72
-_COLLAPSED_H = 22
+_EXPANDED_H = 88
+_COLLAPSED_H = 28
 _TRANSITION_S = 0.2
 
 
@@ -97,31 +107,31 @@ class LauncherUI:
             self.state = LauncherState.EXPANDED
             return
 
-        btn_w, btn_h = 110, 20
-        mode_x = 12
+        btn_w, btn_h = 120, 26
+        mode_x = 14
         mode_y = (bar_h - btn_h) // 2
-        rx = self._w - 200
+        rx = self._w - 220
 
         # Mode toggles
         if mode_y <= y <= mode_y + btn_h:
             if mode_x <= x <= mode_x + btn_w:
                 self.mode = "prerecorded"
                 return
-            if mode_x + btn_w + 4 <= x <= mode_x + 2 * btn_w + 4:
+            if mode_x + btn_w + 6 <= x <= mode_x + 2 * btn_w + 6:
                 self.mode = "live"
                 return
 
         # Action buttons
         if mode_y <= y <= mode_y + btn_h:
             if self.mode == "prerecorded":
-                if rx <= x <= rx + 76:
+                if rx <= x <= rx + 84:
                     self.on_play_requested()
                     return
-                if rx + 82 <= x <= rx + 170:
+                if rx + 92 <= x <= rx + 188:
                     self.on_export_requested()
                     return
             else:
-                if rx <= x <= rx + 110:
+                if rx <= x <= rx + 120:
                     self.on_go_live_requested()
                     return
 
@@ -143,38 +153,50 @@ class LauncherUI:
 
     def _draw_collapsed_strip(self, surf, h: int) -> None:
         import pygame
-        font = pygame.font.SysFont("monospace", 10)
+        font = _font(13)
         dot_color = (78, 195, 161) if self.mode == "prerecorded" else (225, 29, 72)
-        pygame.draw.circle(surf, dot_color, (12, h // 2), 4)
-        text = font.render(self.status_text or "READY", True, dot_color)
-        surf.blit(text, (24, h // 2 - text.get_height() // 2))
+        pygame.draw.circle(surf, dot_color, (14, h // 2), 5)
+        label = self.status_text or ("LIVE" if self.mode == "live" else "READY")
+        text = font.render(label, True, dot_color)
+        surf.blit(text, (26, h // 2 - text.get_height() // 2))
 
     def _draw_expanded_panel(self, surf, h: int) -> None:
         import pygame
-        font_sm = pygame.font.SysFont("monospace", 10)
-        font_xs = pygame.font.SysFont("monospace", 9)
+        font_md = _font(14)
+        font_sm = _font(12)
 
-        mode_x = 12
-        btn_w, btn_h = 110, 20
+        mode_x = 14
+        btn_w, btn_h = 120, 26
         mode_y = (h - btn_h) // 2
 
-        pre_col = (139, 92, 246) if self.mode == "prerecorded" else (30, 30, 46)
-        live_col = (225, 29, 72) if self.mode == "live" else (30, 30, 46)
+        pre_col = (139, 92, 246) if self.mode == "prerecorded" else (38, 38, 56)
+        live_col = (225, 29, 72) if self.mode == "live" else (38, 38, 56)
 
-        pygame.draw.rect(surf, pre_col, (mode_x, mode_y, btn_w, btn_h), border_radius=4)
-        pygame.draw.rect(surf, live_col, (mode_x + btn_w + 4, mode_y, btn_w, btn_h), border_radius=4)
+        pygame.draw.rect(surf, pre_col, (mode_x, mode_y, btn_w, btn_h), border_radius=5)
+        pygame.draw.rect(surf, live_col, (mode_x + btn_w + 6, mode_y, btn_w, btn_h), border_radius=5)
 
-        surf.blit(font_xs.render("Pre-recorded", True, (255, 255, 255)), (mode_x + 8, mode_y + 5))
-        surf.blit(font_xs.render("Live Input", True, (255, 255, 255)), (mode_x + btn_w + 12, mode_y + 5))
+        def _center_text(text_surf, rect_x, rect_w, rect_y, rect_h):
+            surf.blit(text_surf, (
+                rect_x + (rect_w - text_surf.get_width()) // 2,
+                rect_y + (rect_h - text_surf.get_height()) // 2,
+            ))
 
-        rx = self._w - 200
+        _center_text(font_sm.render("Pre-recorded", True, (255, 255, 255)), mode_x, btn_w, mode_y, btn_h)
+        _center_text(font_sm.render("Live Input", True, (255, 255, 255)), mode_x + btn_w + 6, btn_w, mode_y, btn_h)
+
+        # Status text center
+        if self.status_text:
+            st = font_sm.render(self.status_text, True, (160, 160, 180))
+            surf.blit(st, (self._w // 2 - st.get_width() // 2, mode_y + (btn_h - st.get_height()) // 2))
+
+        rx = self._w - 220
         if self.mode == "prerecorded":
             play_col = (78, 195, 161)
-            pygame.draw.rect(surf, play_col, (rx, mode_y, 76, btn_h), border_radius=4)
-            surf.blit(font_sm.render("Play", True, (0, 0, 0)), (rx + 20, mode_y + 5))
-            pygame.draw.rect(surf, (30, 30, 46), (rx + 82, mode_y, 88, btn_h), border_radius=4)
-            pygame.draw.rect(surf, (42, 42, 58), (rx + 82, mode_y, 88, btn_h), 1, border_radius=4)
-            surf.blit(font_sm.render("Export", True, (200, 200, 200)), (rx + 96, mode_y + 5))
+            pygame.draw.rect(surf, play_col, (rx, mode_y, 84, btn_h), border_radius=5)
+            _center_text(font_md.render("▶  Play", True, (10, 10, 20)), rx, 84, mode_y, btn_h)
+            pygame.draw.rect(surf, (38, 38, 56), (rx + 92, mode_y, 96, btn_h), border_radius=5)
+            pygame.draw.rect(surf, (60, 60, 80), (rx + 92, mode_y, 96, btn_h), 1, border_radius=5)
+            _center_text(font_md.render("Export", True, (200, 200, 220)), rx + 92, 96, mode_y, btn_h)
         else:
-            pygame.draw.rect(surf, (225, 29, 72), (rx, mode_y, 110, btn_h), border_radius=4)
-            surf.blit(font_sm.render("Go Live", True, (255, 255, 255)), (rx + 20, mode_y + 5))
+            pygame.draw.rect(surf, (225, 29, 72), (rx, mode_y, 120, btn_h), border_radius=5)
+            _center_text(font_md.render("⏺  Go Live", True, (255, 255, 255)), rx, 120, mode_y, btn_h)

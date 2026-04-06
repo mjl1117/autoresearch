@@ -132,11 +132,9 @@ def main() -> None:
         is_playing = True
         launcher.on_play()
         try:
-            pygame.mixer.quit()
-            pygame.mixer.init(frequency=analysis.sr, channels=1)
-            int16 = (np.clip(analysis.audio, -1.0, 1.0) * 32767).astype(np.int16)
-            sound = pygame.sndarray.make_sound(int16)
-            sound.play()
+            import sounddevice as sd
+            sd.stop()
+            sd.play(analysis.audio.astype(np.float32), samplerate=analysis.sr)
         except Exception:
             pass  # audio playback is best-effort
 
@@ -157,6 +155,11 @@ def main() -> None:
             live_analyzer.stop()
         is_playing = False
         launcher.on_stop()
+        try:
+            import sounddevice as sd
+            sd.stop()
+        except Exception:
+            pass
         if not live_frames:
             return
         audio = live_analyzer.get_recording() if live_analyzer else np.zeros(1)
@@ -205,6 +208,11 @@ def main() -> None:
                     if is_playing:
                         is_playing = False
                         launcher.on_stop()
+                        try:
+                            import sounddevice as sd
+                            sd.stop()
+                        except Exception:
+                            pass
                     else:
                         if is_live:
                             start_live()

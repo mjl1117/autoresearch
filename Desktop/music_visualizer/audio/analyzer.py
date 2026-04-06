@@ -56,16 +56,25 @@ class PrerecordedAnalyzer:
         total_rms = rms + 1e-8
         perc_ratio = np.clip(perc_rms / total_rms, 0.0, 1.0)
 
+        # Flatness is typically 0–0.07 for real music; scale to 0–1
+        flatness_scaled = np.clip(flatness * 15.0, 0.0, 1.0)
+
         n_frames = int(duration * fps)
         frames: list[FeatureFrame] = []
         dissonance_smooth = 0.0
-        alpha = 0.15
+        alpha = 0.25  # faster EMA response (~0.7s settling at 60fps)
 
         for i in range(n_frames):
             t = i / fps
             lib_frame = min(int(t * sr / hop), len(centroid_norm) - 1)
 
-            raw_dis = float(perc_ratio[lib_frame] * flatness[lib_frame])
+            # Weighted combination: onset density + percussive content + spectral noise
+            # Each component is 0–1; together they reliably reach the 0.4 threshold
+            raw_dis = float(
+                0.5 * onset_norm[lib_frame]
+                + 0.3 * perc_ratio[lib_frame]
+                + 0.2 * flatness_scaled[lib_frame]
+            )
             dissonance_smooth = alpha * raw_dis + (1.0 - alpha) * dissonance_smooth
 
             frames.append(

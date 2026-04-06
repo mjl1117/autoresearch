@@ -17,11 +17,13 @@ def _blend_ease(t: float) -> float:
     return _sigmoid((t - 0.5) * 12.0)
 
 
-def _classify(dissonance_smooth: float, bpm: float, cfg: ContextConfig) -> Style:
+def _classify(dissonance_smooth: float, bpm: float, onset_smooth: float, cfg: ContextConfig) -> Style:
     tempo_norm = min(bpm / 200.0, 1.0)
     if dissonance_smooth > cfg.dissonance_threshold:
         return Style.GEOMETRIC
-    if tempo_norm < cfg.tempo_threshold:
+    # COSMIC requires slow tempo AND low onset activity — prevents fast-but-quiet music
+    # from going cosmic just because the bpm is under the threshold
+    if tempo_norm < cfg.tempo_threshold and onset_smooth < cfg.onset_threshold:
         return Style.COSMIC
     return Style.ORGANIC
 
@@ -41,11 +43,17 @@ class ContextEngine:
         self._blend_elapsed = 0.0
         self._in_transition = False
 
+        self._onset_smooth = 0.0
+
         self._prev_color_a: tuple[float, float, float] | None = None
         self._palette_alpha = 1.0
 
     def update(self, frame: FeatureFrame, dt: float) -> RenderParams:
-        classified = _classify(frame.dissonance_smooth, frame.bpm, self._cfg)
+        self._onset_smooth = (
+            self._cfg.ema_alpha * frame.onset_strength
+            + (1.0 - self._cfg.ema_alpha) * self._onset_smooth
+        )
+        classified = _classify(frame.dissonance_smooth, frame.bpm, self._onset_smooth, self._cfg)
 
         if classified == self._candidate_style:
             self._candidate_hold += dt

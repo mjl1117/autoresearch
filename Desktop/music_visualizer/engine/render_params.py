@@ -11,11 +11,12 @@ class Style(Enum):
 
 @dataclass
 class ContextConfig:
-    dissonance_threshold: float = 0.65
-    tempo_threshold: float = 0.35       # bpm / 200.0 threshold
-    style_hold_seconds: float = 4.0
-    blend_duration_seconds: float = 3.0
-    ema_alpha: float = 0.15
+    dissonance_threshold: float = 0.40  # onset+perc+flatness composite, 0–1
+    tempo_threshold: float = 0.40       # bpm / 200.0 (< 80 bpm → COSMIC candidate)
+    onset_threshold: float = 0.25       # onset_smooth must be below this for COSMIC
+    style_hold_seconds: float = 2.0
+    blend_duration_seconds: float = 2.0
+    ema_alpha: float = 0.25             # ~0.7s settling at 60fps
 
 
 @dataclass

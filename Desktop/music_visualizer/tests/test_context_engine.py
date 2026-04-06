@@ -50,7 +50,9 @@ def test_sustained_dissonance_triggers_geometric():
 def test_low_tempo_triggers_cosmic():
     cfg = ContextConfig(style_hold_seconds=2.0, blend_duration_seconds=1.0)
     engine = ContextEngine(cfg)
-    frame = _make_frame(dissonance_smooth=0.1, bpm=50.0)  # 50/200 = 0.25 < 0.35
+    # Low BPM + low onset_strength (< onset_threshold=0.25) → COSMIC
+    frame = _make_frame(dissonance_smooth=0.1, bpm=50.0)
+    # onset_strength=0.2 in _make_frame → onset_smooth converges to ~0.2 < 0.25
     params = None
     for _ in range(int(3.1 * 24)):
         params = engine.update(frame, dt=1.0 / 24)

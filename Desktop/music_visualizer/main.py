@@ -74,6 +74,7 @@ def main() -> None:
     ctx_cfg = ContextConfig(
         dissonance_threshold=config["context"]["dissonance_threshold"],
         tempo_threshold=config["context"]["tempo_threshold"],
+        onset_threshold=config["context"]["onset_threshold"],
         style_hold_seconds=config["context"]["style_hold_seconds"],
         blend_duration_seconds=config["context"]["blend_duration_seconds"],
         ema_alpha=config["context"]["ema_alpha"],

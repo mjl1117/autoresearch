@@ -37,11 +37,12 @@ def test_render_params_defaults():
 
 def test_context_config_defaults():
     cfg = ContextConfig()
-    assert cfg.dissonance_threshold == 0.65
-    assert cfg.tempo_threshold == 0.35
-    assert cfg.style_hold_seconds == 4.0
-    assert cfg.blend_duration_seconds == 3.0
-    assert cfg.ema_alpha == 0.15
+    assert cfg.dissonance_threshold == 0.40
+    assert cfg.tempo_threshold == 0.40
+    assert cfg.onset_threshold == 0.25
+    assert cfg.style_hold_seconds == 2.0
+    assert cfg.blend_duration_seconds == 2.0
+    assert cfg.ema_alpha == 0.25
 
 
 def test_style_enum_values():

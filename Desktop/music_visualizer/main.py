@@ -121,15 +121,9 @@ def main() -> None:
     frame_index = 0
     elapsed_time = 0.0
     _analyzing = False
+    _pending_audio: tuple[np.ndarray, int] | None = None  # queued for main-thread playback
 
     import sounddevice as sd
-
-    def _play_audio(audio: np.ndarray, sr: int) -> None:
-        try:
-            sd.stop()
-            sd.play(audio.astype(np.float32), samplerate=sr)
-        except Exception as e:
-            print(f"[audio] {e}")
 
     def start_prerecorded() -> None:
         nonlocal _analyzing
@@ -140,7 +134,7 @@ def main() -> None:
         file_path = launcher.file_path
 
         def _analyze_thread() -> None:
-            nonlocal analysis, is_playing, frame_index, elapsed_time, _analyzing
+            nonlocal analysis, is_playing, frame_index, elapsed_time, _analyzing, _pending_audio
             try:
                 result = PrerecordedAnalyzer().analyze(file_path, fps=fps_target)
                 analysis = result
@@ -148,7 +142,8 @@ def main() -> None:
                 elapsed_time = 0.0
                 is_playing = True
                 launcher.on_play()
-                _play_audio(result.audio, result.sr)
+                # Queue audio for playback on the main thread (Core Audio requires it)
+                _pending_audio = (result.audio.astype(np.float32), result.sr)
             except Exception as e:
                 print(f"[analyze] {e}")
                 launcher.status_text = f"Error: {e}"
@@ -264,6 +259,16 @@ def main() -> None:
                 onset_strength=0.0, dissonance_raw=0.0, dissonance_smooth=0.0,
                 chroma=np.zeros(12), bpm=0.0,
             )
+
+        # Start queued audio on the main thread (Core Audio requires main-thread init)
+        if _pending_audio is not None:
+            audio, sr = _pending_audio
+            _pending_audio = None
+            try:
+                sd.stop()
+                sd.play(audio, samplerate=sr)
+            except Exception as e:
+                print(f"[audio] {e}")
 
         # Run pending export synchronously on the main thread (safe: single GL context)
         if _export_pending and analysis and launcher.file_path:

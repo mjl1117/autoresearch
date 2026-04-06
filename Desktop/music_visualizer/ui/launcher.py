@@ -153,17 +153,17 @@ class LauncherUI:
 
     def _draw_collapsed_strip(self, surf, h: int) -> None:
         import pygame
-        font = _font(18)
+        font = _font(24)
         dot_color = (78, 195, 161) if self.mode == "prerecorded" else (225, 29, 72)
-        pygame.draw.circle(surf, dot_color, (16, h // 2), 6)
+        pygame.draw.circle(surf, dot_color, (18, h // 2), 7)
         label = self.status_text or ("LIVE" if self.mode == "live" else "READY")
         text = font.render(label, True, dot_color)
-        surf.blit(text, (30, h // 2 - text.get_height() // 2))
+        surf.blit(text, (34, h // 2 - text.get_height() // 2))
 
     def _draw_expanded_panel(self, surf, h: int) -> None:
         import pygame
-        font_md = _font(18)
-        font_sm = _font(16)
+        font_md = _font(24)
+        font_sm = _font(22)
 
         mode_x = 14
         btn_w, btn_h = 140, 34

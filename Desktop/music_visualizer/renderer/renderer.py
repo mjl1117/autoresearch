@@ -183,7 +183,13 @@ class Renderer:
         ]:
             fbo.release()
             tex.release()
+        for vao in self._vaos.values():
+            vao.release()
         for prog in self._prog.values():
+            prog.release()
+        for vao in (self._vao_composite, self._vao_bloom_extract, self._vao_blur, self._vao_final):
+            vao.release()
+        for prog in (self._prog_composite, self._prog_bloom_extract, self._prog_blur, self._prog_final):
             prog.release()
 
     @staticmethod

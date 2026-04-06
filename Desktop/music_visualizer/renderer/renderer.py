@@ -81,6 +81,16 @@ class Renderer:
             self._prog_final, [(vbo, "2f", "in_vert")]
         )
 
+        self._prog_overlay = ctx.program(
+            vertex_shader=vert_src,
+            fragment_shader=_load("overlay.glsl"),
+        )
+        self._vao_overlay = ctx.vertex_array(
+            self._prog_overlay, [(vbo, "2f", "in_vert")]
+        )
+        self._overlay_tex = ctx.texture((width, height), 4)
+        self._overlay_tex.filter = (moderngl.NEAREST, moderngl.NEAREST)
+
         def _make_fbo() -> tuple[moderngl.Framebuffer, moderngl.Texture]:
             tex = ctx.texture((width, height), 3)
             tex.filter = (moderngl.LINEAR, moderngl.LINEAR)
@@ -165,6 +175,17 @@ class Renderer:
         # 8. Copy final → prev for next frame
         self._ctx.copy_framebuffer(dst=self._fbo_prev, src=self._fbo_final)
 
+    def render_overlay(self, rgba_bytes: bytes) -> None:
+        """Blend an RGBA UI overlay on top of ctx.screen. Call after copy_framebuffer."""
+        self._overlay_tex.write(rgba_bytes)
+        self._ctx.screen.use()
+        self._ctx.enable(moderngl.BLEND)
+        self._ctx.blend_func = moderngl.SRC_ALPHA, moderngl.ONE_MINUS_SRC_ALPHA
+        self._overlay_tex.use(location=0)
+        self._set_uniform(self._prog_overlay, "u_overlay", 0)
+        self._vao_overlay.render(moderngl.TRIANGLE_STRIP)
+        self._ctx.disable(moderngl.BLEND)
+
     def read_pixels(self) -> np.ndarray:
         """Return current frame as (H, W, 3) uint8 array."""
         raw = self._fbo_final.read(components=3)
@@ -188,10 +209,13 @@ class Renderer:
             vao.release()
         for prog in self._prog.values():
             prog.release()
-        for vao in (self._vao_composite, self._vao_bloom_extract, self._vao_blur, self._vao_final):
+        for vao in (self._vao_composite, self._vao_bloom_extract, self._vao_blur,
+                    self._vao_final, self._vao_overlay):
             vao.release()
-        for prog in (self._prog_composite, self._prog_bloom_extract, self._prog_blur, self._prog_final):
+        for prog in (self._prog_composite, self._prog_bloom_extract, self._prog_blur,
+                     self._prog_final, self._prog_overlay):
             prog.release()
+        self._overlay_tex.release()
         self._vbo.release()
 
     @staticmethod

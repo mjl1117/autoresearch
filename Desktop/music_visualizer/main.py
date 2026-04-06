@@ -124,16 +124,21 @@ def main() -> None:
         nonlocal analysis, is_playing, frame_index, elapsed_time
         if not launcher.file_path:
             return
+        launcher.status_text = "Analyzing…"
         analyzer = PrerecordedAnalyzer()
         analysis = analyzer.analyze(launcher.file_path, fps=fps_target)
         frame_index = 0
         elapsed_time = 0.0
         is_playing = True
         launcher.on_play()
-        pygame.mixer.init(frequency=analysis.sr, channels=1)
-        int16 = (np.clip(analysis.audio, -1.0, 1.0) * 32767).astype(np.int16)
-        sound = pygame.sndarray.make_sound(int16.reshape(-1, 1))
-        sound.play()
+        try:
+            pygame.mixer.quit()
+            pygame.mixer.init(frequency=analysis.sr, channels=1)
+            int16 = (np.clip(analysis.audio, -1.0, 1.0) * 32767).astype(np.int16)
+            sound = pygame.sndarray.make_sound(int16)
+            sound.play()
+        except Exception:
+            pass  # audio playback is best-effort
 
     def start_live() -> None:
         nonlocal live_analyzer, is_playing, is_live, elapsed_time
@@ -184,13 +189,15 @@ def main() -> None:
 
     clock = pygame.time.Clock()
     dt = 1.0 / fps_target
-    pbo_surf = pygame.Surface((width, height), 0, 24)
+    ui_surf = pygame.Surface((width, height), pygame.SRCALPHA, 32)
 
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                launcher.handle_click(*event.pos)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
@@ -247,13 +254,11 @@ def main() -> None:
         if is_live and is_playing:
             live_frames.append(renderer.read_pixels())
 
-        # Blit FBO → Pygame surface
-        raw = renderer._fbo_final.read(components=3)
-        arr = np.frombuffer(raw, dtype=np.uint8).reshape(height, width, 3)
-        arr = np.flipud(arr)
-        pygame.surfarray.blit_array(pbo_surf, arr.transpose(1, 0, 2))
-        screen.blit(pbo_surf, (0, 0))
-        launcher.draw(screen)
+        # Copy final FBO → default framebuffer, then composite UI overlay
+        ctx.copy_framebuffer(dst=ctx.screen, src=renderer._fbo_final)
+        ui_surf.fill((0, 0, 0, 0))
+        launcher.draw(ui_surf)
+        renderer.render_overlay(pygame.image.tobytes(ui_surf, "RGBA", False))
         pygame.display.flip()
         clock.tick(fps_target)
 

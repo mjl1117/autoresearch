@@ -85,6 +85,46 @@ class LauncherUI:
         self._transition_target = float(target_h)
         self._transition_elapsed = 0.0
 
+    def handle_click(self, x: int, y: int) -> None:
+        """Process a mouse click at (x, y). Call from the event loop on MOUSEBUTTONDOWN."""
+        bar_h = int(self.bar_height)
+        if y > bar_h:
+            return  # click outside the bar
+
+        if bar_h <= _COLLAPSED_H + 4:
+            # Clicking collapsed strip expands it
+            self._start_transition(_EXPANDED_H)
+            self.state = LauncherState.EXPANDED
+            return
+
+        btn_w, btn_h = 110, 20
+        mode_x = 12
+        mode_y = (bar_h - btn_h) // 2
+        rx = self._w - 200
+
+        # Mode toggles
+        if mode_y <= y <= mode_y + btn_h:
+            if mode_x <= x <= mode_x + btn_w:
+                self.mode = "prerecorded"
+                return
+            if mode_x + btn_w + 4 <= x <= mode_x + 2 * btn_w + 4:
+                self.mode = "live"
+                return
+
+        # Action buttons
+        if mode_y <= y <= mode_y + btn_h:
+            if self.mode == "prerecorded":
+                if rx <= x <= rx + 76:
+                    self.on_play_requested()
+                    return
+                if rx + 82 <= x <= rx + 170:
+                    self.on_export_requested()
+                    return
+            else:
+                if rx <= x <= rx + 110:
+                    self.on_go_live_requested()
+                    return
+
     def draw(self, surface) -> None:
         """Render the top bar onto a pygame Surface. Called once per frame."""
         import pygame

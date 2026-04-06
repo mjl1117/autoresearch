@@ -78,17 +78,24 @@ def main() -> None:
         blend_duration_seconds=config["context"]["blend_duration_seconds"],
         ema_alpha=config["context"]["ema_alpha"],
     )
-    width, height = config["export"]["resolution"]
+    export_w, export_h = config["export"]["resolution"]
     fps_target = config["renderer"]["realtime_fps"]
 
     pygame.init()
     pygame.font.init()
+
+    # Cap window to actual screen size so buttons stay on-screen
+    desktop_sizes = pygame.display.get_desktop_sizes()
+    scr_w, scr_h = desktop_sizes[0] if desktop_sizes else (export_w, export_h)
+    width = min(export_w, scr_w)
+    height = min(export_h, scr_h)
+
     pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 3)
     pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MINOR_VERSION, 3)
     pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEXT_PROFILE_CORE)
     pygame.display.gl_set_attribute(pygame.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG, True)
     screen = pygame.display.set_mode(
-        (width, height), pygame.OPENGL | pygame.DOUBLEBUF | pygame.RESIZABLE
+        (width, height), pygame.OPENGL | pygame.DOUBLEBUF
     )
     pygame.display.set_caption("Music Visualizer")
 
@@ -213,7 +220,6 @@ def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                print(f"[click] pos={event.pos} bar_h={int(launcher.bar_height)} w={launcher._w}")
                 launcher.handle_click(*event.pos)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:

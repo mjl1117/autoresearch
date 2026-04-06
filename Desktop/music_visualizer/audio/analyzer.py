@@ -1,7 +1,9 @@
 from __future__ import annotations
 import os
+import subprocess
 import tempfile
 from dataclasses import dataclass
+from pathlib import Path
 
 import librosa
 import numpy as np
@@ -90,20 +92,39 @@ class PrerecordedAnalyzer:
             frames=frames,
         )
 
+    # Formats that need conversion to WAV before librosa can load them reliably
+    _FFMPEG_CONVERT = {".aif", ".aiff", ".m4a", ".mp4", ".flac", ".ogg", ".opus", ".wma"}
+
     @staticmethod
     def _resolve_audio(path: str) -> str:
-        """For .avi files, extract audio to a temp wav via moviepy."""
-        if not path.lower().endswith(".avi"):
-            return path
-        from moviepy import VideoFileClip
-        tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
-        tmp.close()
-        try:
-            clip = VideoFileClip(path)
-            clip.audio.write_audiofile(tmp.name, verbose=False, logger=None)
-            clip.close()
-        except Exception:
-            # Fallback: treat as audio file directly (for test mocking)
+        """Convert non-native formats to a temp WAV using ffmpeg, return path to use."""
+        ext = Path(path).suffix.lower()
+
+        if ext == ".avi":
+            from moviepy import VideoFileClip
+            tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+            tmp.close()
+            try:
+                clip = VideoFileClip(path)
+                clip.audio.write_audiofile(tmp.name, verbose=False, logger=None)
+                clip.close()
+                return tmp.name
+            except Exception:
+                os.unlink(tmp.name)
+                return path
+
+        if ext in PrerecordedAnalyzer._FFMPEG_CONVERT:
+            tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+            tmp.close()
+            result = subprocess.run(
+                ["ffmpeg", "-y", "-i", path, "-vn", "-ac", "1", tmp.name],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            if result.returncode == 0:
+                return tmp.name
             os.unlink(tmp.name)
+            # ffmpeg failed — let librosa try the original (may work on some systems)
             return path
-        return tmp.name
+
+        return path

@@ -43,3 +43,37 @@ def test_analyze_avi_extracts_audio(tmp_path, sine_wav):
     # Should not raise; falls back to treating as audio directly for test
     result = analyzer.analyze(avi_path, fps=24)
     assert len(result.frames) > 0
+
+
+def test_resolve_audio_aif(tmp_path, sine_wav):
+    """AIF/AIFF files are converted to a temp WAV via ffmpeg."""
+    import shutil, subprocess
+    aif_path = str(tmp_path / "test.aif")
+    # Convert the test WAV → AIF using ffmpeg so we have a real AIF file
+    r = subprocess.run(
+        ["ffmpeg", "-y", "-i", sine_wav, aif_path],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+    if r.returncode != 0:
+        pytest.skip("ffmpeg not available")
+    resolved = PrerecordedAnalyzer._resolve_audio(aif_path)
+    assert resolved != aif_path, "should return a temp WAV path"
+    assert resolved.endswith(".wav")
+    # Cleanup
+    import os; os.unlink(resolved)
+
+
+def test_resolve_audio_m4a(tmp_path, sine_wav):
+    """M4A files are converted to a temp WAV via ffmpeg."""
+    import subprocess
+    m4a_path = str(tmp_path / "test.m4a")
+    r = subprocess.run(
+        ["ffmpeg", "-y", "-i", sine_wav, "-c:a", "aac", m4a_path],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+    if r.returncode != 0:
+        pytest.skip("ffmpeg not available")
+    resolved = PrerecordedAnalyzer._resolve_audio(m4a_path)
+    assert resolved != m4a_path
+    assert resolved.endswith(".wav")
+    import os; os.unlink(resolved)

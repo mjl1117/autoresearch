@@ -213,6 +213,7 @@ def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                print(f"[click] pos={event.pos} bar_h={int(launcher.bar_height)} w={launcher._w}")
                 launcher.handle_click(*event.pos)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:

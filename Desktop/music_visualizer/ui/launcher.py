@@ -98,11 +98,12 @@ class LauncherUI:
     def handle_click(self, x: int, y: int) -> None:
         """Process a mouse click at (x, y). Call from the event loop on MOUSEBUTTONDOWN."""
         bar_h = int(self.bar_height)
+        print(f"[launcher] click x={x} y={y} bar_h={bar_h} mode={self.mode}")
         if y > bar_h:
+            print(f"[launcher] outside bar, ignoring")
             return  # click outside the bar
 
         if bar_h <= _COLLAPSED_H + 4:
-            # Clicking collapsed strip expands it
             self._start_transition(_EXPANDED_H)
             self.state = LauncherState.EXPANDED
             return
@@ -111,29 +112,36 @@ class LauncherUI:
         mode_x = 14
         mode_y = (bar_h - btn_h) // 2
         rx = self._w - 280
+        print(f"[launcher] mode_y={mode_y} rx={rx} btn zones: play=[{rx},{rx+110}] export=[{rx+118},{rx+236}]")
 
         # Mode toggles
         if mode_y <= y <= mode_y + btn_h:
             if mode_x <= x <= mode_x + btn_w:
                 self.mode = "prerecorded"
+                print("[launcher] → prerecorded mode")
                 return
             if mode_x + btn_w + 6 <= x <= mode_x + 2 * btn_w + 6:
                 self.mode = "live"
+                print("[launcher] → live mode")
                 return
 
         # Action buttons
         if mode_y <= y <= mode_y + btn_h:
             if self.mode == "prerecorded":
                 if rx <= x <= rx + 110:
+                    print("[launcher] → on_play_requested")
                     self.on_play_requested()
                     return
                 if rx + 118 <= x <= rx + 236:
+                    print("[launcher] → on_export_requested")
                     self.on_export_requested()
                     return
             else:
                 if rx <= x <= rx + 148:
+                    print("[launcher] → on_go_live_requested")
                     self.on_go_live_requested()
                     return
+        print("[launcher] click not matched to any button")
 
     def draw(self, surface) -> None:
         """Render the top bar onto a pygame Surface. Called once per frame."""

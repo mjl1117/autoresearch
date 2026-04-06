@@ -82,6 +82,10 @@ def main() -> None:
 
     pygame.init()
     pygame.font.init()
+    pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 3)
+    pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MINOR_VERSION, 3)
+    pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEXT_PROFILE_CORE)
+    pygame.display.gl_set_attribute(pygame.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG, True)
     screen = pygame.display.set_mode(
         (width, height), pygame.OPENGL | pygame.DOUBLEBUF | pygame.RESIZABLE
     )

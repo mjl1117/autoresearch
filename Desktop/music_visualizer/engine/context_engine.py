@@ -69,7 +69,7 @@ class ContextEngine:
             self._blend_weight = _blend_ease(t)
             if t >= 1.0:
                 self._current_style = self._blend_target
-                self._blend_weight = 1.0
+                self._blend_weight = 0.0  # reset — renderer uses active_style exclusively
                 self._in_transition = False
 
         self._palette_alpha = min(self._palette_alpha + dt * 0.5, 1.0)

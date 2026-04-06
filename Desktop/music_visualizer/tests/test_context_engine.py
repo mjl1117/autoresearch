@@ -44,7 +44,7 @@ def test_sustained_dissonance_triggers_geometric():
     for _ in range(int(7.1 * 24)):
         params = engine.update(frame, dt=1.0 / 24)
     assert params.active_style == Style.GEOMETRIC
-    assert params.blend_weight == pytest.approx(1.0, abs=0.01)
+    assert params.blend_weight == pytest.approx(0.0, abs=0.01)  # reset after transition completes
 
 
 def test_low_tempo_triggers_cosmic():

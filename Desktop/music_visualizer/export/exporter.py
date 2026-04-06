@@ -53,7 +53,6 @@ class Exporter:
             codec="libx264",
             audio_codec="aac",
             ffmpeg_params=["-crf", "18"],
-            verbose=False,
             logger=None,
         )
 

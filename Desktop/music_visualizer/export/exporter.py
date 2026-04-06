@@ -46,10 +46,13 @@ class Exporter:
         from moviepy import AudioFileClip, ImageSequenceClip
         clip = ImageSequenceClip(frames, fps=fps)
         audio = AudioFileClip(audio_source)
-        clip.set_audio(audio).write_videofile(
+        # moviepy 2.x uses with_audio(); fall back to set_audio() for older installs
+        attach = getattr(clip, "with_audio", None) or clip.set_audio
+        attach(audio).write_videofile(
             output_path,
             codec="libx264",
             audio_codec="aac",
+            ffmpeg_params=["-crf", "18"],
             verbose=False,
             logger=None,
         )

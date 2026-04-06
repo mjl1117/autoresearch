@@ -14,7 +14,6 @@ from __future__ import annotations
 import argparse
 import os
 import tempfile
-import threading
 import wave
 from pathlib import Path
 
@@ -165,16 +164,14 @@ def main() -> None:
         os.unlink(tmp.name)
         launcher.status_text = f"Saved → {out_path}"
 
+    _export_pending = False
+
     def request_headless_export() -> None:
+        nonlocal _export_pending
         if not launcher.file_path or not analysis:
             return
-        out = launcher.file_path.rsplit(".", 1)[0] + "_viz.mp4"
-        engine2 = ContextEngine(ctx_cfg)
-        threading.Thread(
-            target=_run_headless_export,
-            args=(analysis, renderer, engine2, launcher.file_path, out, config, launcher),
-            daemon=True,
-        ).start()
+        _export_pending = True
+        launcher.status_text = "Export queued…"
 
     launcher.on_play_requested = start_prerecorded
     launcher.on_go_live_requested = start_live
@@ -231,6 +228,13 @@ def main() -> None:
                 onset_strength=0.0, dissonance_raw=0.0, dissonance_smooth=0.0,
                 chroma=np.zeros(12), bpm=0.0,
             )
+
+        # Run pending export synchronously on the main thread (safe: single GL context)
+        if _export_pending and analysis and launcher.file_path:
+            _export_pending = False
+            out = launcher.file_path.rsplit(".", 1)[0] + "_viz.mp4"
+            _run_headless_export(analysis, renderer, ContextEngine(ctx_cfg),
+                                 launcher.file_path, out, config, launcher)
 
         params = engine.update(audio_frame, dt=dt)
         renderer.render_frame(params, elapsed_time=elapsed_time)

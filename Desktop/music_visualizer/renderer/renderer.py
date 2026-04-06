@@ -26,7 +26,8 @@ class Renderer:
         self._h = height
         self._ring_times: list[float] = []
 
-        vbo = ctx.buffer(_QUAD_VERTS)
+        self._vbo = ctx.buffer(_QUAD_VERTS)
+        vbo = self._vbo
         vert_src = _load("quad.vert")
 
         self._prog: dict[Style, moderngl.Program] = {
@@ -191,6 +192,7 @@ class Renderer:
             vao.release()
         for prog in (self._prog_composite, self._prog_bloom_extract, self._prog_blur, self._prog_final):
             prog.release()
+        self._vbo.release()
 
     @staticmethod
     def _set_uniform(prog: moderngl.Program, name: str, value: object) -> None:

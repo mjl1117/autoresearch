@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import os
 import tempfile
+import threading
 import wave
 from pathlib import Path
 
@@ -119,24 +120,42 @@ def main() -> None:
     is_live = args.live
     frame_index = 0
     elapsed_time = 0.0
+    _analyzing = False
+
+    import sounddevice as sd
+
+    def _play_audio(audio: np.ndarray, sr: int) -> None:
+        try:
+            sd.stop()
+            sd.play(audio.astype(np.float32), samplerate=sr)
+        except Exception as e:
+            print(f"[audio] {e}")
 
     def start_prerecorded() -> None:
-        nonlocal analysis, is_playing, frame_index, elapsed_time
-        if not launcher.file_path:
+        nonlocal _analyzing
+        if not launcher.file_path or _analyzing:
             return
+        _analyzing = True
         launcher.status_text = "Analyzing…"
-        analyzer = PrerecordedAnalyzer()
-        analysis = analyzer.analyze(launcher.file_path, fps=fps_target)
-        frame_index = 0
-        elapsed_time = 0.0
-        is_playing = True
-        launcher.on_play()
-        try:
-            import sounddevice as sd
-            sd.stop()
-            sd.play(analysis.audio.astype(np.float32), samplerate=analysis.sr)
-        except Exception:
-            pass  # audio playback is best-effort
+        file_path = launcher.file_path
+
+        def _analyze_thread() -> None:
+            nonlocal analysis, is_playing, frame_index, elapsed_time, _analyzing
+            try:
+                result = PrerecordedAnalyzer().analyze(file_path, fps=fps_target)
+                analysis = result
+                frame_index = 0
+                elapsed_time = 0.0
+                is_playing = True
+                launcher.on_play()
+                _play_audio(result.audio, result.sr)
+            except Exception as e:
+                print(f"[analyze] {e}")
+                launcher.status_text = f"Error: {e}"
+            finally:
+                _analyzing = False
+
+        threading.Thread(target=_analyze_thread, daemon=True).start()
 
     def start_live() -> None:
         nonlocal live_analyzer, is_playing, is_live, elapsed_time
@@ -156,7 +175,6 @@ def main() -> None:
         is_playing = False
         launcher.on_stop()
         try:
-            import sounddevice as sd
             sd.stop()
         except Exception:
             pass
@@ -209,7 +227,6 @@ def main() -> None:
                         is_playing = False
                         launcher.on_stop()
                         try:
-                            import sounddevice as sd
                             sd.stop()
                         except Exception:
                             pass

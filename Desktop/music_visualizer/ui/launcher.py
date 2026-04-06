@@ -19,8 +19,8 @@ class LauncherState(Enum):
     TRANSITIONING = auto()
 
 
-_EXPANDED_H = 88
-_COLLAPSED_H = 28
+_EXPANDED_H = 112
+_COLLAPSED_H = 36
 _TRANSITION_S = 0.2
 
 
@@ -107,10 +107,10 @@ class LauncherUI:
             self.state = LauncherState.EXPANDED
             return
 
-        btn_w, btn_h = 120, 26
+        btn_w, btn_h = 140, 34
         mode_x = 14
         mode_y = (bar_h - btn_h) // 2
-        rx = self._w - 220
+        rx = self._w - 280
 
         # Mode toggles
         if mode_y <= y <= mode_y + btn_h:
@@ -124,14 +124,14 @@ class LauncherUI:
         # Action buttons
         if mode_y <= y <= mode_y + btn_h:
             if self.mode == "prerecorded":
-                if rx <= x <= rx + 84:
+                if rx <= x <= rx + 110:
                     self.on_play_requested()
                     return
-                if rx + 92 <= x <= rx + 188:
+                if rx + 118 <= x <= rx + 236:
                     self.on_export_requested()
                     return
             else:
-                if rx <= x <= rx + 120:
+                if rx <= x <= rx + 148:
                     self.on_go_live_requested()
                     return
 
@@ -153,20 +153,20 @@ class LauncherUI:
 
     def _draw_collapsed_strip(self, surf, h: int) -> None:
         import pygame
-        font = _font(13)
+        font = _font(18)
         dot_color = (78, 195, 161) if self.mode == "prerecorded" else (225, 29, 72)
-        pygame.draw.circle(surf, dot_color, (14, h // 2), 5)
+        pygame.draw.circle(surf, dot_color, (16, h // 2), 6)
         label = self.status_text or ("LIVE" if self.mode == "live" else "READY")
         text = font.render(label, True, dot_color)
-        surf.blit(text, (26, h // 2 - text.get_height() // 2))
+        surf.blit(text, (30, h // 2 - text.get_height() // 2))
 
     def _draw_expanded_panel(self, surf, h: int) -> None:
         import pygame
-        font_md = _font(14)
-        font_sm = _font(12)
+        font_md = _font(18)
+        font_sm = _font(16)
 
         mode_x = 14
-        btn_w, btn_h = 120, 26
+        btn_w, btn_h = 140, 34
         mode_y = (h - btn_h) // 2
 
         pre_col = (139, 92, 246) if self.mode == "prerecorded" else (38, 38, 56)
@@ -189,14 +189,14 @@ class LauncherUI:
             st = font_sm.render(self.status_text, True, (160, 160, 180))
             surf.blit(st, (self._w // 2 - st.get_width() // 2, mode_y + (btn_h - st.get_height()) // 2))
 
-        rx = self._w - 220
+        rx = self._w - 280
         if self.mode == "prerecorded":
             play_col = (78, 195, 161)
-            pygame.draw.rect(surf, play_col, (rx, mode_y, 84, btn_h), border_radius=5)
-            _center_text(font_md.render("▶  Play", True, (10, 10, 20)), rx, 84, mode_y, btn_h)
-            pygame.draw.rect(surf, (38, 38, 56), (rx + 92, mode_y, 96, btn_h), border_radius=5)
-            pygame.draw.rect(surf, (60, 60, 80), (rx + 92, mode_y, 96, btn_h), 1, border_radius=5)
-            _center_text(font_md.render("Export", True, (200, 200, 220)), rx + 92, 96, mode_y, btn_h)
+            pygame.draw.rect(surf, play_col, (rx, mode_y, 110, btn_h), border_radius=6)
+            _center_text(font_md.render("▶  Play", True, (10, 10, 20)), rx, 110, mode_y, btn_h)
+            pygame.draw.rect(surf, (38, 38, 56), (rx + 118, mode_y, 118, btn_h), border_radius=6)
+            pygame.draw.rect(surf, (60, 60, 80), (rx + 118, mode_y, 118, btn_h), 1, border_radius=6)
+            _center_text(font_md.render("Export", True, (200, 200, 220)), rx + 118, 118, mode_y, btn_h)
         else:
-            pygame.draw.rect(surf, (225, 29, 72), (rx, mode_y, 120, btn_h), border_radius=5)
-            _center_text(font_md.render("⏺  Go Live", True, (255, 255, 255)), rx, 120, mode_y, btn_h)
+            pygame.draw.rect(surf, (225, 29, 72), (rx, mode_y, 148, btn_h), border_radius=6)
+            _center_text(font_md.render("⏺  Go Live", True, (255, 255, 255)), rx, 148, mode_y, btn_h)

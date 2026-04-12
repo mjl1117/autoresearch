@@ -231,58 +231,94 @@ def test_star_states_colors():
 # ── Chord gesture builder ─────────────────────────────────────────────────────
 
 def test_build_chord_gesture_event_count():
-    """Each chord record produces exactly one NoteEvent."""
+    """n_events parameter controls the number of NoteEvents produced."""
     from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
-    chords = [
-        {'chord_id': 'A', 'chord_type': 0, 'num_voices': 3,
-         'balance': 0.7, 'inversion': 0, 'weights': []},
-        {'chord_id': 'B', 'chord_type': 1, 'num_voices': 3,
-         'balance': 0.7, 'inversion': 0, 'weights': []},
-        {'chord_id': 'C', 'chord_type': 7, 'num_voices': 4,
-         'balance': 0.7, 'inversion': 0, 'weights': []},
-    ]
-    g = _build_chord_gesture(chords, bpm=80.0)
+    g = _build_chord_gesture(n_events=3, bpm=80.0)
     assert len(g.events) == 3
 
 def test_build_chord_gesture_chord_enabled():
     """All events must have chord.enabled = True."""
     from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
-    chords = [
-        {'chord_id': 'X', 'chord_type': 6, 'num_voices': 4,
-         'balance': 0.6, 'inversion': 1, 'weights': []},
-    ]
-    g = _build_chord_gesture(chords, bpm=72.0)
-    assert g.events[0].chord.enabled is True
-    assert g.events[0].chord.chord_type == 6
-    assert g.events[0].chord.num_voices == 4
-    assert g.events[0].chord.inversion == 1
+    g = _build_chord_gesture(n_events=4, bpm=72.0)
+    assert all(ev.chord.enabled is True for ev in g.events)
 
 def test_build_chord_gesture_beat_durations():
-    """All beat durations must come from [1, 2, 3]."""
+    """Beat durations must fall within the Gaussian-clamped range [1, 4]."""
     from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
-    chords = [
-        {'chord_id': str(i), 'chord_type': 0, 'num_voices': 3,
-         'balance': 0.7, 'inversion': 0, 'weights': []}
-        for i in range(6)
-    ]
-    g = _build_chord_gesture(chords, bpm=80.0)
-    assert all(ev.beats in (1, 2, 3) for ev in g.events)
+    g = _build_chord_gesture(n_events=20, bpm=80.0)
+    assert all(1 <= ev.beats <= 4 for ev in g.events)
 
 def test_build_chord_gesture_bpm():
     """BPM is preserved on the returned Gesture."""
     from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
-    g = _build_chord_gesture(
-        [{'chord_id': 'Z', 'chord_type': 0, 'num_voices': 3,
-          'balance': 0.7, 'inversion': 0, 'weights': []}],
-        bpm=120.0,
-    )
+    g = _build_chord_gesture(n_events=1, bpm=120.0)
     assert g.bpm == 120.0
 
 def test_build_chord_gesture_empty_input():
-    """Empty chord list returns a Gesture with no events."""
+    """n_events=0 returns a Gesture with no events."""
     from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
-    g = _build_chord_gesture([], bpm=80.0)
+    g = _build_chord_gesture(n_events=0, bpm=80.0)
     assert g.events == []
+
+def test_build_chord_gesture_varied_roots():
+    """Generated events should have varied root notes (not all the same)."""
+    import random
+    random.seed(0)
+    from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture
+    g = _build_chord_gesture(n_events=20)
+    notes = {ev.note for ev in g.events}
+    assert len(notes) > 1, f"All events have the same root — no variety: {notes}"
+
+
+def test_build_chord_gesture_amplitude_normalised(tmp_path):
+    """Low-octave events must have higher amplitude than high-octave events."""
+    import random
+    random.seed(42)
+    from src.generative_music.gesture_designer.human_feedback import _build_chord_gesture, _CHORD_GESTURE_LOG
+    import src.generative_music.gesture_designer.human_feedback as hf
+
+    # Redirect log to tmp_path so the test doesn't pollute the project data dir
+    original = hf._CHORD_GESTURE_LOG
+    hf._CHORD_GESTURE_LOG = tmp_path / 'chord_gesture_log.jsonl'
+    try:
+        # Force one low-octave and one high-octave event by generating many
+        # and checking the amplitude ordering holds on average.
+        low_amps, high_amps = [], []
+        for _ in range(30):
+            g = _build_chord_gesture(n_events=1)
+            ev = g.events[0]
+            if ev.octave <= 3:
+                low_amps.append(ev.amplitude)
+            elif ev.octave >= 5:
+                high_amps.append(ev.amplitude)
+    finally:
+        hf._CHORD_GESTURE_LOG = original
+
+    if low_amps and high_amps:
+        assert sum(low_amps) / len(low_amps) > sum(high_amps) / len(high_amps), (
+            "Low-octave events should have higher mean amplitude than high-octave events")
+
+
+def test_chord_gesture_log_written(tmp_path):
+    """Each _build_chord_gesture call appends one record to the JSONL log."""
+    import json
+    import src.generative_music.gesture_designer.human_feedback as hf
+
+    original = hf._CHORD_GESTURE_LOG
+    hf._CHORD_GESTURE_LOG = tmp_path / 'chord_gesture_log.jsonl'
+    try:
+        hf._build_chord_gesture(n_events=3, bpm=80.0)
+        hf._build_chord_gesture(n_events=4, bpm=90.0)
+    finally:
+        hf._CHORD_GESTURE_LOG = original
+
+    lines = (tmp_path / 'chord_gesture_log.jsonl').read_text().splitlines()
+    assert len(lines) == 2
+    record = json.loads(lines[0])
+    assert 'generated_at' in record
+    assert len(record['events']) == 3
+    # Each event's chord dict should carry a human-readable name
+    assert 'chord_type_name' in record['events'][0]['chord']
 
 
 # ── Music layer helpers ───────────────────────────────────────────────────────

@@ -33,8 +33,8 @@ from .feedback_store import FeedbackStore
 from .library_ranker import LibraryRanker
 from .gesture_library import GestureLibrary
 from .gesture_player import GesturePlayer
-from .chord_predictor import ChordPredictor
-from .gesture_model import Gesture, NoteEvent, ChordConfig, PartialWeights
+from .gesture_model import (Gesture, NoteEvent, ChordConfig, PartialWeights,
+                             CHORD_TYPE_NAMES, CHORD_MAX_VOICES)
 
 logger = logging.getLogger(__name__)
 
@@ -121,11 +121,19 @@ def _sep() -> QFrame:
 
 # ── Helper functions ──────────────────────────────────────────────────────────
 
-def _gesture_va_prediction(gesture_path: str) -> tuple[float, float]:
-    """Predict V/A from partial weights using pre-trained audio RF models.
-    Returns (50.0, 50.0) on any failure."""
+def _gesture_va_from_event_dicts(events: list,
+                                  bpm: float = 80.0) -> tuple[float, float]:
+    """Predict V/A from a list of event dicts (the 'events' key of a gesture JSON).
+
+    Uses the 37-feature schema: 24 spectral + 4 temporal + 9 harmonic-transition.
+    BPM must be passed explicitly so temporal features are meaningful.
+    Returns (50.0, 50.0) on any failure.
+
+    NOTE: feature schema must stay in sync with
+          src/machine_learning/gesture_features.py::extract_gesture_features.
+    """
     try:
-        import json, joblib
+        import joblib
         import numpy as np
 
         models_dir = Path(__file__).parent.parent.parent.parent / 'models'
@@ -134,28 +142,30 @@ def _gesture_va_prediction(gesture_path: str) -> tuple[float, float]:
 
         if not v_model_path.exists() or not a_model_path.exists():
             return 50.0, 50.0
-
-        with open(gesture_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-
-        events = data.get('events', [])
         if not events:
             return 50.0, 50.0
 
-        feat_rows = []
+        spectral_rows: list = []
+        semitones: list = []
+        centroids: list = []
+        rmss: list = []
+        beat_list: list = []
+
         for ev in events:
             if ev.get('is_rest', False):
                 continue
-            freq = _note_to_hz(ev.get('note', 'A'), ev.get('accidental', ''),
-                               int(ev.get('octave', 4)))
+            note       = ev.get('note', 'A')
+            accidental = ev.get('accidental', '')
+            octave     = int(ev.get('octave', 4))
+            freq       = _note_to_hz(note, accidental, octave)
+
             weights = np.array([ev.get('partials', {}).get(f'w{i}', 1.0)
                                  for i in range(1, 17)], dtype=float)
             weights = np.clip(weights, 0, None)
-            total = weights.sum()
+            total   = weights.sum()
             if total < 1e-9:
                 continue
-            freqs = np.array([freq * i for i in range(1, 17)])
-
+            freqs    = np.array([freq * i for i in range(1, 17)])
             rms      = float(np.sqrt(np.mean(weights ** 2)))
             centroid = float(np.dot(weights, freqs) / total)
             bw       = float(np.sqrt(np.dot(weights, (freqs - centroid) ** 2) / total))
@@ -163,20 +173,68 @@ def _gesture_va_prediction(gesture_path: str) -> tuple[float, float]:
             rolloff  = float(freqs[min(np.searchsorted(cumsum, 0.85 * cumsum[-1]), 15)])
             gm       = float(np.exp(np.mean(np.log(weights + 1e-9))))
             flatness = float(gm / (total / 16 + 1e-9))
-            zcr      = 0.0
-            feat_rows.append([rms, centroid, rolloff, bw, flatness, zcr])
 
-        if not feat_rows:
+            # semitone: absolute pitch position (C-1=0, A4=69)
+            _semis = {'C':0,'D':2,'E':4,'F':5,'G':7,'A':9,'B':11}
+            _accs  = {'bb':-2,'b':-1,'3qb':-1.5,'qb':-0.5,'':0,
+                      'q#':0.5,'#':1,'3q#':1.5,'x':2}
+            semi_abs = ((octave + 1) * 12
+                        + _semis.get(note.upper(), 9)
+                        + _accs.get(accidental, 0.0))
+
+            spectral_rows.append([rms, centroid, rolloff, bw, flatness, 0.0])
+            semitones.append(semi_abs)
+            centroids.append(centroid)
+            rmss.append(rms)
+            beat_list.append(float(ev.get('beats', 1)))
+
+        if not spectral_rows:
             return 50.0, 50.0
 
-        arr  = np.array(feat_rows)
-        feat = np.concatenate([arr.mean(axis=0), arr.std(axis=0),
-                               arr.min(axis=0), arr.max(axis=0)]).reshape(1, -1)
+        arr          = np.array(spectral_rows)
+        spectral_vec = np.concatenate([arr.mean(0), arr.std(0),
+                                       arr.min(0), arr.max(0)])
+
+        beats_arr    = np.array(beat_list)
+        temporal_vec = np.array([
+            float(bpm),
+            float(beats_arr.mean()),
+            float(beats_arr.std()) if len(beats_arr) > 1 else 0.0,
+            float(len(spectral_rows)),
+        ])
+
+        n = len(spectral_rows)
+        if n > 1:
+            def _agg(a: np.ndarray) -> list:
+                return [float(a.mean()),
+                        float(a.std()) if len(a) > 1 else 0.0,
+                        float(a.max())]
+            semi_d = np.abs(np.diff(np.array(semitones)))
+            cent_d = np.abs(np.diff(np.array(centroids)))
+            rms_d  = np.abs(np.diff(np.array(rmss)))
+            trans_vec = np.array(_agg(semi_d) + _agg(cent_d) + _agg(rms_d))
+        else:
+            trans_vec = np.zeros(9)
+
+        feat = np.concatenate([spectral_vec, temporal_vec, trans_vec]).reshape(1, -1)
         v_model = joblib.load(v_model_path)
         a_model = joblib.load(a_model_path)
         return (float(np.clip(v_model.predict(feat)[0], 0, 100)),
                 float(np.clip(a_model.predict(feat)[0], 0, 100)))
 
+    except Exception as exc:
+        logger.debug(f'gesture V/A prediction failed: {exc}')
+        return 50.0, 50.0
+
+
+def _gesture_va_prediction(gesture_path: str) -> tuple[float, float]:
+    """Predict V/A from a gesture JSON file. Returns (50.0, 50.0) on failure."""
+    try:
+        import json
+        with open(gesture_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return _gesture_va_from_event_dicts(data.get('events', []),
+                                             bpm=float(data.get('bpm', 80.0)))
     except Exception as exc:
         logger.debug(f'gesture V/A prediction failed: {exc}')
         return 50.0, 50.0
@@ -192,87 +250,138 @@ def _note_to_hz(note: str, accidental: str, octave: int) -> float:
     return 440.0 * math.pow(2.0, (midi - 69.0) / 12.0)
 
 
-def _weighted_random_chord(chords: list[dict], participant_id: str,
-                            ranker: LibraryRanker) -> dict:
-    weights = []
-    for c in chords:
-        r = ranker.get_participant_chord_rating(c.get('chord_id', ''), participant_id)
-        weights.append(1.0 if r is None else max(0.1, (6.0 - r) / 5.0))
-    return random.choices(chords, weights=weights, k=1)[0]
+# ── Generative chord gesture constants ───────────────────────────────────────
+
+_NOTES       = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+_ACCIDENTALS = ['', '', '', '', '', '#', 'b', 'q#', 'qb']  # weighted toward natural
+_OCTAVES     = [2, 3, 4, 5, 6]
+_BPMS        = [60.0, 72.0, 80.0, 90.0, 100.0, 120.0]
+
+# Log path for reviewing all generated chord gestures
+_CHORD_GESTURE_LOG = (Path(__file__).parent.parent.parent.parent
+                      / 'data' / 'feedback' / 'chord_gesture_log.jsonl')
 
 
-_RHYTHM_MOTIFS = [
-    [1, 2, 3, 2],
-    [2, 1, 1, 2],
-    [1, 1, 2, 1],
-    [3, 1, 2],
-    [1, 3, 1, 1],
-    [2, 2, 1, 1],
-    [1, 1, 1, 2],
-    [2, 1, 3],
-    [1, 2, 1, 1],
-    [3, 2, 1],
-]
+def _equal_loudness_gain(root_hz: float) -> float:
+    """Amplitude correction factor for equal perceived loudness across pitch.
 
-
-def _build_chord_gesture(chords: list[dict], bpm: float = 72.0) -> 'Gesture':
-    """Convert a sequence of chord records into a playable gestural Gesture.
-
-    Each chord becomes one NoteEvent with chord.enabled=True.
-    A random rhythmic motif is chosen per gesture and cycled over the events,
-    giving each chord gesture a distinct feel.
-    The root is always A4 (440 Hz) — matching the existing chord preview behaviour.
+    Applies ~3 dB/octave relative to A4 (440 Hz): lower pitches are boosted,
+    higher pitches are attenuated, compensating for the ear's increased
+    sensitivity in the 1–4 kHz region.  Result is clamped to [0.25, 4.0].
     """
-    motif = random.choice(_RHYTHM_MOTIFS)
+    import math
+    db = -3.0 * math.log2(max(root_hz, 20.0) / 440.0)
+    return float(min(4.0, max(0.25, 10.0 ** (db / 20.0))))
+
+
+def _log_chord_gesture(gesture: 'Gesture') -> None:
+    """Append a generated chord gesture to the review log (silent on failure)."""
+    try:
+        import json
+        from datetime import datetime, timezone
+        data = gesture.to_dict()
+        data['generated_at'] = datetime.now(timezone.utc).isoformat()
+        # Annotate each event with a human-readable chord type name
+        for ev in data.get('events', []):
+            ct = ev.get('chord', {}).get('chord_type', 0)
+            ev['chord']['chord_type_name'] = (
+                CHORD_TYPE_NAMES[ct]
+                if 0 <= ct < len(CHORD_TYPE_NAMES) else 'Unknown')
+        _CHORD_GESTURE_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with open(_CHORD_GESTURE_LOG, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(data) + '\n')
+    except Exception:
+        pass
+
+
+def _build_chord_gesture(n_events: int = None, bpm: float = None) -> 'Gesture':
+    """Generate a fully randomised spectral chord gesture.
+
+    Root pitch (note + accidental + octave), chord type, voicing, inversion,
+    partial weights, amplitude, and brightness are all drawn independently at
+    random for each event — matching the generative conventions of melodic
+    gestures.  Beat durations follow a Gaussian (μ=2, σ=0.8) clamped to [1, 4].
+
+    Amplitude is equal-loudness normalised: a 3 dB/octave correction relative
+    to A4 compensates for the ear's frequency sensitivity, preventing high-
+    octave chords from sounding disproportionately louder.  Partial weights are
+    RMS-normalised so different spectral decay profiles produce equal energy.
+    """
+    import math, numpy as np
+
+    if n_events is None:
+        n_events = random.randint(4, 8)
+    if bpm is None:
+        bpm = float(random.choice(_BPMS))
+
     events = []
-    for i, chord in enumerate(chords):
+    for _ in range(n_events):
+        note       = random.choice(_NOTES)
+        accidental = random.choice(_ACCIDENTALS)
+        octave     = random.choice(_OCTAVES)
+
+        chord_type = random.randint(0, len(CHORD_TYPE_NAMES) - 1)
+        max_v      = CHORD_MAX_VOICES[chord_type]
+        num_voices = random.randint(2, max_v)
+        inversion  = random.randint(0, min(2, num_voices - 1))
+        balance    = round(random.uniform(0.3, 1.0), 3)
+
+        # Spectral profile: exponential decay + noise, then RMS-normalised
+        decay = float(np.random.uniform(0.4, 0.95))
+        raw   = np.array([decay ** i for i in range(16)], dtype=float)
+        raw  += np.random.uniform(0.0, 0.25, 16)
+        raw   = np.clip(raw, 0.0, None)
+        rms   = float(np.sqrt(np.mean(raw ** 2)))
+        if rms > 1e-9:
+            raw = raw / rms          # normalise → consistent spectral energy
         pw = PartialWeights()
-        for j, w in enumerate(chord.get('weights', [1.0] * 16)[:16]):
-            pw.set_index(j, float(w))
-        cc = ChordConfig(
-            enabled=True,
-            chord_type=int(chord.get('chord_type', 0)),
-            num_voices=int(chord.get('num_voices', 3)),
-            balance=float(chord.get('balance', 0.7)),
-            inversion=int(chord.get('inversion', 0)),
-        )
-        ev = NoteEvent(
-            note='A', accidental='', octave=4,
-            amplitude=0.25, brightness=0.5,
-            beats=motif[i % len(motif)],
+        for j in range(16):
+            pw.set_index(j, float(raw[j]))
+
+        # Equal-loudness amplitude: random base scaled by pitch correction
+        root_hz   = _note_to_hz(note, accidental, octave)
+        base_amp  = random.uniform(0.15, 0.35)
+        amplitude = float(np.clip(base_amp * _equal_loudness_gain(root_hz), 0.05, 0.5))
+
+        beats = int(np.clip(round(float(np.random.normal(2.0, 0.8))), 1, 4))
+
+        events.append(NoteEvent(
+            note=note, accidental=accidental, octave=octave,
+            amplitude=round(amplitude, 3),
+            brightness=round(random.uniform(0.0, 1.0), 3),
+            beats=beats,
             partials=pw,
-            chord=cc,
-        )
-        events.append(ev)
-    return Gesture(name='chord_gesture', bpm=bpm, events=events)
+            chord=ChordConfig(
+                enabled=True,
+                chord_type=chord_type,
+                num_voices=num_voices,
+                balance=balance,
+                inversion=inversion,
+            ),
+        ))
+
+    gesture = Gesture(name=f'gen_chord_{random.randint(10000, 99999)}',
+                      bpm=bpm, events=events)
+    _log_chord_gesture(gesture)
+    return gesture
 
 
-def _select_music_layers(lib: GestureLibrary, predictor: ChordPredictor,
-                          ranker: LibraryRanker, pid: str,
+def _select_music_layers(lib: GestureLibrary, ranker: LibraryRanker, pid: str,
                           target_va: tuple[float, float], n: int) -> list[dict]:
-    """Pick n layers near target_va from the gesture library and chord predictor.
+    """Pick n layers for a music evaluation, mixing melodic and chord gestures.
 
     Each layer is a dict: {'name': str, 'gesture': Gesture}
 
-    Selection is 50/50 gesture vs chord gesture when both sources are available,
-    falling back to gesture-only when the chord predictor has no data.
-    GestureLibrary.weighted_random() already applies LibraryRanker weights so
-    under-explored items surface more often — no extra weighting needed here.
+    Selection is 50/50 melodic (from library) vs generative chord gesture.
+    GestureLibrary.weighted_random() applies LibraryRanker weights so
+    under-explored items surface more often.
     """
-    tv, ta = target_va
     layers: list[dict] = []
 
     for _ in range(n):
-        use_chord = bool(predictor.chords) and random.random() < 0.5
-        if use_chord:
-            steps = random.randint(3, 5)
-            chords = predictor.find_path((tv, ta), (tv, ta), steps=steps)
-            if chords:
-                gesture = _build_chord_gesture(chords)
-                layers.append({
-                    'name': f'chord_{chords[0]["chord_id"]}',
-                    'gesture': gesture,
-                })
+        if random.random() < 0.5:
+            gesture = _build_chord_gesture()
+            layers.append({'name': gesture.name, 'gesture': gesture})
         else:
             item = lib.weighted_random(participant_id=pid)
             if item:
@@ -529,28 +638,17 @@ class _GestureTab(_EvalWidget):
 # ── Chord tab ─────────────────────────────────────────────────────────────────
 
 class _ChordTab(_EvalWidget):
-    def __init__(self, store, ranker, pid_fn, player: GesturePlayer,
-                 predictor: ChordPredictor, parent=None):
+    def __init__(self, store, ranker, pid_fn, player: GesturePlayer, parent=None):
         self._player = player
-        self._predictor = predictor
         self._current_gesture = None
         super().__init__(store, ranker, pid_fn, 'chord', parent)
 
     def _load_item(self) -> Optional[dict]:
-        if not self._predictor.chords:
-            return None
-        tv = random.uniform(10.0, 90.0)
-        ta = random.uniform(10.0, 90.0)
-        self._ml_valence = tv
-        self._ml_arousal = ta
-        steps = random.randint(4, 6)
-        chords = self._predictor.find_path((tv, ta), (tv, ta), steps=steps)
-        if not chords:
-            return None
-        self._current_gesture = _build_chord_gesture(chords)
-        chord_ids = ' · '.join(c['chord_id'] for c in chords[:3])
-        return {'name': f'Chord Gesture  ·  {chord_ids}',
-                'chords': chords}
+        self._current_gesture = _build_chord_gesture()
+        self._ml_valence, self._ml_arousal = _gesture_va_from_event_dicts(
+            self._current_gesture.to_dict()['events'],
+            bpm=self._current_gesture.bpm)
+        return {'name': self._current_gesture.name}
 
     def _play_item(self, item: dict):
         if self._current_gesture:
@@ -578,10 +676,7 @@ class _MusicTab(_EvalWidget):
     congruency independently of single-gesture quality.
     """
 
-    def __init__(self, store, ranker, pid_fn, player: GesturePlayer,
-                 predictor: ChordPredictor, parent=None):
-        # player accepted for API compatibility but _MusicTab manages its own per-layer players
-        self._predictor = predictor
+    def __init__(self, store, ranker, pid_fn, player: GesturePlayer, parent=None):
         self._lib = GestureLibrary()
         self._layers: list[dict] = []
         self._layer_players: list[GesturePlayer] = []
@@ -598,7 +693,7 @@ class _MusicTab(_EvalWidget):
 
         n_layers = random.randint(2, 3)
         self._layers = _select_music_layers(
-            self._lib, self._predictor, self._ranker, pid, (tv, ta), n_layers)
+            self._lib, self._ranker, pid, (tv, ta), n_layers)
 
         if len(self._layers) < 2:   # need at least 2 layers for meaningful congruency data
             return None
@@ -640,10 +735,9 @@ class HumanFeedbackWindow(QMainWindow):
         self.setMinimumSize(620, 580)
         self.setStyleSheet(f'background:{WINDOW_BG}; color:{TEXT};')
 
-        store     = FeedbackStore()
-        ranker    = LibraryRanker()
-        player    = GesturePlayer()
-        predictor = ChordPredictor()
+        store  = FeedbackStore()
+        ranker = LibraryRanker()
+        player = GesturePlayer()
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -697,8 +791,8 @@ class HumanFeedbackWindow(QMainWindow):
         pid_fn = lambda: self._pid_edit.text().strip() or 'anonymous'
 
         tabs.addTab(_GestureTab(store, ranker, pid_fn, player), 'Gesture')
-        tabs.addTab(_ChordTab(store, ranker, pid_fn, player, predictor), 'Chord Gesture')
-        tabs.addTab(_MusicTab(store, ranker, pid_fn, player, predictor), 'Music')
+        tabs.addTab(_ChordTab(store, ranker, pid_fn, player), 'Chord Gesture')
+        tabs.addTab(_MusicTab(store, ranker, pid_fn, player), 'Music')
 
         root.addWidget(tabs)
         self._player = player

@@ -35,6 +35,8 @@ from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
+from gesture_features import extract_gesture_features, N_FEATURES
+
 logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -48,16 +50,6 @@ RF_MIN_SAMPLES  = 80    # switch from Ridge to RF once enough data is collected
 
 
 # ── feature extraction ────────────────────────────────────────────────────────
-
-_NOTE_SEMITONES = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
-_ACC_OFFSETS    = {'#': 1, 'b': -1, '': 0}
-
-
-def _note_to_hz(note: str, accidental: str, octave: int) -> float:
-    semitone = _NOTE_SEMITONES.get(note.upper(), 9) + _ACC_OFFSETS.get(accidental, 0)
-    midi = (octave + 1) * 12 + semitone
-    return 440.0 * (2 ** ((midi - 69) / 12))
-
 
 def _sanitise(name: str) -> str:
     s = re.sub(r'[^\w\s\-]', '', name).strip()
@@ -83,49 +75,19 @@ def _gesture_file(name: str) -> Path | None:
 
 
 def _extract_features(gesture_path: Path) -> np.ndarray | None:
-    """Extract 24-element feature vector from a gesture JSON file.
+    """Extract 37-element feature vector from a gesture JSON file.
 
-    Matches the feature schema expected by the valence/arousal RF models:
-    6 spectral statistics (rms, centroid, rolloff, bandwidth, flatness, zcr)
-    × 4 aggregation modes (mean, std, min, max) across all non-rest events.
-    Returns None if no valid events.
+    Delegates to gesture_features.extract_gesture_features, passing the
+    gesture's own BPM so temporal features are correctly populated.
     """
     try:
         data = json.loads(gesture_path.read_text(encoding='utf-8'))
     except (json.JSONDecodeError, OSError):
         return None
-
     if 'events' not in data:
         return None
-
-    rows = []
-    for ev in data['events']:
-        if ev.get('is_rest', False):
-            continue
-        freq = _note_to_hz(ev.get('note', 'A'), ev.get('accidental', ''),
-                           int(ev.get('octave', 4)))
-        weights = np.array([ev.get('partials', {}).get(f'w{i}', 1.0)
-                            for i in range(1, 17)], dtype=float)
-        weights = np.clip(weights, 0, None)
-        total = weights.sum()
-        if total < 1e-9:
-            continue
-        freqs = np.array([freq * i for i in range(1, 17)])
-
-        rms      = float(np.sqrt(np.mean(weights ** 2)))
-        centroid = float(np.dot(weights, freqs) / total)
-        bw       = float(np.sqrt(np.dot(weights, (freqs - centroid) ** 2) / total))
-        cumsum   = np.cumsum(weights ** 2)
-        rolloff  = float(freqs[min(np.searchsorted(cumsum, 0.85 * cumsum[-1]), 15)])
-        gm       = float(np.exp(np.mean(np.log(weights + 1e-9))))
-        flatness = float(gm / (total / 16 + 1e-9))
-        rows.append([rms, centroid, rolloff, bw, flatness, 0.0])
-
-    if not rows:
-        return None
-
-    arr = np.array(rows)
-    return np.concatenate([arr.mean(0), arr.std(0), arr.min(0), arr.max(0)])
+    bpm = float(data.get('bpm', 80.0))
+    return extract_gesture_features(data['events'], bpm=bpm)
 
 
 # ── data loading ──────────────────────────────────────────────────────────────
@@ -237,7 +199,7 @@ def train(replace: bool = True) -> None:
     print(f"\n{'═'*58}")
     print(f"  Feedback-Trained V/A Model  ({model_label})")
     print(f"{'═'*58}")
-    print(f"  Gestures: {n}   Features: {X.shape[1]}")
+    print(f"  Gestures: {n}   Features: {X.shape[1]}  ({N_FEATURES} expected)")
     print(f"  Valence  range: [{Y[:,0].min():.1f}, {Y[:,0].max():.1f}]  "
           f"mean={Y[:,0].mean():.1f}")
     print(f"  Arousal  range: [{Y[:,1].min():.1f}, {Y[:,1].max():.1f}]  "

@@ -175,3 +175,23 @@ def save_preprocessed_tiff(frame_f32: np.ndarray, output_path: Path) -> None:
 
     uint16 = (np.clip(frame_f32, 0.0, 1.0) * 65535).astype(np.uint16)
     tifffile.imwrite(str(output_path), uint16)
+
+
+def detect_python_executable() -> str:
+    """
+    Return the Python binary to use when launching the Cellpose GUI.
+
+    If the current process is running inside a conda environment (detected by
+    the presence of 'envs/<name>/' in sys.executable), use that Python so the
+    GUI runs in the same environment.  Otherwise fall back to the known
+    membrane-image environment that has Cellpose installed.
+
+    Returns
+    -------
+    str
+        Absolute path to the Python executable.
+    """
+    exe = sys.executable
+    if re.search(r"envs/[^/]+/", exe):
+        return exe
+    return FALLBACK_PYTHON

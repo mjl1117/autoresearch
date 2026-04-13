@@ -2,13 +2,14 @@
 import importlib
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import numpy as np
 import pytest
 import tifffile
-from prepare_training_images import find_tiff_files, select_frame_indices, compute_auto_params, preprocess_frame, save_preprocessed_tiff
+from prepare_training_images import find_tiff_files, select_frame_indices, compute_auto_params, preprocess_frame, save_preprocessed_tiff, detect_python_executable, FALLBACK_PYTHON
 
 
 def test_module_imports():
@@ -152,3 +153,27 @@ def test_save_preprocessed_tiff_creates_parents(tmp_path):
     out = tmp_path / "sub" / "deep" / "frame.tif"
     save_preprocessed_tiff(frame, out)
     assert out.exists()
+
+
+def test_detect_python_executable_conda_env():
+    """Returns the current Python when running inside a conda env."""
+    fake_exe = "/Users/matthew/miniforge3/envs/membrane-image/bin/python"
+    with patch("prepare_training_images.sys") as mock_sys:
+        mock_sys.executable = fake_exe
+        result = detect_python_executable()
+    assert result == fake_exe
+
+
+def test_detect_python_executable_system_python():
+    """Falls back to membrane-image Python when not in a conda env."""
+    with patch("prepare_training_images.sys") as mock_sys:
+        mock_sys.executable = "/opt/homebrew/opt/python@3.14/bin/python3.14"
+        result = detect_python_executable()
+    assert result == FALLBACK_PYTHON
+
+
+def test_detect_python_executable_returns_string():
+    """Always returns a string."""
+    result = detect_python_executable()
+    assert isinstance(result, str)
+    assert len(result) > 0

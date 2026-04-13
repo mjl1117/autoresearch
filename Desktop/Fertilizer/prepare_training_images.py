@@ -195,3 +195,198 @@ def detect_python_executable() -> str:
     if re.search(r"envs/[^/]+/", exe):
         return exe
     return FALLBACK_PYTHON
+
+
+def parse_args(argv=None):
+    """
+    Parse command-line arguments.
+
+    Parameters
+    ----------
+    argv : list of str, optional
+        Argument list; defaults to sys.argv[1:] when None.
+    """
+    p = argparse.ArgumentParser(
+        description=(
+            "Preprocess TIFF images for Cellpose training.\n"
+            "Extracts the OA-647 channel from the first and last timepoints,\n"
+            "applies the inference preprocessing pipeline, saves uint16 TIFFs,\n"
+            "and launches the Cellpose GUI pre-loaded with cpsam."
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    p.add_argument("input_dir", type=Path,
+                   help="Root directory to search recursively for .tif/.tiff files")
+
+    p.add_argument("--output-dir", type=Path, default=Path("training_images"),
+                   help="Directory where preprocessed TIFFs are saved (default: training_images/)")
+    p.add_argument("--channel", type=int, default=1,
+                   help="Channel index to extract — 1 = OA-647 (default: 1)")
+
+    # Rolling ball
+    p.add_argument("--no-rolling-ball", action="store_true",
+                   help="Disable rolling ball background subtraction")
+    p.add_argument("--rolling-ball-radius", type=float, default=None,
+                   help="Rolling ball radius in pixels (default: auto from pixel size)")
+
+    # DoG
+    p.add_argument("--no-dog", action="store_true",
+                   help="Disable Difference-of-Gaussians enhancement")
+    p.add_argument("--dog-sigma-low", type=float, default=1.0,
+                   help="DoG low sigma in pixels (default: 1.0)")
+    p.add_argument("--dog-sigma-high", type=float, default=None,
+                   help="DoG high sigma in pixels (default: auto from pixel size)")
+
+    # CLAHE
+    p.add_argument("--no-clahe", action="store_true",
+                   help="Disable CLAHE contrast enhancement")
+    p.add_argument("--clahe-clip-limit", type=float, default=0.01,
+                   help="CLAHE clip limit (default: 0.01)")
+
+    # Physical parameters for auto-radius
+    p.add_argument("--pixel-size-um", type=float, default=None,
+                   help="Pixel size in µm (default: read from TIFF metadata)")
+    p.add_argument("--max-bead-diameter-um", type=float, default=50.0,
+                   help="Maximum bead diameter in µm for auto rolling ball radius (default: 50.0)")
+
+    # GUI
+    p.add_argument("--no-launch", action="store_true",
+                   help="Prepare images but do not open the Cellpose GUI")
+
+    return p.parse_args(argv)
+
+
+def launch_cellpose_gui(output_dir: Path, python_bin: str) -> None:
+    """
+    Launch the Cellpose GUI non-blocking, pre-loaded with the cpsam model.
+
+    Parameters
+    ----------
+    output_dir : Path
+        Directory containing the preprocessed training TIFFs.
+    python_bin : str
+        Path to the Python executable in the target conda environment.
+    """
+    cmd = [
+        python_bin, "-m", "cellpose",
+        "--image_path", str(output_dir),
+        "--pretrained_model", CPSAM_MODEL_PATH,
+    ]
+    subprocess.Popen(cmd)
+
+
+def main(argv=None):
+    """
+    Main entry point.
+
+    Parameters
+    ----------
+    argv : list of str, optional
+        Argument list for testing; defaults to sys.argv[1:] when None.
+    """
+    args = parse_args(argv)
+
+    # Validate input directory
+    if not args.input_dir.is_dir():
+        print(f"ERROR: input_dir does not exist or is not a directory: {args.input_dir}")
+        sys.exit(1)
+
+    # Validate output directory is writable (create if needed)
+    try:
+        args.output_dir.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        print(f"ERROR: cannot create output directory {args.output_dir}: {exc}")
+        sys.exit(1)
+
+    # Discover TIFFs
+    tiff_files = find_tiff_files(args.input_dir)
+    if not tiff_files:
+        print(f"No .tif/.tiff files found under {args.input_dir}")
+        sys.exit(0)
+
+    print(f"\nFound {len(tiff_files)} TIFF file(s) under {args.input_dir}")
+
+    frames_written = 0
+    skipped = 0
+
+    for tiff_path in tiff_files:
+        # Resolve pixel size: flag > TIFF metadata > None
+        pixel_size_um = args.pixel_size_um
+        if pixel_size_um is None:
+            pixel_size_um = read_pixel_size_from_tiff(tiff_path)
+
+        # Compute auto parameters
+        auto = compute_auto_params(pixel_size_um, args.max_bead_diameter_um)
+        rb_radius     = args.rolling_ball_radius if args.rolling_ball_radius is not None else auto["rb_radius"]
+        dog_sigma_high = args.dog_sigma_high      if args.dog_sigma_high      is not None else auto["dog_sigma_high"]
+
+        # Load stack
+        try:
+            stack, metadata = load_tiff_stack(tiff_path)
+        except Exception as exc:
+            print(f"  WARNING: failed to load {tiff_path.name}: {exc} — skipping")
+            skipped += 1
+            continue
+
+        n_timepoints = metadata["n_timepoints"]
+        n_channels   = metadata["n_channels"]
+
+        if args.channel >= n_channels:
+            print(f"  WARNING: {tiff_path.name} has {n_channels} channel(s); "
+                  f"channel index {args.channel} is out of range — skipping")
+            skipped += 1
+            continue
+
+        frame_indices = select_frame_indices(n_timepoints)
+
+        # Relative path from input_dir for output subdirectory structure
+        rel_parent = tiff_path.parent.relative_to(args.input_dir)
+
+        for t in frame_indices:
+            raw_frame = stack[t, args.channel, :, :]
+
+            processed = preprocess_frame(
+                raw_frame,
+                rolling_ball=not args.no_rolling_ball,
+                rb_radius=rb_radius,
+                dog=not args.no_dog,
+                dog_sigma_low=args.dog_sigma_low,
+                dog_sigma_high=dog_sigma_high,
+                clahe=not args.no_clahe,
+                clahe_clip_limit=args.clahe_clip_limit,
+            )
+
+            out_name = f"{tiff_path.stem}_t{t:03d}_ch{args.channel}.tif"
+            out_path = args.output_dir / rel_parent / out_name
+            save_preprocessed_tiff(processed, out_path)
+            frames_written += 1
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("CELLPOSE TRAINING PREP COMPLETE")
+    print(f"{'='*60}")
+    print(f"Input directory:   {args.input_dir}  (recursive)")
+    print(f"TIFFs found:       {len(tiff_files)}")
+    if skipped:
+        print(f"TIFFs skipped:     {skipped}")
+    print(f"Frames written:    {frames_written}")
+    print(f"Output directory:  {args.output_dir}")
+    print(f"Channel:           {args.channel} (OA-647)")
+    print(f"Preprocessing:     rolling_ball={not args.no_rolling_ball}  "
+          f"dog={not args.no_dog}  clahe={not args.no_clahe}")
+
+    if not args.no_launch:
+        python_bin = detect_python_executable()
+        print(f"\nLaunching Cellpose GUI...")
+        print(f"  Python:  {python_bin}")
+        print(f"  Model:   {CPSAM_MODEL_PATH}")
+        print(f"  Images:  {args.output_dir}")
+        print(f"{'='*60}\n")
+        launch_cellpose_gui(args.output_dir, python_bin)
+    else:
+        print(f"{'='*60}\n")
+
+
+if __name__ == "__main__":
+    main()

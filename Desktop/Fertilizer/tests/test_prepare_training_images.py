@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import numpy as np
 import pytest
 import tifffile
-from prepare_training_images import find_tiff_files, select_frame_indices, compute_auto_params, preprocess_frame, save_preprocessed_tiff, detect_python_executable, FALLBACK_PYTHON
+from prepare_training_images import find_tiff_files, select_frame_indices, compute_auto_params, preprocess_frame, save_preprocessed_tiff, detect_python_executable, FALLBACK_PYTHON, main
 
 
 def test_module_imports():
@@ -177,3 +177,49 @@ def test_detect_python_executable_returns_string():
     result = detect_python_executable()
     assert isinstance(result, str)
     assert len(result) > 0
+
+
+def _make_fake_tiff(path: Path, n_timepoints=3):
+    """Write a minimal (T, C, H, W) TIFF for testing."""
+    rng = np.random.default_rng(0)
+    stack = rng.integers(100, 4000,
+                         size=(n_timepoints * 2, 32, 32),
+                         dtype=np.uint16)
+    tifffile.imwrite(str(path), stack)
+
+
+def test_main_creates_output_files(tmp_path):
+    """main() writes first+last frame TIFFs into the output directory."""
+    input_dir  = tmp_path / "input"
+    output_dir = tmp_path / "output"
+    input_dir.mkdir()
+    _make_fake_tiff(input_dir / "exp1.tif", n_timepoints=5)
+
+    with patch("prepare_training_images.subprocess.Popen"), \
+         patch("prepare_training_images.read_pixel_size_from_tiff", return_value=None):
+        main([str(input_dir),
+              "--output-dir", str(output_dir),
+              "--no-launch"])
+
+    tifs = list(output_dir.rglob("*.tif"))
+    assert len(tifs) == 2                       # frame 0 and frame 4
+    names = {p.name for p in tifs}
+    assert any("t000" in n for n in names)
+    assert any("t004" in n for n in names)
+
+
+def test_main_single_frame_tiff(tmp_path):
+    """Single-frame TIFF produces exactly one output file."""
+    input_dir  = tmp_path / "input"
+    output_dir = tmp_path / "output"
+    input_dir.mkdir()
+    _make_fake_tiff(input_dir / "single.tif", n_timepoints=1)
+
+    with patch("prepare_training_images.subprocess.Popen"), \
+         patch("prepare_training_images.read_pixel_size_from_tiff", return_value=None):
+        main([str(input_dir),
+              "--output-dir", str(output_dir),
+              "--no-launch"])
+
+    tifs = list(output_dir.rglob("*.tif"))
+    assert len(tifs) == 1

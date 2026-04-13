@@ -37,3 +37,24 @@ from ml_image_analysis import (
 
 CPSAM_MODEL_PATH = "/Users/matthew/.cellpose/models/cpsam"
 FALLBACK_PYTHON   = "/Users/matthew/miniforge3/envs/membrane-image/bin/python"
+
+
+def find_tiff_files(root_dir: Path) -> list:
+    """
+    Recursively find all .tif and .tiff files under root_dir.
+
+    Parameters
+    ----------
+    root_dir : Path
+        Directory to search.
+
+    Returns
+    -------
+    list of Path
+        Sorted list of matching file paths.
+    """
+    root_dir = Path(root_dir)
+    tifs = sorted(root_dir.rglob("*.tif")) + sorted(root_dir.rglob("*.tiff"))
+    # rglob("*.tif") won't match *.tiff, so both patterns are needed.
+    # De-duplicate and re-sort in case of overlap on case-insensitive filesystems.
+    return sorted(set(tifs))

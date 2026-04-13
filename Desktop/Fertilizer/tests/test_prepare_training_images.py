@@ -6,7 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
-from prepare_training_images import find_tiff_files, select_frame_indices
+from prepare_training_images import find_tiff_files, select_frame_indices, compute_auto_params
 
 
 def test_module_imports():
@@ -60,3 +60,24 @@ def test_select_frame_indices_timelapse():
 def test_select_frame_indices_three():
     """Three frames: first and last, not middle."""
     assert select_frame_indices(3) == [0, 2]
+
+
+def test_compute_auto_params_with_pixel_size():
+    """Computes radius and sigma from physical units when pixel size is known."""
+    params = compute_auto_params(pixel_size_um=0.1, max_bead_diameter_um=50.0)
+    assert params["rb_radius"] == pytest.approx(500.0)
+    assert params["dog_sigma_high"] == pytest.approx(125.0)
+
+
+def test_compute_auto_params_fallback():
+    """Returns fallback values when pixel size is None."""
+    params = compute_auto_params(pixel_size_um=None, max_bead_diameter_um=50.0)
+    assert params["rb_radius"] == pytest.approx(50.0)
+    assert params["dog_sigma_high"] == pytest.approx(10.0)
+
+
+def test_compute_auto_params_zero_pixel_size():
+    """pixel_size_um=0 is treated as unknown — falls back to defaults."""
+    params = compute_auto_params(pixel_size_um=0, max_bead_diameter_um=50.0)
+    assert params["rb_radius"] == pytest.approx(50.0)
+    assert params["dog_sigma_high"] == pytest.approx(10.0)

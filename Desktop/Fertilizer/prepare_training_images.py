@@ -78,3 +78,34 @@ def select_frame_indices(n_timepoints: int) -> list:
     if n_timepoints == 1:
         return [0]
     return [0, n_timepoints - 1]
+
+
+def compute_auto_params(pixel_size_um, max_bead_diameter_um=50.0) -> dict:
+    """
+    Compute rolling ball radius and DoG high sigma from physical units.
+
+    Mirrors the auto-parameter logic in ml_image_analysis.py so that
+    preprocessing at training time matches preprocessing at inference time.
+
+    Parameters
+    ----------
+    pixel_size_um : float or None
+        Physical pixel size in µm. None or 0 triggers fallback values.
+    max_bead_diameter_um : float
+        Maximum expected bead/vesicle diameter in µm.
+
+    Returns
+    -------
+    dict with keys:
+        'rb_radius'      – rolling ball radius in pixels (float)
+        'dog_sigma_high' – DoG high sigma in pixels (float)
+    """
+    if pixel_size_um and pixel_size_um > 0:
+        max_diam_px = max_bead_diameter_um / pixel_size_um
+        rb_radius     = max_diam_px
+        dog_sigma_high = max_diam_px / 4.0
+    else:
+        rb_radius     = 50.0
+        dog_sigma_high = 10.0
+
+    return {"rb_radius": rb_radius, "dog_sigma_high": dog_sigma_high}

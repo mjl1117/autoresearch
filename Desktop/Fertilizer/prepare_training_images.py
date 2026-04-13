@@ -57,3 +57,24 @@ def find_tiff_files(root_dir: Path) -> list:
     tifs = list(root_dir.rglob("*.tif")) + list(root_dir.rglob("*.tiff"))
     # set() guards against symlinks that resolve to the same path.
     return sorted(set(tifs))
+
+
+def select_frame_indices(n_timepoints: int) -> list:
+    """
+    Return the frame indices to extract from a TIFF stack.
+
+    Single-frame stacks return [0].
+    Time-lapse stacks (T >= 2) return [0, T-1].
+
+    Parameters
+    ----------
+    n_timepoints : int
+        Total number of frames in the stack.
+
+    Returns
+    -------
+    list of int
+    """
+    if n_timepoints == 1:
+        return [0]
+    return [0, n_timepoints - 1]

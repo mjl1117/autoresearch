@@ -84,8 +84,8 @@ def compute_auto_params(pixel_size_um, max_bead_diameter_um=50.0) -> dict:
     """
     Compute rolling ball radius and DoG high sigma from physical units.
 
-    Mirrors the auto-parameter logic in ml_image_analysis.py so that
-    preprocessing at training time matches preprocessing at inference time.
+    Mirrors the auto-parameter logic in ml_image_analysis.py for the case
+    where no prior Cellpose diameter estimate is available (the diameter_px=None path).
 
     Parameters
     ----------
@@ -372,7 +372,8 @@ def main(argv=None):
         print(f"TIFFs skipped:     {skipped}")
     print(f"Frames written:    {frames_written}")
     print(f"Output directory:  {args.output_dir}")
-    print(f"Channel:           {args.channel} (OA-647)")
+    channel_label = " (OA-647)" if args.channel == 1 else ""
+    print(f"Channel:           {args.channel}{channel_label}")
     print(f"Preprocessing:     rolling_ball={not args.no_rolling_ball}  "
           f"dog={not args.no_dog}  clahe={not args.no_clahe}")
 

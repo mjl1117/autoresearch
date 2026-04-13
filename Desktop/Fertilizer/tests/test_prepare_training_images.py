@@ -7,7 +7,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import numpy as np
 import pytest
-from prepare_training_images import find_tiff_files, select_frame_indices, compute_auto_params, preprocess_frame
+import tifffile
+from prepare_training_images import find_tiff_files, select_frame_indices, compute_auto_params, preprocess_frame, save_preprocessed_tiff
 
 
 def test_module_imports():
@@ -126,3 +127,28 @@ def test_preprocess_frame_all_disabled():
     )
     assert result.dtype == np.float32
     assert float(result.max()) == pytest.approx(1.0, abs=1e-5)
+
+
+def test_save_preprocessed_tiff_creates_file(tmp_path):
+    """Saves a uint16 TIFF at the given path."""
+    frame = np.random.default_rng(0).random((32, 32)).astype(np.float32)
+    out = tmp_path / "out.tif"
+    save_preprocessed_tiff(frame, out)
+    assert out.exists()
+
+
+def test_save_preprocessed_tiff_dtype(tmp_path):
+    """Saved TIFF is uint16."""
+    frame = np.linspace(0, 1, 32 * 32, dtype=np.float32).reshape(32, 32)
+    out = tmp_path / "out.tif"
+    save_preprocessed_tiff(frame, out)
+    loaded = tifffile.imread(str(out))
+    assert loaded.dtype == np.uint16
+
+
+def test_save_preprocessed_tiff_creates_parents(tmp_path):
+    """Creates intermediate directories if they don't exist."""
+    frame = np.zeros((16, 16), dtype=np.float32)
+    out = tmp_path / "sub" / "deep" / "frame.tif"
+    save_preprocessed_tiff(frame, out)
+    assert out.exists()

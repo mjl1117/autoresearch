@@ -157,3 +157,21 @@ def preprocess_frame(frame, rolling_ball, rb_radius,
         image = np.zeros_like(image)
 
     return np.ascontiguousarray(image, dtype=np.float32)
+
+
+def save_preprocessed_tiff(frame_f32: np.ndarray, output_path: Path) -> None:
+    """
+    Scale a float32 [0, 1] frame to uint16 and save as a grayscale TIFF.
+
+    Parameters
+    ----------
+    frame_f32 : np.ndarray, dtype float32, shape (H, W)
+        Preprocessed frame with values in [0, 1].
+    output_path : Path
+        Destination file path. Parent directories are created if absent.
+    """
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    uint16 = (np.clip(frame_f32, 0.0, 1.0) * 65535).astype(np.uint16)
+    tifffile.imwrite(str(output_path), uint16)

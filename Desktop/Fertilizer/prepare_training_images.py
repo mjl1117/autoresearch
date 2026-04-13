@@ -257,20 +257,21 @@ def parse_args(argv=None):
     return p.parse_args(argv)
 
 
-def launch_cellpose_gui(output_dir: Path, python_bin: str) -> None:
+def launch_cellpose_gui(python_bin: str) -> None:
     """
     Launch the Cellpose GUI non-blocking, pre-loaded with the cpsam model.
 
+    In Cellpose 4, the GUI opens only when no --dir or --image_path argument
+    is provided. Passing --image_path triggers batch evaluation mode instead.
+    The user loads images from inside the GUI after it opens.
+
     Parameters
     ----------
-    output_dir : Path
-        Directory containing the preprocessed training TIFFs.
     python_bin : str
         Path to the Python executable in the target conda environment.
     """
     cmd = [
         python_bin, "-m", "cellpose",
-        "--image_path", str(output_dir),
         "--pretrained_model", CPSAM_MODEL_PATH,
     ]
     subprocess.Popen(cmd)
@@ -379,12 +380,14 @@ def main(argv=None):
 
     if not args.no_launch:
         python_bin = detect_python_executable()
+        abs_output = args.output_dir.resolve()
         print(f"\nLaunching Cellpose GUI...")
         print(f"  Python:  {python_bin}")
         print(f"  Model:   {CPSAM_MODEL_PATH}")
-        print(f"  Images:  {args.output_dir}")
+        print(f"  Images:  {abs_output}")
+        print(f"  --> In the GUI: File > Open Image(s) and navigate to the above folder")
         print(f"{'='*60}\n")
-        launch_cellpose_gui(args.output_dir, python_bin)
+        launch_cellpose_gui(python_bin)
     else:
         print(f"{'='*60}\n")
 

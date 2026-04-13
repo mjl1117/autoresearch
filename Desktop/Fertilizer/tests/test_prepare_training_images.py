@@ -183,7 +183,7 @@ def _make_fake_tiff(path: Path, n_timepoints=3):
     """Write a minimal (T, C, H, W) TIFF for testing."""
     rng = np.random.default_rng(0)
     stack = rng.integers(100, 4000,
-                         size=(n_timepoints * 2, 32, 32),
+                         size=(n_timepoints, 2, 32, 32),
                          dtype=np.uint16)
     tifffile.imwrite(str(path), stack)
 

@@ -54,7 +54,6 @@ def find_tiff_files(root_dir: Path) -> list:
         Sorted list of matching file paths.
     """
     root_dir = Path(root_dir)
-    tifs = sorted(root_dir.rglob("*.tif")) + sorted(root_dir.rglob("*.tiff"))
-    # rglob("*.tif") won't match *.tiff, so both patterns are needed.
-    # De-duplicate and re-sort in case of overlap on case-insensitive filesystems.
+    tifs = list(root_dir.rglob("*.tif")) + list(root_dir.rglob("*.tiff"))
+    # set() guards against symlinks that resolve to the same path.
     return sorted(set(tifs))

@@ -196,7 +196,8 @@ def test_main_creates_output_files(tmp_path):
     _make_fake_tiff(input_dir / "exp1.tif", n_timepoints=5)
 
     with patch("prepare_training_images.subprocess.Popen"), \
-         patch("prepare_training_images.read_pixel_size_from_tiff", return_value=None):
+         patch("prepare_training_images.read_pixel_size_from_tiff",
+               return_value=(None, "not found")):
         main([str(input_dir),
               "--output-dir", str(output_dir),
               "--no-launch"])
@@ -216,7 +217,8 @@ def test_main_single_frame_tiff(tmp_path):
     _make_fake_tiff(input_dir / "single.tif", n_timepoints=1)
 
     with patch("prepare_training_images.subprocess.Popen"), \
-         patch("prepare_training_images.read_pixel_size_from_tiff", return_value=None):
+         patch("prepare_training_images.read_pixel_size_from_tiff",
+               return_value=(None, "not found")):
         main([str(input_dir),
               "--output-dir", str(output_dir),
               "--no-launch"])

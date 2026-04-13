@@ -314,7 +314,7 @@ def main(argv=None):
         # Resolve pixel size: flag > TIFF metadata > None
         pixel_size_um = args.pixel_size_um
         if pixel_size_um is None:
-            pixel_size_um = read_pixel_size_from_tiff(tiff_path)
+            pixel_size_um, _source = read_pixel_size_from_tiff(tiff_path)
 
         # Compute auto parameters
         auto = compute_auto_params(pixel_size_um, args.max_bead_diameter_um)

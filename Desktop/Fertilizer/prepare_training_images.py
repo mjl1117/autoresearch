@@ -109,3 +109,51 @@ def compute_auto_params(pixel_size_um, max_bead_diameter_um=50.0) -> dict:
         dog_sigma_high = 10.0
 
     return {"rb_radius": rb_radius, "dog_sigma_high": dog_sigma_high}
+
+
+def preprocess_frame(frame, rolling_ball, rb_radius,
+                     dog, dog_sigma_low, dog_sigma_high,
+                     clahe, clahe_clip_limit) -> np.ndarray:
+    """
+    Apply the inference preprocessing pipeline to a single 2-D frame.
+
+    Steps applied in order (each conditional on its enable flag):
+      1. Rolling ball background subtraction
+      2. Difference-of-Gaussians enhancement
+      3. CLAHE contrast enhancement
+      4. Normalise to float32 [0, 1]
+
+    Parameters
+    ----------
+    frame : array-like, shape (H, W)
+        Raw grayscale image (any integer or float dtype).
+    rolling_ball : bool
+    rb_radius : float
+    dog : bool
+    dog_sigma_low : float
+    dog_sigma_high : float
+    clahe : bool
+    clahe_clip_limit : float
+
+    Returns
+    -------
+    np.ndarray, dtype float32, shape (H, W), values in [0, 1]
+    """
+    image = np.asarray(frame, dtype=np.float32)
+
+    if rolling_ball:
+        image = apply_rolling_ball_background(image, radius=rb_radius)
+    if dog:
+        image = apply_dog_enhancement(image, sigma_low=dog_sigma_low,
+                                      sigma_high=dog_sigma_high)
+    if clahe:
+        image = enhance_contrast_clahe(image, clip_limit=clahe_clip_limit)
+
+    # Normalise to [0, 1]
+    img_min, img_max = float(image.min()), float(image.max())
+    if img_max > img_min:
+        image = (image - img_min) / (img_max - img_min)
+    else:
+        image = np.zeros_like(image)
+
+    return np.ascontiguousarray(image, dtype=np.float32)

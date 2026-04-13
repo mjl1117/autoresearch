@@ -5,8 +5,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+import numpy as np
 import pytest
-from prepare_training_images import find_tiff_files, select_frame_indices, compute_auto_params
+from prepare_training_images import find_tiff_files, select_frame_indices, compute_auto_params, preprocess_frame
 
 
 def test_module_imports():
@@ -81,3 +82,47 @@ def test_compute_auto_params_zero_pixel_size():
     params = compute_auto_params(pixel_size_um=0, max_bead_diameter_um=50.0)
     assert params["rb_radius"] == pytest.approx(50.0)
     assert params["dog_sigma_high"] == pytest.approx(10.0)
+
+
+def _synthetic_frame(h=64, w=64):
+    rng = np.random.default_rng(42)
+    return rng.integers(100, 4000, size=(h, w), dtype=np.uint16)
+
+
+def test_preprocess_frame_output_range():
+    """Output is float32 normalised to [0, 1]."""
+    frame = _synthetic_frame()
+    result = preprocess_frame(
+        frame,
+        rolling_ball=True, rb_radius=20.0,
+        dog=True, dog_sigma_low=1.0, dog_sigma_high=5.0,
+        clahe=True, clahe_clip_limit=0.01,
+    )
+    assert result.dtype == np.float32
+    assert float(result.min()) >= 0.0
+    assert float(result.max()) <= 1.0
+
+
+def test_preprocess_frame_shape_preserved():
+    """Output shape matches input shape."""
+    frame = _synthetic_frame(48, 96)
+    result = preprocess_frame(
+        frame,
+        rolling_ball=False, rb_radius=20.0,
+        dog=False, dog_sigma_low=1.0, dog_sigma_high=5.0,
+        clahe=False, clahe_clip_limit=0.01,
+    )
+    assert result.shape == (48, 96)
+
+
+def test_preprocess_frame_all_disabled():
+    """With all steps disabled, output is still float32 [0,1] normalised."""
+    frame = _synthetic_frame()
+    result = preprocess_frame(
+        frame,
+        rolling_ball=False, rb_radius=20.0,
+        dog=False, dog_sigma_low=1.0, dog_sigma_high=5.0,
+        clahe=False, clahe_clip_limit=0.01,
+    )
+    assert result.dtype == np.float32
+    assert float(result.max()) == pytest.approx(1.0, abs=1e-5)

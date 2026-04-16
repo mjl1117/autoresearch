@@ -250,16 +250,32 @@ def parse_args(argv=None):
     p.add_argument("--max-bead-diameter-um", type=float, default=50.0,
                    help="Maximum bead diameter in µm for auto rolling ball radius (default: 50.0)")
 
+    # Preprocessing shortcut
+    p.add_argument("--no-preprocessing", action="store_true",
+                   help=(
+                       "Skip all preprocessing (rolling ball, DoG, CLAHE, normalisation) "
+                       "and write the raw channel data at its original bit depth. "
+                       "Recommended for high-contrast confocal images where the signal "
+                       "is already clean. Cellpose normalises internally so the absolute "
+                       "scale of pixel values does not affect segmentation quality."
+                   ))
+
     # GUI
+    p.add_argument("--model", default="cyto3",
+                   help=(
+                       "Cellpose model to pre-load in the GUI "
+                       "(default: cyto3 — recommended for annotation; "
+                       "use cpsam only if you want to inspect cpsam predictions)"
+                   ))
     p.add_argument("--no-launch", action="store_true",
                    help="Prepare images but do not open the Cellpose GUI")
 
     return p.parse_args(argv)
 
 
-def launch_cellpose_gui(python_bin: str) -> None:
+def launch_cellpose_gui(python_bin: str, model: str) -> None:
     """
-    Launch the Cellpose GUI non-blocking, pre-loaded with the cpsam model.
+    Launch the Cellpose GUI non-blocking with the specified model.
 
     In Cellpose 4, the GUI opens only when no --dir or --image_path argument
     is provided. Passing --image_path triggers batch evaluation mode instead.
@@ -269,10 +285,13 @@ def launch_cellpose_gui(python_bin: str) -> None:
     ----------
     python_bin : str
         Path to the Python executable in the target conda environment.
+    model : str
+        Model name or path passed to --pretrained_model. Built-in names
+        (e.g. 'cyto3') and full paths to custom model files both work.
     """
     cmd = [
         python_bin, "-m", "cellpose",
-        "--pretrained_model", CPSAM_MODEL_PATH,
+        "--pretrained_model", model,
     ]
     subprocess.Popen(cmd)
 
@@ -347,20 +366,27 @@ def main(argv=None):
         for t in frame_indices:
             raw_frame = stack[t, args.channel, :, :]
 
-            processed = preprocess_frame(
-                raw_frame,
-                rolling_ball=not args.no_rolling_ball,
-                rb_radius=rb_radius,
-                dog=not args.no_dog,
-                dog_sigma_low=args.dog_sigma_low,
-                dog_sigma_high=dog_sigma_high,
-                clahe=not args.no_clahe,
-                clahe_clip_limit=args.clahe_clip_limit,
-            )
-
             out_name = f"{tiff_path.stem}_t{t:03d}_ch{args.channel}.tif"
             out_path = args.output_dir / rel_parent / out_name
-            save_preprocessed_tiff(processed, out_path)
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+
+            if args.no_preprocessing:
+                # Write the raw channel data at its original bit depth.
+                # No normalization — Cellpose handles that internally.
+                tifffile.imwrite(str(out_path), raw_frame)
+            else:
+                processed = preprocess_frame(
+                    raw_frame,
+                    rolling_ball=not args.no_rolling_ball,
+                    rb_radius=rb_radius,
+                    dog=not args.no_dog,
+                    dog_sigma_low=args.dog_sigma_low,
+                    dog_sigma_high=dog_sigma_high,
+                    clahe=not args.no_clahe,
+                    clahe_clip_limit=args.clahe_clip_limit,
+                )
+                save_preprocessed_tiff(processed, out_path)
+
             frames_written += 1
 
     # Summary
@@ -375,8 +401,11 @@ def main(argv=None):
     print(f"Output directory:  {args.output_dir}")
     channel_label = " (OA-647)" if args.channel == 1 else ""
     print(f"Channel:           {args.channel}{channel_label}")
-    print(f"Preprocessing:     rolling_ball={not args.no_rolling_ball}  "
-          f"dog={not args.no_dog}  clahe={not args.no_clahe}")
+    if args.no_preprocessing:
+        print(f"Preprocessing:     none (raw channel data, original bit depth)")
+    else:
+        print(f"Preprocessing:     rolling_ball={not args.no_rolling_ball}  "
+              f"dog={not args.no_dog}  clahe={not args.no_clahe}")
 
     if not args.no_launch:
         python_bin = detect_python_executable()
@@ -387,7 +416,7 @@ def main(argv=None):
         print(f"  Images:  {abs_output}")
         print(f"  --> In the GUI: File > Open Image(s) and navigate to the above folder")
         print(f"{'='*60}\n")
-        launch_cellpose_gui(python_bin)
+        launch_cellpose_gui(python_bin, args.model)
     else:
         print(f"{'='*60}\n")
 

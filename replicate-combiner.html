@@ -1,629 +1,581 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Technical Replicate Combiner</title>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/htm@3/dist/htm.umd.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Technical Replicate Combiner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg:        #f4f6fb;
-      --surface:   #ffffff;
-      --border:    #e2e7f0;
-      --indigo:    #6366f1;
-      --indigo-d:  #4f46e5;
-      --violet:    #8b5cf6;
-      --green:     #10b981;
-      --red:       #ef4444;
-      --muted:     #94a3b8;
-      --text:      #1e293b;
-      --text-2:    #475569;
-      --radius:    12px;
-      --shadow:    0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
-      --shadow-lg: 0 8px 32px rgba(99,102,241,.12), 0 2px 8px rgba(0,0,0,.06);
-    }
+  :root {
+    --bg:        #f4f6fb;
+    --surface:   #ffffff;
+    --border:    #e2e7f0;
+    --indigo:    #6366f1;
+    --indigo-d:  #4f46e5;
+    --violet:    #8b5cf6;
+    --red:       #ef4444;
+    --muted:     #94a3b8;
+    --text:      #1e293b;
+    --text-2:    #475569;
+    --radius:    12px;
+    --shadow:    0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+    --shadow-lg: 0 8px 32px rgba(99,102,241,.12), 0 2px 8px rgba(0,0,0,.06);
+  }
 
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      background-image:
-        linear-gradient(rgba(99,102,241,.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(99,102,241,.04) 1px, transparent 1px);
-      background-size: 40px 40px;
-    }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    background-image:
+      linear-gradient(rgba(99,102,241,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
 
-    .page {
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 48px 20px 80px;
-    }
+  .page { max-width: 820px; margin: 0 auto; padding: 48px 20px 80px; }
 
-    /* ── Header ── */
-    .header {
-      margin-bottom: 36px;
-    }
-    .header-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--indigo);
-      background: #eef2ff;
-      border: 1px solid #c7d2fe;
-      border-radius: 999px;
-      padding: 4px 12px;
-      margin-bottom: 16px;
-    }
-    .header h1 {
-      font-size: clamp(24px, 4vw, 32px);
-      font-weight: 700;
-      letter-spacing: -.02em;
-      color: var(--text);
-      line-height: 1.15;
-    }
-    .header h1 span { color: var(--indigo); }
-    .header p {
-      margin-top: 8px;
-      font-size: 14px;
-      color: var(--text-2);
-      line-height: 1.6;
-      max-width: 560px;
-    }
+  .header { margin-bottom: 36px; }
+  .header-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--indigo);
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 999px;
+    padding: 4px 12px;
+    margin-bottom: 16px;
+  }
+  .header-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--indigo); }
+  .header h1 {
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 700; letter-spacing: -.02em; line-height: 1.15;
+  }
+  .header h1 span { color: var(--indigo); }
+  .header p {
+    margin-top: 8px; font-size: 14px; color: var(--text-2);
+    line-height: 1.6; max-width: 580px;
+  }
 
-    /* ── Card ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      background: #fafbff;
-    }
-    .card-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-2);
-      letter-spacing: .04em;
-      text-transform: uppercase;
-    }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: #fafbff;
+  }
+  .card-title {
+    font-size: 13px; font-weight: 600; color: var(--text-2);
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .card-meta { font-size: 12px; color: var(--muted); }
 
-    /* ── Table ── */
-    .table-wrap { overflow-x: auto; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    thead th {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .07em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 10px 14px;
-      text-align: left;
-      background: #fafbff;
-      border-bottom: 1px solid var(--border);
-    }
-    thead th.center { text-align: center; }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  thead th {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 14px; text-align: left;
+    background: #fafbff; border-bottom: 1px solid var(--border);
+  }
+  th.center { text-align: center; }
 
-    .replicate-row {
-      border-bottom: 1px solid var(--border);
-      transition: background .15s;
-    }
-    .replicate-row:last-child { border-bottom: none; }
-    .replicate-row:hover { background: #fafbff; }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #fafbff; }
+  tbody td { padding: 8px 10px; vertical-align: middle; }
 
-    .replicate-row td { padding: 8px 10px; vertical-align: middle; }
-    .row-num {
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      color: var(--muted);
-      text-align: center;
-      user-select: none;
-    }
+  .row-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; color: var(--muted);
+    text-align: center; user-select: none;
+  }
 
-    /* ── Inputs ── */
-    .field-input {
-      width: 100%;
-      font-family: 'DM Mono', monospace;
-      font-size: 13.5px;
-      font-weight: 500;
-      color: var(--text);
-      background: #f8fafc;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 7px 10px;
-      outline: none;
-      transition: border-color .15s, box-shadow .15s, background .15s;
-      -moz-appearance: textfield;
-    }
-    .field-input::-webkit-outer-spin-button,
-    .field-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-    .field-input:focus {
-      background: #fff;
-      border-color: var(--indigo);
-      box-shadow: 0 0 0 3px rgba(99,102,241,.12);
-    }
-    .field-input.invalid {
-      border-color: var(--red);
-      background: #fff5f5;
-    }
-    .field-input.invalid:focus {
-      box-shadow: 0 0 0 3px rgba(239,68,68,.12);
-    }
+  .field {
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px; font-weight: 500;
+    color: var(--text);
+    background: #f8fafc;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+  }
+  .field.label-field { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text-2); }
+  .field:focus {
+    background: #fff;
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+  }
+  .field.invalid { border-color: var(--red); background: #fff5f5; }
+  .field.invalid:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.12); }
 
-    .label-input {
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      color: var(--text-2);
-    }
+  /* Hide spinners on number inputs */
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number] { -moz-appearance: textfield; }
 
-    /* ── Delete button ── */
-    .del-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border: none;
-      border-radius: 6px;
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-      transition: background .15s, color .15s;
-      margin: 0 auto;
-    }
-    .del-btn:hover { background: #fee2e2; color: var(--red); }
-    .del-btn:disabled { opacity: .3; cursor: not-allowed; }
-    .del-btn svg { width: 14px; height: 14px; }
+  .del-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px;
+    border: none; border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    margin: 0 auto;
+  }
+  .del-btn:hover:not(:disabled) { background: #fee2e2; color: var(--red); }
+  .del-btn:disabled { opacity: .3; cursor: not-allowed; }
+  .del-btn svg { width: 14px; height: 14px; }
 
-    /* ── Add row ── */
-    .add-row-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--indigo);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 12px 20px;
-      width: 100%;
-      border-top: 1px solid var(--border);
-      transition: background .15s;
-    }
-    .add-row-btn:hover { background: #eef2ff; }
-    .add-row-btn svg { width: 16px; height: 16px; }
+  .add-row-btn {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-size: 13px; font-weight: 500;
+    color: var(--indigo);
+    background: none; border: none;
+    cursor: pointer;
+    padding: 12px 20px; width: 100%;
+    border-top: 1px solid var(--border);
+    transition: background .15s;
+    font-family: inherit;
+  }
+  .add-row-btn:hover { background: #eef2ff; }
+  .add-row-btn svg { width: 16px; height: 16px; }
 
-    /* ── Result card ── */
-    .result-card {
-      margin-top: 24px;
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-lg);
-      padding: 28px 28px 24px;
-      color: #fff;
-    }
-    .result-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      opacity: .75;
-      margin-bottom: 20px;
-    }
-    .result-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    .stat-chip {
-      background: rgba(255,255,255,.15);
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 10px;
-      padding: 14px 16px;
-      backdrop-filter: blur(4px);
-    }
-    .stat-chip-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      opacity: .75;
-      margin-bottom: 6px;
-    }
-    .stat-chip-value {
-      font-family: 'DM Mono', monospace;
-      font-size: clamp(18px, 2.5vw, 24px);
-      font-weight: 500;
-      letter-spacing: -.01em;
-      line-height: 1;
-    }
-    .stat-chip-value.placeholder { opacity: .4; }
+  .result-card {
+    margin-top: 24px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 28px 28px 24px;
+    color: #fff;
+  }
+  .result-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase;
+    opacity: .75; margin-bottom: 20px;
+  }
+  .result-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  .stat-chip {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stat-chip-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase;
+    opacity: .75; margin-bottom: 6px;
+  }
+  .stat-chip-value {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(18px, 2.5vw, 24px);
+    font-weight: 500; letter-spacing: -.01em; line-height: 1;
+  }
+  .stat-chip-value.placeholder { opacity: .4; }
 
-    /* ── Action row ── */
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 18px;
-      flex-wrap: wrap;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13px;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      padding: 9px 16px;
-      cursor: pointer;
-      transition: all .15s;
-    }
-    .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
-    .btn-copy {
-      background: rgba(255,255,255,.9);
-      color: var(--indigo-d);
-    }
-    .btn-copy:hover { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
-    .btn-copy:disabled { opacity: .45; cursor: not-allowed; }
-    .btn-copy.copied { background: #d1fae5; color: #065f46; }
-    .btn-reset {
-      background: rgba(255,255,255,.15);
-      color: rgba(255,255,255,.9);
-      border: 1px solid rgba(255,255,255,.25);
-    }
-    .btn-reset:hover { background: rgba(255,255,255,.25); }
+  .actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 13px; font-weight: 600;
+    border: none; border-radius: 8px;
+    padding: 9px 16px; cursor: pointer;
+    transition: all .15s; font-family: inherit;
+  }
+  .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .btn-copy { background: rgba(255,255,255,.92); color: var(--indigo-d); }
+  .btn-copy:hover:not(:disabled) { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+  .btn-copy:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-copy.copied { background: #d1fae5; color: #065f46; }
+  .btn-reset {
+    background: rgba(255,255,255,.15);
+    color: rgba(255,255,255,.95);
+    border: 1px solid rgba(255,255,255,.25);
+  }
+  .btn-reset:hover { background: rgba(255,255,255,.25); }
 
-    /* ── Formula tooltip ── */
-    .formula-note {
-      margin-top: 24px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.7;
-      padding: 14px 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-    }
-    .formula-note strong { color: var(--text-2); font-weight: 600; }
-    .formula-note code {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      background: #f1f5f9;
-      border-radius: 4px;
-      padding: 1px 5px;
-    }
+  .formula-note {
+    margin-top: 24px;
+    font-size: 12px; color: var(--muted); line-height: 1.7;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .formula-note strong { color: var(--text-2); font-weight: 600; }
+  .formula-note code {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    background: #f1f5f9;
+    border-radius: 4px; padding: 1px 5px;
+    color: var(--text-2);
+  }
 
-    /* ── Row animation ── */
-    @keyframes rowIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .replicate-row { animation: rowIn .18s ease; }
-
-    @media (max-width: 500px) {
-      .result-stats { grid-template-columns: 1fr; }
-      .stat-chip-value { font-size: 22px; }
-    }
-  </style>
+  @media (max-width: 500px) {
+    .result-stats { grid-template-columns: 1fr; }
+    .stat-chip-value { font-size: 22px; }
+  }
+</style>
 </head>
 <body>
-<div id="root"></div>
-<script type="module">
-  const { useState, useCallback, useMemo, useRef, useEffect } = React;
-  const html = htm.bind(React.createElement);
 
-  const uid = () => Math.random().toString(36).slice(2, 9);
+<div class="page">
+  <header class="header">
+    <div class="header-badge"><span class="dot"></span>Statistics Tool</div>
+    <h1>Technical <span>Replicate</span> Combiner</h1>
+    <p>Enter your technical replicates (mean, SD, n) to compute the pooled biological replicate. Tab between fields, paste from Excel/Prism, then copy the result back into Prism.</p>
+  </header>
 
-  const makeRow = (label = '') => ({ id: uid(), label, mean: '', sd: '', n: '' });
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Technical Replicates</span>
+      <span class="card-meta" id="row-count">3 replicates</span>
+    </div>
+    <table>
+      <colgroup>
+        <col style="width:42px" />
+        <col style="width:140px" />
+        <col />
+        <col />
+        <col />
+        <col style="width:48px" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="center">#</th>
+          <th>Label</th>
+          <th>Mean</th>
+          <th>SD</th>
+          <th>n</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <button class="add-row-btn" id="add-btn" type="button">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+      Add replicate
+    </button>
+  </div>
+
+  <div class="result-card">
+    <div class="result-label">Biological Replicate — Combined Result</div>
+    <div class="result-stats">
+      <div class="stat-chip">
+        <div class="stat-chip-label">Mean</div>
+        <div class="stat-chip-value placeholder" id="r-mean">—</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-chip-label">SD</div>
+        <div class="stat-chip-value placeholder" id="r-sd">—</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-chip-label">n</div>
+        <div class="stat-chip-value placeholder" id="r-n">—</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-copy" id="copy-btn" type="button" disabled>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="8" height="9" rx="1.5"/><path d="M3 11V3a1 1 0 011-1h7"/></svg>
+        <span id="copy-label">Copy for Prism</span>
+      </button>
+      <button class="btn btn-reset" id="reset-btn" type="button">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 106-6H5.5M5.5 2v2.5H8"/></svg>
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <div class="formula-note">
+    <strong>Pooled SD formula</strong> — accounts for both within-group and between-group variance:<br/>
+    <code>SS_within = Σ (nᵢ−1)·SDᵢ²</code> &nbsp;·&nbsp;
+    <code>SS_between = Σ nᵢ·(x̄ᵢ − x̄)²</code> &nbsp;·&nbsp;
+    <code>SD_combined = √((SS_within + SS_between) / (N−1))</code><br/>
+    Tab between fields. Press <code>Enter</code> on n to add a row. Paste a block from Excel/Prism into any cell to bulk-fill.
+  </div>
+</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+
+  var FIELDS = ['label', 'mean', 'sd', 'n'];
+  var rows = [
+    { label: 'Rep 1', mean: '', sd: '', n: '' },
+    { label: 'Rep 2', mean: '', sd: '', n: '' },
+    { label: 'Rep 3', mean: '', sd: '', n: '' }
+  ];
+
+  var tbody     = document.getElementById('tbody');
+  var rowCount  = document.getElementById('row-count');
+  var rMean     = document.getElementById('r-mean');
+  var rSD       = document.getElementById('r-sd');
+  var rN        = document.getElementById('r-n');
+  var copyBtn   = document.getElementById('copy-btn');
+  var copyLabel = document.getElementById('copy-label');
+  var addBtn    = document.getElementById('add-btn');
+  var resetBtn  = document.getElementById('reset-btn');
+  var copyTimer = null;
 
   function parseNum(v) {
-    const n = parseFloat(v);
+    if (v === '' || v == null) return null;
+    var n = parseFloat(v);
     return isNaN(n) ? null : n;
   }
 
-  function computeCombined(rows) {
-    const parsed = rows.map(r => ({
-      mean: parseNum(r.mean),
-      sd:   parseNum(r.sd),
-      n:    parseNum(r.n),
-    }));
-    if (parsed.some(p => p.mean === null || p.sd === null || p.n === null || p.n <= 0 || p.sd < 0))
-      return null;
-
-    const N = parsed.reduce((s, p) => s + p.n, 0);
-    const combinedMean = parsed.reduce((s, p) => s + p.n * p.mean, 0) / N;
-    const ssWithin   = parsed.reduce((s, p) => s + (p.n - 1) * p.sd * p.sd, 0);
-    const ssBetween  = parsed.reduce((s, p) => s + p.n * Math.pow(p.mean - combinedMean, 2), 0);
-    const combinedSD = N > 1 ? Math.sqrt((ssWithin + ssBetween) / (N - 1)) : 0;
-
-    return { mean: combinedMean, sd: combinedSD, n: N };
+  function fieldInvalid(row, field) {
+    if (row[field] === '') return false;
+    var v = parseNum(row[field]);
+    if (v === null) return true;
+    if (field === 'sd' && v < 0) return true;
+    if (field === 'n' && (v <= 0 || !Number.isInteger(v))) return true;
+    return false;
   }
 
-  function fmt(v, decimals = 4) {
-    if (v === null || v === undefined) return '—';
-    const s = v.toPrecision(6);
-    const f = parseFloat(s);
-    // trim trailing zeros but keep meaningful precision
-    return String(parseFloat(f.toFixed(decimals)));
+  function fmt(v) {
+    if (v == null) return '—';
+    return String(parseFloat(v.toFixed(4)));
   }
 
-  /* ── TrashIcon ── */
-  const TrashIcon = () => html`
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M2 4h12M5.333 4V2.667h5.334V4M6.667 7.333v4M9.333 7.333v4M3.333 4l.667 9.333h8L12.667 4"/>
-    </svg>`;
+  function compute() {
+    if (rows.length === 0) return null;
+    var parsed = [];
+    for (var i = 0; i < rows.length; i++) {
+      var m = parseNum(rows[i].mean);
+      var s = parseNum(rows[i].sd);
+      var n = parseNum(rows[i].n);
+      if (m === null || s === null || n === null) return null;
+      if (n <= 0 || !Number.isInteger(n) || s < 0) return null;
+      parsed.push({ mean: m, sd: s, n: n });
+    }
+    var N = 0, sumNX = 0;
+    for (var j = 0; j < parsed.length; j++) { N += parsed[j].n; sumNX += parsed[j].n * parsed[j].mean; }
+    var cMean = sumNX / N;
+    var ssW = 0, ssB = 0;
+    for (var k = 0; k < parsed.length; k++) {
+      var p = parsed[k];
+      ssW += (p.n - 1) * p.sd * p.sd;
+      ssB += p.n * (p.mean - cMean) * (p.mean - cMean);
+    }
+    var cSD = N > 1 ? Math.sqrt((ssW + ssB) / (N - 1)) : 0;
+    return { mean: cMean, sd: cSD, n: N };
+  }
 
-  const PlusIcon = () => html`
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <path d="M8 3v10M3 8h10"/>
-    </svg>`;
+  function updateResult() {
+    var r = compute();
+    if (r) {
+      rMean.textContent = fmt(r.mean);
+      rSD.textContent   = fmt(r.sd);
+      rN.textContent    = String(r.n);
+      rMean.classList.remove('placeholder');
+      rSD.classList.remove('placeholder');
+      rN.classList.remove('placeholder');
+      copyBtn.disabled = false;
+    } else {
+      rMean.textContent = '—';
+      rSD.textContent   = '—';
+      rN.textContent    = '—';
+      rMean.classList.add('placeholder');
+      rSD.classList.add('placeholder');
+      rN.classList.add('placeholder');
+      copyBtn.disabled = true;
+    }
+  }
 
-  const CopyIcon = () => html`
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="5" y="5" width="8" height="9" rx="1.5"/>
-      <path d="M3 11V3a1 1 0 011-1h7"/>
-    </svg>`;
+  function makeInput(rowIdx, field) {
+    var inp = document.createElement('input');
+    inp.className = 'field' + (field === 'label' ? ' label-field' : '');
+    inp.type = (field === 'label') ? 'text' : 'number';
+    inp.value = rows[rowIdx][field];
+    inp.dataset.row = String(rowIdx);
+    inp.dataset.field = field;
+    if (field === 'label') inp.placeholder = 'Rep ' + (rowIdx + 1);
+    else if (field === 'n') { inp.placeholder = '1'; inp.min = '1'; inp.step = '1'; }
+    else if (field === 'sd') { inp.placeholder = '0.000'; inp.min = '0'; inp.step = 'any'; }
+    else { inp.placeholder = '0.000'; inp.step = 'any'; }
+    if (fieldInvalid(rows[rowIdx], field)) inp.classList.add('invalid');
+    return inp;
+  }
 
-  const CheckIcon = () => html`
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M2.5 8l4 4 7-7"/>
-    </svg>`;
+  function render() {
+    tbody.innerHTML = '';
+    for (var i = 0; i < rows.length; i++) {
+      var tr = document.createElement('tr');
 
-  const ResetIcon = () => html`
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M2 8a6 6 0 106-6H5.5M5.5 2v2.5H8"/>
-    </svg>`;
+      var tdNum = document.createElement('td');
+      tdNum.className = 'row-num';
+      tdNum.textContent = String(i + 1);
+      tr.appendChild(tdNum);
 
-  /* ── ReplicateRow ── */
-  function ReplicateRow({ row, index, total, inputRefs, onChange, onDelete, onEnterLast, onAddRow }) {
-    const isInvalid = (field) => {
-      const v = parseNum(row[field]);
-      if (row[field] === '') return false;
-      if (v === null) return true;
-      if (field === 'n' && (v <= 0 || !Number.isInteger(v))) return true;
-      if (field === 'sd' && v < 0) return true;
-      return false;
-    };
-
-    const handleKeyDown = (field, e) => {
-      if (e.key === 'Enter' && field === 'n') {
-        e.preventDefault();
-        onEnterLast(index);
+      for (var f = 0; f < FIELDS.length; f++) {
+        var td = document.createElement('td');
+        td.appendChild(makeInput(i, FIELDS[f]));
+        tr.appendChild(td);
       }
-    };
 
-    return html`
-      <tr class="replicate-row" key=${row.id}>
-        <td class="row-num">${index + 1}</td>
-        <td>
-          <input
-            class="field-input label-input"
-            type="text"
-            placeholder="Rep ${index + 1}"
-            value=${row.label}
-            onInput=${e => onChange(row.id, 'label', e.target.value)}
-          />
-        </td>
-        <td>
-          <input
-            ref=${el => { if (inputRefs) inputRefs.current[`${row.id}-mean`] = el; }}
-            class=${'field-input' + (isInvalid('mean') ? ' invalid' : '')}
-            type="number"
-            placeholder="0.000"
-            value=${row.mean}
-            onInput=${e => onChange(row.id, 'mean', e.target.value)}
-            onKeyDown=${e => handleKeyDown('mean', e)}
-          />
-        </td>
-        <td>
-          <input
-            ref=${el => { if (inputRefs) inputRefs.current[`${row.id}-sd`] = el; }}
-            class=${'field-input' + (isInvalid('sd') ? ' invalid' : '')}
-            type="number"
-            placeholder="0.000"
-            min="0"
-            value=${row.sd}
-            onInput=${e => onChange(row.id, 'sd', e.target.value)}
-            onKeyDown=${e => handleKeyDown('sd', e)}
-          />
-        </td>
-        <td>
-          <input
-            ref=${el => { if (inputRefs) inputRefs.current[`${row.id}-n`] = el; }}
-            class=${'field-input' + (isInvalid('n') ? ' invalid' : '')}
-            type="number"
-            placeholder="1"
-            min="1"
-            step="1"
-            value=${row.n}
-            onInput=${e => onChange(row.id, 'n', e.target.value)}
-            onKeyDown=${e => handleKeyDown('n', e)}
-          />
-        </td>
-        <td>
-          <button
-            class="del-btn"
-            onClick=${() => onDelete(row.id)}
-            disabled=${total <= 1}
-            title="Remove row"
-          ><${TrashIcon} /></button>
-        </td>
-      </tr>`;
+      var tdDel = document.createElement('td');
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'del-btn';
+      del.title = 'Remove row';
+      del.dataset.action = 'delete';
+      del.dataset.row = String(i);
+      del.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M5.333 4V2.667h5.334V4M6.667 7.333v4M9.333 7.333v4M3.333 4l.667 9.333h8L12.667 4"/></svg>';
+      if (rows.length <= 1) del.disabled = true;
+      tdDel.appendChild(del);
+      tr.appendChild(tdDel);
+
+      tbody.appendChild(tr);
+    }
+    rowCount.textContent = rows.length + ' replicate' + (rows.length === 1 ? '' : 's');
+    updateResult();
   }
 
-  /* ── App ── */
-  function App() {
-    const [rows, setRows] = useState(() => [makeRow('Rep 1'), makeRow('Rep 2'), makeRow('Rep 3')]);
-    const [copied, setCopied] = useState(false);
-    const inputRefs = useRef({});
+  // Single delegated input handler — survives re-renders, no per-cell listeners needed
+  tbody.addEventListener('input', function (e) {
+    var t = e.target;
+    if (!t.classList || !t.classList.contains('field')) return;
+    var idx = parseInt(t.dataset.row, 10);
+    var f = t.dataset.field;
+    if (isNaN(idx) || !f) return;
+    rows[idx][f] = t.value;
+    if (fieldInvalid(rows[idx], f)) t.classList.add('invalid');
+    else t.classList.remove('invalid');
+    updateResult();
+  });
 
-    const result = useMemo(() => computeCombined(rows), [rows]);
+  // Enter on n → add row or jump to next row's mean
+  tbody.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    var t = e.target;
+    if (!t.classList || !t.classList.contains('field')) return;
+    if (t.dataset.field !== 'n') return;
+    e.preventDefault();
+    var idx = parseInt(t.dataset.row, 10);
+    if (idx === rows.length - 1) {
+      addRow();
+    } else {
+      focusCell(idx + 1, 'mean');
+    }
+  });
 
-    const onChange = useCallback((id, field, value) => {
-      setRows(prev => prev.map(r => r.id === id ? { ...r, [field]: value } : r));
-    }, []);
+  // Bulk paste — pasting tab/newline-separated data fills the grid
+  tbody.addEventListener('paste', function (e) {
+    var t = e.target;
+    if (!t.classList || !t.classList.contains('field')) return;
+    var cd = e.clipboardData || window.clipboardData;
+    if (!cd) return;
+    var text = cd.getData('text');
+    if (!text || (text.indexOf('\t') < 0 && text.indexOf('\n') < 0)) return;
+    e.preventDefault();
+    var startRow = parseInt(t.dataset.row, 10);
+    var startField = t.dataset.field;
+    var startCol = FIELDS.indexOf(startField);
+    if (startCol < 0) return;
 
-    const onDelete = useCallback((id) => {
-      setRows(prev => prev.length > 1 ? prev.filter(r => r.id !== id) : prev);
-    }, []);
+    var lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    while (lines.length && lines[lines.length - 1].trim() === '') lines.pop();
 
-    const addRow = useCallback(() => {
-      const idx = rows.length;
-      const nr = makeRow(`Rep ${idx + 1}`);
-      setRows(prev => [...prev, nr]);
-      // focus mean input of new row after render
-      setTimeout(() => {
-        const el = inputRefs.current[`${nr.id}-mean`];
-        if (el) el.focus();
-      }, 30);
-    }, [rows.length]);
-
-    const onEnterLast = useCallback((index) => {
-      if (index === rows.length - 1) {
-        addRow();
-      } else {
-        // focus next row's mean
-        const nextId = rows[index + 1].id;
-        const el = inputRefs.current[`${nextId}-mean`];
-        if (el) el.focus();
+    for (var i = 0; i < lines.length; i++) {
+      while (rows.length <= startRow + i) {
+        rows.push({ label: 'Rep ' + (rows.length + 1), mean: '', sd: '', n: '' });
       }
-    }, [rows, addRow]);
+      var cells = lines[i].split('\t');
+      for (var j = 0; j < cells.length; j++) {
+        var col = startCol + j;
+        if (col >= FIELDS.length) break;
+        rows[startRow + i][FIELDS[col]] = cells[j].trim();
+      }
+    }
+    render();
+  });
 
-    const reset = useCallback(() => {
-      setRows([makeRow('Rep 1'), makeRow('Rep 2'), makeRow('Rep 3')]);
-    }, []);
+  // Delete button delegation
+  tbody.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('[data-action="delete"]') : null;
+    if (!btn) return;
+    if (rows.length <= 1) return;
+    var idx = parseInt(btn.dataset.row, 10);
+    if (isNaN(idx)) return;
+    rows.splice(idx, 1);
+    render();
+  });
 
-    const copy = useCallback(() => {
-      if (!result) return;
-      const text = `${fmt(result.mean)}\t${fmt(result.sd)}\t${result.n}`;
-      navigator.clipboard.writeText(text).then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      });
-    }, [result]);
-
-    return html`
-      <div class="page">
-        <header class="header">
-          <div class="header-badge">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-              <circle cx="5" cy="5" r="4"/>
-            </svg>
-            Statistics Tool
-          </div>
-          <h1>Technical <span>Replicate</span> Combiner</h1>
-          <p>Enter your technical replicates (mean ± SD, n) to compute the pooled biological replicate. Results are ready to paste into GraphPad Prism.</p>
-        </header>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Technical Replicates</span>
-            <span style="font-size:12px;color:var(--muted)">${rows.length} replicate${rows.length !== 1 ? 's' : ''}</span>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:36px" class="center">#</th>
-                  <th style="width:120px">Label</th>
-                  <th>Mean</th>
-                  <th>SD</th>
-                  <th>n</th>
-                  <th style="width:44px" class="center"></th>
-                </tr>
-              </thead>
-              <tbody>
-                ${rows.map((row, i) => html`
-                  <${ReplicateRow}
-                    key=${row.id}
-                    row=${row}
-                    index=${i}
-                    total=${rows.length}
-                    inputRefs=${inputRefs}
-                    onChange=${onChange}
-                    onDelete=${onDelete}
-                    onEnterLast=${onEnterLast}
-                    onAddRow=${addRow}
-                  />`)}
-              </tbody>
-            </table>
-          </div>
-          <button class="add-row-btn" onClick=${addRow}>
-            <${PlusIcon} /> Add replicate
-          </button>
-        </div>
-
-        <div class="result-card">
-          <div class="result-label">Biological Replicate — Combined Result</div>
-          <div class="result-stats">
-            <div class="stat-chip">
-              <div class="stat-chip-label">Mean</div>
-              <div class=${'stat-chip-value' + (result ? '' : ' placeholder')}>
-                ${result ? fmt(result.mean) : '—'}
-              </div>
-            </div>
-            <div class="stat-chip">
-              <div class="stat-chip-label">SD</div>
-              <div class=${'stat-chip-value' + (result ? '' : ' placeholder')}>
-                ${result ? fmt(result.sd) : '—'}
-              </div>
-            </div>
-            <div class="stat-chip">
-              <div class="stat-chip-label">n</div>
-              <div class=${'stat-chip-value' + (result ? '' : ' placeholder')}>
-                ${result ? result.n : '—'}
-              </div>
-            </div>
-          </div>
-          <div class="actions">
-            <button
-              class=${'btn btn-copy' + (copied ? ' copied' : '')}
-              onClick=${copy}
-              disabled=${!result}
-              title="Copy tab-separated values for GraphPad Prism"
-            >
-              ${copied ? html`<${CheckIcon} /> Copied!` : html`<${CopyIcon} /> Copy for Prism`}
-            </button>
-            <button class="btn btn-reset" onClick=${reset}>
-              <${ResetIcon} /> Reset
-            </button>
-          </div>
-        </div>
-
-        <div class="formula-note">
-          <strong>Pooled SD formula</strong> — accounts for both within-group and between-group variance:<br/>
-          <code>SS_within = Σ (nᵢ−1)·SDᵢ²</code> &nbsp;·&nbsp;
-          <code>SS_between = Σ nᵢ·(x̄ᵢ − x̄)²</code> &nbsp;·&nbsp;
-          <code>SD_combined = √((SS_within + SS_between) / (N−1))</code><br/>
-          Copy output is tab-separated <code>mean ⇥ SD ⇥ n</code> — paste directly into a Prism column.
-          Press <code>Enter</code> on the n field to add a new row.
-        </div>
-      </div>`;
+  function addRow() {
+    rows.push({ label: 'Rep ' + (rows.length + 1), mean: '', sd: '', n: '' });
+    render();
+    focusCell(rows.length - 1, 'mean');
   }
 
-  ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
+  function focusCell(rowIdx, field) {
+    setTimeout(function () {
+      var el = tbody.querySelector('input[data-row="' + rowIdx + '"][data-field="' + field + '"]');
+      if (el) el.focus();
+    }, 0);
+  }
+
+  addBtn.addEventListener('click', addRow);
+
+  resetBtn.addEventListener('click', function () {
+    rows = [
+      { label: 'Rep 1', mean: '', sd: '', n: '' },
+      { label: 'Rep 2', mean: '', sd: '', n: '' },
+      { label: 'Rep 3', mean: '', sd: '', n: '' }
+    ];
+    render();
+  });
+
+  copyBtn.addEventListener('click', function () {
+    var r = compute();
+    if (!r) return;
+    var text = fmt(r.mean) + '\t' + fmt(r.sd) + '\t' + r.n;
+    var done = function () {
+      copyBtn.classList.add('copied');
+      copyLabel.textContent = 'Copied!';
+      if (copyTimer) clearTimeout(copyTimer);
+      copyTimer = setTimeout(function () {
+        copyBtn.classList.remove('copied');
+        copyLabel.textContent = 'Copy for Prism';
+      }, 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text, done); });
+    } else {
+      fallbackCopy(text, done);
+    }
+  });
+
+  function fallbackCopy(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  render();
+});
 </script>
 </body>
 </html>

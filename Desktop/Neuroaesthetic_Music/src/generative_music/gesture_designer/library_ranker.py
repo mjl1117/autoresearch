@@ -85,9 +85,25 @@ class LibraryRanker:
     # ── Gesture ratings ───────────────────────────────────────────────────────
 
     def _gesture_path(self, name: str) -> Optional[Path]:
-        """Return path to gesture JSON file, or None if not found."""
-        p = self.gesture_dir / f'{_sanitise(name)}.json'
-        return p if p.exists() else None
+        """Return path to gesture JSON file, searching root then generated_gestures/.
+
+        Also handles the synthetic_XXXXX → gesture_XXXXX filename mapping used by
+        the generative pipeline (internal name field differs from file stem).
+        """
+        stem = _sanitise(name)
+        p = self.gesture_dir / f'{stem}.json'
+        if p.exists():
+            return p
+        gen_dir = self.gesture_dir / 'generated_gestures'
+        p_gen = gen_dir / f'{stem}.json'
+        if p_gen.exists():
+            return p_gen
+        # Generated gestures are stored as gesture_XXXXX.json but named synthetic_XXXXX
+        if stem.startswith('synthetic_'):
+            p_alt = gen_dir / f'gesture_{stem[len("synthetic_"):]}.json'
+            if p_alt.exists():
+                return p_alt
+        return None
 
     def update_gesture_rating(self, gesture_name: str,
                               participant_id: str, stars: int) -> None:

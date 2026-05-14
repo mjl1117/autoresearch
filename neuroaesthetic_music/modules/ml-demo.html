@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ML Demo — Neuroaesthetic Music</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background: var(--bg); padding-top: 5rem; }
+    .back-link { display:inline-flex;align-items:center;gap:.4rem;color:var(--indigo);text-decoration:none;font-weight:500;font-size:.9rem;margin:2rem 2rem 0; }
+    .demo-layout { max-width:900px;margin:0 auto;padding:0 2rem 4rem; }
+
+    .quadrant-grid {
+      display:grid;grid-template-columns:1fr 1fr;gap:.75rem;
+      max-width:480px;margin:1.5rem 0 .5rem;
+    }
+    .q-btn {
+      padding:.75rem 1rem;border-radius:var(--radius);
+      border:2px solid var(--border);font-family:Inter,sans-serif;
+      font-size:.875rem;font-weight:600;cursor:pointer;
+      text-align:left;transition:border-color .15s,transform .12s,background .15s;
+      background:var(--surface);line-height:1.35;
+    }
+    .q-btn:hover { transform:translateY(-2px);background:#fafafa; }
+    .q-btn.active { border-color:currentColor;background:#fafafa; }
+    .q-btn.positive-high { color:#16a34a; }
+    .q-btn.negative-high { color:#dc2626; }
+    .q-btn.positive-low  { color:#1d4ed8; }
+    .q-btn.negative-low  { color:#475569; }
+    .q-btn.random-btn    { color:var(--violet);grid-column:1/-1; }
+    .q-btn small { font-weight:400;opacity:.65;font-size:.8em;display:block; }
+
+    .play-btn {
+      background:linear-gradient(135deg,var(--indigo),var(--violet));
+      color:#fff;border:none;border-radius:999px;
+      padding:.75rem 2.25rem;font-size:1rem;font-weight:600;
+      font-family:Inter,sans-serif;cursor:pointer;margin-top:1.25rem;
+      transition:opacity .2s,transform .15s;
+    }
+    .play-btn:hover { opacity:.9;transform:translateY(-1px); }
+    .play-btn:disabled { opacity:.4;cursor:not-allowed; }
+
+    canvas#scope {
+      width:100%;height:140px;background:#0f0e1a;
+      border-radius:10px;display:block;margin:1.5rem 0;
+    }
+
+    .gesture-info {
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--radius);padding:1.25rem 1.5rem;
+    }
+    .gesture-info h3 { font-size:1rem;margin-bottom:.35rem; }
+    .gesture-info .va-line { font-size:.875rem;color:var(--text-2); }
+    .gesture-info .va-line strong { color:var(--text); }
+  </style>
+</head>
+<body>
+
+<a href="../index.html#modules" class="back-link">&#8592; All Modules</a>
+<div class="demo-layout">
+  <h2 style="margin-top:1rem;">ML Demo</h2>
+  <p>Select an emotional quadrant, then play a gesture from the library that the Random Forest model predicts falls in that region of the valence/arousal plane. Each click picks a different random gesture.</p>
+
+  <div class="quadrant-grid" id="quadrantGrid">
+    <button class="q-btn negative-high active" data-quadrant="negative-high">
+      &#128543; Tense / Anxious
+      <small>Negative V, High A</small>
+    </button>
+    <button class="q-btn positive-high" data-quadrant="positive-high">
+      &#127774; Excited / Joyful
+      <small>Positive V, High A</small>
+    </button>
+    <button class="q-btn negative-low" data-quadrant="negative-low">
+      &#128532; Sad / Gloomy
+      <small>Negative V, Low A</small>
+    </button>
+    <button class="q-btn positive-low" data-quadrant="positive-low">
+      &#128564; Calm / Serene
+      <small>Positive V, Low A</small>
+    </button>
+    <button class="q-btn random-btn" data-quadrant="random">
+      &#127922; Random Gesture
+      <small>Any quadrant</small>
+    </button>
+  </div>
+
+  <button class="play-btn" id="btnPlay" disabled>&#9654; Play Gesture</button>
+
+  <canvas id="scope" width="800" height="140"></canvas>
+
+  <div class="gesture-info" id="gestureInfo">
+    <h3>Loading gesture library&#8230;</h3>
+    <p class="va-line">Predicted V/A values will appear here after a gesture plays.</p>
+  </div>
+</div>
+
+<script src="../js/synth.js"></script>
+<script>
+const synth   = new GestureSynth();
+let gestures  = [];
+let quadrant  = 'negative-high';
+let rafId     = null;
+let lastIndex = -1;
+
+const btnPlay = document.getElementById('btnPlay');
+const infoEl  = document.getElementById('gestureInfo');
+const canvas  = document.getElementById('scope');
+const ctx2d   = canvas.getContext('2d');
+
+fetch('../data/gestures.json')
+  .then(r => r.json())
+  .then(data => {
+    gestures = data;
+    btnPlay.disabled = false;
+    infoEl.innerHTML = `
+      <h3>Gesture library loaded</h3>
+      <p class="va-line">${gestures.length} gestures across 4 quadrants. Select a quadrant and click Play.</p>`;
+  })
+  .catch(() => {
+    infoEl.innerHTML = '<h3>Could not load gesture library</h3><p class="va-line">Run scripts/export_gestures.py first.</p>';
+  });
+
+// Quadrant button selection
+document.getElementById('quadrantGrid').addEventListener('click', e => {
+  const btn = e.target.closest('.q-btn');
+  if (!btn) return;
+  document.querySelectorAll('.q-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  quadrant = btn.dataset.quadrant;
+  lastIndex = -1;
+});
+
+function pickGesture() {
+  const pool = quadrant === 'random'
+    ? gestures
+    : gestures.filter(g => g.quadrant === quadrant);
+  if (!pool.length) return null;
+  // Avoid repeating the same gesture back-to-back
+  let idx;
+  do { idx = Math.floor(Math.random() * pool.length); } while (pool.length > 1 && idx === lastIndex);
+  lastIndex = idx;
+  return pool[idx];
+}
+
+function drawScope() {
+  const analyser = synth.getAnalyser();
+  if (!analyser) return;
+  const buf = new Uint8Array(analyser.fftSize);
+  analyser.getByteTimeDomainData(buf);
+  const W = canvas.width, H = canvas.height;
+  ctx2d.fillStyle = '#0f0e1a';
+  ctx2d.fillRect(0, 0, W, H);
+  ctx2d.strokeStyle = '#8b5cf6';
+  ctx2d.lineWidth = 2;
+  ctx2d.beginPath();
+  buf.forEach((v, i) => {
+    const x = (i / buf.length) * W;
+    const y = (v / 255) * H;
+    i === 0 ? ctx2d.moveTo(x, y) : ctx2d.lineTo(x, y);
+  });
+  ctx2d.stroke();
+  rafId = requestAnimationFrame(drawScope);
+}
+
+btnPlay.addEventListener('click', () => {
+  const g = pickGesture();
+  if (!g) {
+    infoEl.innerHTML = `<h3>No gestures found</h3><p class="va-line">Try a different quadrant or re-run the export script.</p>`;
+    return;
+  }
+
+  cancelAnimationFrame(rafId);
+  synth.stop();
+  synth.playGesture(g);
+  drawScope();
+
+  const totalSec = synth.gestureDuration(g);
+  setTimeout(() => cancelAnimationFrame(rafId), (totalSec + 0.5) * 1000);
+
+  const vStr = g.valence >= 0 ? `+${g.valence.toFixed(2)}` : g.valence.toFixed(2);
+  const aStr = g.arousal >= 0 ? `+${g.arousal.toFixed(2)}` : g.arousal.toFixed(2);
+  const qLabel = {
+    'positive-high':'Excited / Joyful','negative-high':'Tense / Anxious',
+    'positive-low':'Calm / Serene','negative-low':'Sad / Gloomy'
+  }[g.quadrant] ?? g.quadrant;
+
+  infoEl.innerHTML = `
+    <h3>${g.name}</h3>
+    <p class="va-line">
+      <strong>Quadrant:</strong> ${qLabel} &nbsp;|&nbsp;
+      <strong>Valence:</strong> ${vStr} &nbsp;|&nbsp;
+      <strong>Arousal:</strong> ${aStr}
+    </p>
+    <p class="va-line" style="margin-top:.4rem;">
+      ${g.events.length} events &nbsp;|&nbsp; ${g.bpm} BPM &nbsp;|&nbsp; ~${totalSec.toFixed(1)}s duration
+    </p>`;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rate Gestures — Neuroaesthetic Music</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background:var(--bg);padding-top:5rem;min-height:100vh; }
+    .back-link { display:inline-flex;align-items:center;gap:.4rem;color:var(--indigo);text-decoration:none;font-weight:500;font-size:.9rem;margin:2rem 2rem 0; }
+    .rate-layout { max-width:780px;margin:0 auto;padding:0 2rem 4rem; }
+    .round-header { margin:1.5rem 0 .75rem; }
+    .round-badge { background:#ede9fe;color:var(--indigo-d);border-radius:999px;padding:.2rem .75rem;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em; }
+    .step-indicator { display:flex;gap:.5rem;margin:.75rem 0; }
+    .step-dot { width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .3s; }
+    .step-dot.done   { background:var(--violet); }
+    .step-dot.active { background:var(--indigo); }
+    .circumplex-widget { position:relative;margin:1.25rem 0; }
+    svg#ratingCircumplex { width:100%;max-width:380px;height:auto;display:block;cursor:crosshair;touch-action:none;border-radius:12px; }
+    .va-readout { font-size:.9rem;font-weight:500;color:var(--text);margin-top:.4rem; }
+    .play-btn {
+      background:var(--surface);border:1.5px solid var(--indigo);color:var(--indigo);
+      border-radius:999px;padding:.55rem 1.4rem;font-family:Inter,sans-serif;
+      font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s;
+    }
+    .play-btn:hover { background:#ede9fe; }
+    .next-btn {
+      background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;
+      border:none;border-radius:999px;padding:.65rem 1.8rem;
+      font-family:Inter,sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;
+      margin-top:1.25rem;transition:opacity .2s;
+    }
+    .next-btn:disabled { opacity:.4;cursor:not-allowed; }
+    .yt-embed { width:100%;aspect-ratio:16/9;border:none;border-radius:10px;display:block;margin-bottom:.75rem; }
+    .submit-section { text-align:center;padding:2rem 0; }
+    .submit-btn {
+      background:linear-gradient(135deg,#16a34a,#059669);color:#fff;
+      border:none;border-radius:999px;padding:.8rem 2.5rem;
+      font-family:Inter,sans-serif;font-size:1rem;font-weight:600;cursor:pointer;
+    }
+    .thank-you { text-align:center;padding:3rem 0;display:none; }
+  </style>
+</head>
+<body>
+
+<a href="../index.html#modules" class="back-link">&#8592; All Modules</a>
+<div class="rate-layout">
+  <h2 style="margin-top:1rem;">Rate Gestures</h2>
+  <p>Place each sound on the valence/arousal circumplex. Your ratings help train the next model. Data is anonymous.</p>
+
+  <div id="ratingFlow"></div>
+  <div class="thank-you" id="thankYou">
+    <h3>Thank you!</h3>
+    <p style="margin-top:.5rem;">Your ratings have been submitted and will contribute to the next training round.</p>
+    <a href="../index.html#modules" style="display:inline-block;margin-top:1.25rem;color:var(--indigo);font-weight:600;">&#8592; Back to all modules</a>
+  </div>
+</div>
+
+<script src="../js/synth.js"></script>
+<script src="../js/sheets.js"></script>
+<script>
+const synth    = new GestureSynth();
+const ratings  = [];
+let gestureLib = [];
+let ROUNDS     = [];
+let roundIdx   = 0;
+let itemIdx    = 0;
+let curValence = 0, curArousal = 0;
+let placed     = false;
+
+const flow = document.getElementById('ratingFlow');
+
+function pickFromLib(quadrant) {
+  const pool = quadrant === 'any'
+    ? gestureLib
+    : gestureLib.filter(g => g.quadrant === quadrant);
+  return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
+}
+
+function buildRounds() {
+  const quadrants = ['negative-high','positive-high','negative-low','positive-low'];
+  const r1items = quadrants.map((q, i) => ({
+    type:'gesture', id:`r1_${q}`, label:`Gesture ${String.fromCharCode(65+i)}`,
+    gesture: pickFromLib(q), quadrant: q
+  }));
+  r1items.push({ type:'gesture', id:'r1_random', label:'Gesture E', gesture: pickFromLib('any'), quadrant:'any' });
+
+  const r2items = ['A','B','C'].map((lbl, i) => ({
+    type:'gestureseq', id:`r2_seq${i}`, label:`Sequence ${lbl}`,
+    gestures: [pickFromLib('any'), pickFromLib('any')]
+  }));
+
+  ROUNDS = [
+    {
+      label:'Round 1 of 3', title:'Synthesized Gestures',
+      desc:'Listen to each gesture and place it on the circumplex.',
+      items: r1items
+    },
+    {
+      label:'Round 2 of 3', title:'Gesture Sequences',
+      desc:'Each sequence plays two gestures in succession. Rate the overall emotional impression.',
+      items: r2items
+    },
+    {
+      label:'Round 3 of 3', title:'Recorded Pieces',
+      desc:'Watch each clip and place it on the circumplex.',
+      items: [
+        { type:'yt', id:'satoh_rate',     label:'Clip A', videoId:'DM7C57d0D6I', start:352 },
+        { type:'yt', id:'schnittke_rate', label:'Clip B', videoId:'fTTyS6mjZiI', start:315 },
+      ]
+    }
+  ];
+}
+
+function buildCircumplexWidget() {
+  return `
+    <div class="circumplex-widget">
+      <svg id="ratingCircumplex" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="400" height="400" fill="var(--surface)" rx="12"/>
+        <line x1="20" y1="200" x2="380" y2="200" stroke="var(--border)" stroke-width="1.5"/>
+        <line x1="200" y1="20" x2="200" y2="380" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="388" y="205" font-size="11" fill="var(--muted)" font-family="Inter,sans-serif">+V</text>
+        <text x="5"   y="205" font-size="11" fill="var(--muted)" font-family="Inter,sans-serif">-V</text>
+        <text x="200" y="14"  font-size="11" fill="var(--muted)" font-family="Inter,sans-serif" text-anchor="middle">+A</text>
+        <text x="200" y="397" font-size="11" fill="var(--muted)" font-family="Inter,sans-serif" text-anchor="middle">-A</text>
+        <circle id="ratingDot" cx="200" cy="200" r="10" fill="var(--violet)" stroke="#fff" stroke-width="2" opacity=".3"/>
+      </svg>
+      <div class="va-readout" id="vaReadout">Click or drag to place your rating</div>
+    </div>`;
+}
+
+function attachCircumplexHandlers() {
+  const svg     = document.getElementById('ratingCircumplex');
+  const dot     = document.getElementById('ratingDot');
+  const readout = document.getElementById('vaReadout');
+  if (!svg) return;
+  let dragging  = false;
+
+  function place(e) {
+    const rect = svg.getBoundingClientRect();
+    const px   = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const py   = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    const cx   = Math.max(20, Math.min(380, (px / rect.width)  * 400));
+    const cy   = Math.max(20, Math.min(380, (py / rect.height) * 400));
+    dot.setAttribute('cx', cx);
+    dot.setAttribute('cy', cy);
+    dot.setAttribute('opacity', '1');
+    curValence = +((cx - 200) / 180).toFixed(3);
+    curArousal = +(-(cy - 200) / 180).toFixed(3);
+    readout.textContent = `V = ${curValence.toFixed(2)},  A = ${curArousal.toFixed(2)}`;
+    placed = true;
+    const nb = document.getElementById('nextBtn');
+    if (nb) nb.disabled = false;
+  }
+
+  svg.addEventListener('mousedown',  e => { dragging = true; place(e); });
+  svg.addEventListener('mousemove',  e => { if (dragging) place(e); });
+  svg.addEventListener('mouseup',    () => { dragging = false; });
+  svg.addEventListener('mouseleave', () => { dragging = false; });
+  svg.addEventListener('touchstart', e => { e.preventDefault(); place(e); }, { passive:false });
+  svg.addEventListener('touchmove',  e => { e.preventDefault(); place(e); }, { passive:false });
+}
+
+function renderItem() {
+  const round = ROUNDS[roundIdx];
+  const item  = round.items[itemIdx];
+  placed = false; curValence = 0; curArousal = 0;
+
+  const dots = round.items.map((_,i) =>
+    `<div class="step-dot ${i<itemIdx?'done':i===itemIdx?'active':''}"></div>`
+  ).join('');
+
+  let mediaHtml = '';
+  if (item.type === 'gesture' || item.type === 'gestureseq') {
+    const missing = item.type === 'gesture' ? !item.gesture
+                  : (!item.gestures?.[0] || !item.gestures?.[1]);
+    mediaHtml = missing
+      ? `<p style="color:var(--muted);font-size:.875rem;margin-bottom:.75rem;">No gesture available. Click Next to continue.</p>`
+      : `<button class="play-btn" id="playBtn">&#9654; Play ${item.label}</button>`;
+  } else if (item.type === 'yt') {
+    mediaHtml = `<iframe class="yt-embed" src="https://www.youtube-nocookie.com/embed/${item.videoId}?start=${item.start}&rel=0" allowfullscreen loading="lazy"></iframe>`;
+  }
+
+  flow.innerHTML = `
+    <div class="round-header">
+      <span class="round-badge">${round.label}</span>
+      <h3 style="margin-top:.5rem;">${round.title}</h3>
+      <p style="font-size:.875rem;margin-top:.25rem;color:var(--text-2);">${round.desc}</p>
+    </div>
+    <div class="step-indicator">${dots}</div>
+    <p style="font-weight:600;margin-bottom:.75rem;">${item.label}</p>
+    ${mediaHtml}
+    ${buildCircumplexWidget()}
+    <button class="next-btn" id="nextBtn" disabled>Next &#8594;</button>`;
+
+  attachCircumplexHandlers();
+
+  const playBtn = document.getElementById('playBtn');
+  if (playBtn) {
+    playBtn.addEventListener('click', () => {
+      synth.stop();
+      if (item.type === 'gesture' && item.gesture) {
+        synth.playGesture(item.gesture);
+      } else if (item.type === 'gestureseq' && item.gestures) {
+        const [g1, g2] = item.gestures;
+        if (g1) {
+          synth.playGesture(g1);
+          const d1 = synth.gestureDuration(g1);
+          if (g2) setTimeout(() => synth.playGesture(g2), (d1 + 0.3) * 1000);
+        }
+      }
+    });
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    ratings.push({ type:item.type, id:item.id, valence:curValence, arousal:curArousal });
+    synth.stop();
+    itemIdx++;
+    if (itemIdx >= round.items.length) { roundIdx++; itemIdx = 0; }
+    if (roundIdx >= ROUNDS.length) { renderSubmit(); return; }
+    renderItem();
+  });
+}
+
+function renderSubmit() {
+  flow.innerHTML = `
+    <div class="submit-section">
+      <h3>Ready to submit?</h3>
+      <p style="margin:.75rem 0 1.5rem;color:var(--text-2);">You rated ${ratings.length} items. Your data is anonymous.</p>
+      <button class="submit-btn" id="submitBtn">Submit Ratings</button>
+    </div>`;
+  document.getElementById('submitBtn').addEventListener('click', async () => {
+    await submitRatings(ratings);
+    flow.style.display = 'none';
+    document.getElementById('thankYou').style.display = 'block';
+  });
+}
+
+fetch('../data/gestures.json')
+  .then(r => r.json())
+  .then(data => { gestureLib = data; buildRounds(); renderItem(); })
+  .catch(() => {
+    flow.innerHTML = '<p style="color:var(--muted);">Could not load gesture library. Run scripts/export_gestures.py first.</p>';
+  });
+</script>
+</body>
+</html>

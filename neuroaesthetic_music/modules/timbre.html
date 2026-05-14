@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timbre &amp; Spectralism — Neuroaesthetic Music</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { margin:0; }
+    .back-link {
+      position:fixed;top:1.5rem;left:1.5rem;z-index:300;
+      display:inline-flex;align-items:center;gap:.4rem;
+      color:rgba(255,255,255,.85);text-decoration:none;font-weight:500;font-size:.85rem;
+      background:rgba(0,0,0,.3);padding:.4rem .85rem;border-radius:999px;
+      backdrop-filter:blur(6px);
+    }
+    .timbre-root  { position:relative;height:500vh; }
+    .timbre-stage { position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center; }
+    .timbre-phase {
+      position:absolute;inset:0;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;padding:2.5rem;
+      text-align:center;opacity:0;transition:opacity .4s;pointer-events:none;
+    }
+    .timbre-phase.active { opacity:1;pointer-events:auto; }
+    .timbre-phase h2 { font-size:clamp(1.8rem,4.5vw,3.2rem);font-weight:700;letter-spacing:-.02em;max-width:720px;line-height:1.15; }
+    .timbre-phase p  { max-width:600px;font-size:clamp(.95rem,1.8vw,1.15rem);margin-top:1rem; }
+    .overtone-diagram { display:flex;align-items:flex-end;gap:.5rem;margin-top:1.75rem; }
+    .partial { border-radius:4px 4px 0 0;width:30px;background:linear-gradient(180deg,#a78bfa,#7c3aed); }
+    .yt-wrap { width:min(560px,90vw); }
+    .yt-wrap iframe { width:100%;aspect-ratio:16/9;border:none;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.35); }
+
+    /* Below pin */
+    .timbre-content { background:var(--bg);padding:4rem 2rem 5rem;max-width:880px;margin:0 auto; }
+    .feature-bar { display:flex;align-items:center;gap:1rem;margin-bottom:.8rem; }
+    .feature-label { min-width:190px;font-size:.875rem;font-weight:500;color:var(--text); }
+    .feature-track { flex:1;height:22px;background:var(--border);border-radius:999px;overflow:hidden; }
+    .feature-fill { height:100%;border-radius:999px;background:linear-gradient(90deg,var(--indigo),var(--violet)); }
+    .feature-val { font-size:.8rem;color:var(--muted);min-width:42px;text-align:right; }
+  </style>
+</head>
+<body>
+
+<a href="../index.html#modules" class="back-link">&#8592; All Modules</a>
+
+<div class="timbre-root" id="timbreRoot">
+  <div class="timbre-stage" id="timbreStage">
+
+    <!-- Phase 0 -->
+    <div class="timbre-phase active" id="tp0">
+      <h2 style="color:#fff;">What is timbre?</h2>
+      <p style="color:rgba(255,255,255,.75);">Two instruments play the same note at the same volume. You can still tell them apart.
+      That is timbre: the spectral shape that makes a violin a violin and an oboe an oboe.</p>
+      <div class="overtone-diagram">
+        <div class="partial" style="height:90px;" title="f1: fundamental"></div>
+        <div class="partial" style="height:56px;opacity:.85;" title="f2"></div>
+        <div class="partial" style="height:36px;opacity:.72;" title="f3"></div>
+        <div class="partial" style="height:23px;opacity:.60;" title="f4"></div>
+        <div class="partial" style="height:15px;opacity:.48;" title="f5"></div>
+        <div class="partial" style="height:10px;opacity:.38;" title="f6"></div>
+        <div class="partial" style="height: 6px;opacity:.28;" title="f7"></div>
+      </div>
+      <p style="color:rgba(255,255,255,.45);font-size:.8rem;margin-top:.6rem;">Harmonic partial series above a single fundamental</p>
+    </div>
+
+    <!-- Phase 1 -->
+    <div class="timbre-phase" id="tp1">
+      <h2 style="color:#e9d5ff;">Spectralism formalized it.</h2>
+      <p style="color:rgba(233,213,255,.8);">In the 1970s, Gerard Grisey and Tristan Murail built entire compositions from the physics of the overtone series. Harmony became the analysis of sound itself, not a system of functional chords.</p>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="timbre-phase" id="tp2">
+      <h2 style="color:#ddd6fe;">The machine learned the same lesson.</h2>
+      <p style="color:rgba(221,214,254,.8);">Random Forest models trained on biosignal data from 80 real listening sessions found that spectral features, not harmonic ones, best predicted both valence and arousal. Every top-5 feature was timbral.</p>
+    </div>
+
+    <!-- Phase 3: YouTube embed -->
+    <div class="timbre-phase" id="tp3">
+      <div class="yt-wrap">
+        <p style="color:rgba(255,255,255,.6);font-size:.85rem;margin-bottom:.8rem;">
+          Gerard Grisey · Les Espaces Acoustiques (1974-1985) · 17:45
+        </p>
+        <iframe src="https://www.youtube-nocookie.com/embed/1BQQQ2bu3GM?start=1065&rel=0"
+                title="Grisey Les Espaces Acoustiques" allowfullscreen loading="lazy"></iframe>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Normal-scroll content -->
+<div class="timbre-content">
+  <h2 style="margin-bottom:1.5rem;">Feature Importances</h2>
+  <p style="margin-bottom:2rem;">Top predictive features from the Random Forest models trained on ~2,773 audio windows from 80 contemporary music clips. All five leading features are spectral.</p>
+  <div id="featureBars"></div>
+</div>
+
+<script>
+const STOPS_T = [
+  [12,  10, 26],
+  [22,  16, 46],
+  [42,  32, 80],
+  [20,  16, 48],
+];
+function lerp(a,b,t){ return a+(b-a)*t; }
+function ease(t){ return t<.5?2*t*t:1-(-2*t+2)**2/2; }
+function lerpArr(a,b,t){ return a.map((v,i)=>lerp(v,b[i],t)); }
+
+const root   = document.getElementById('timbreRoot');
+const stage  = document.getElementById('timbreStage');
+const phases = [...document.querySelectorAll('.timbre-phase')];
+let curPhase = 0;
+
+function render(){
+  const total = root.offsetHeight - window.innerHeight;
+  const p     = Math.max(0, Math.min(1, -root.getBoundingClientRect().top / total));
+  const segN  = STOPS_T.length - 1;
+  const raw   = p * segN;
+  const seg   = Math.min(Math.floor(raw), segN - 1);
+  const t     = ease(raw - seg);
+  const rgb   = lerpArr(STOPS_T[seg], STOPS_T[seg+1], t);
+  stage.style.background = `rgb(${rgb.map(Math.round).join(',')})`;
+  const phase = Math.round(p * (phases.length - 1));
+  if(phase !== curPhase){
+    phases[curPhase].classList.remove('active');
+    phases[phase].classList.add('active');
+    curPhase = phase;
+  }
+}
+window.addEventListener('scroll', render, { passive:true });
+render();
+
+// Feature importance bars (values from poster)
+const FEATURES = [
+  { name:'Spectral Centroid',  importance:0.187 },
+  { name:'Spectral Rolloff',   importance:0.154 },
+  { name:'Zero-Crossing Rate', importance:0.131 },
+  { name:'Spectral Flatness',  importance:0.118 },
+  { name:'RMS Energy',         importance:0.102 },
+  { name:'MFCC-2',             importance:0.086 },
+  { name:'Spectral Bandwidth', importance:0.071 },
+];
+const barsEl = document.getElementById('featureBars');
+const maxImp = FEATURES[0].importance;
+FEATURES.forEach(f => {
+  barsEl.innerHTML += `
+    <div class="feature-bar">
+      <div class="feature-label">${f.name}</div>
+      <div class="feature-track">
+        <div class="feature-fill" style="width:${(f.importance/maxImp*100).toFixed(0)}%"></div>
+      </div>
+      <div class="feature-val">${(f.importance*100).toFixed(1)}%</div>
+    </div>`;
+});
+</script>
+</body>
+</html>

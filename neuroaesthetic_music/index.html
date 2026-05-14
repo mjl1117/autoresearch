@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neuroaesthetic Music — Matthew Lucia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Scrollytelling */
+    .scroll-root  { position: relative; height: 500vh; }
+    .scroll-stage {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .scroll-phase {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+      opacity: 0;
+      transition: opacity .4s ease;
+      pointer-events: none;
+    }
+    .scroll-phase.active { opacity: 1; pointer-events: auto; }
+    .phase-headline {
+      font-size: clamp(2rem, 5.5vw, 4rem);
+      font-weight: 700;
+      letter-spacing: -.03em;
+      max-width: 820px;
+      line-height: 1.1;
+    }
+    .phase-sub {
+      max-width: 660px;
+      font-size: clamp(.95rem, 2vw, 1.2rem);
+      margin-top: 1.25rem;
+      opacity: .75;
+    }
+    .phase-badge { margin-bottom: 1.5rem; }
+
+    /* Nav (text color injected by JS) */
+    .site-nav { color: #fff; }
+    .nav-logo, .nav-links a { color: inherit; }
+
+    /* Dot progress nav */
+    .dot-nav {
+      position: fixed;
+      right: 2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      z-index: 200;
+    }
+    .dot-nav button {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.55);
+      background: transparent;
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+      padding: 0;
+    }
+    .dot-nav button.active { background: #fff; border-color: #fff; }
+
+    /* Scroll cue */
+    .scroll-cue {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .5rem;
+      color: rgba(255,255,255,.6);
+      font-size: .75rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      z-index: 200;
+      transition: opacity .4s;
+      pointer-events: none;
+    }
+    .scroll-cue .mouse {
+      width: 24px; height: 38px;
+      border: 2px solid rgba(255,255,255,.5);
+      border-radius: 12px;
+      position: relative;
+    }
+    .scroll-cue .mouse::after {
+      content: '';
+      position: absolute;
+      top: 6px; left: 50%;
+      transform: translateX(-50%);
+      width: 4px; height: 8px;
+      background: rgba(255,255,255,.7);
+      border-radius: 2px;
+      animation: scrollDot 1.6s ease-in-out infinite;
+    }
+    @keyframes scrollDot {
+      0%   { opacity:1; transform:translateX(-50%) translateY(0); }
+      80%  { opacity:0; transform:translateX(-50%) translateY(10px); }
+      100% { opacity:0; transform:translateX(-50%) translateY(10px); }
+    }
+
+    /* Module section */
+    .module-section-head {
+      text-align: center;
+      padding: 5rem 2rem 1rem;
+    }
+    .module-section-head p { font-size: 1rem; color: var(--text-2); margin-top: .5rem; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav" id="siteNav">
+  <span class="nav-logo">Neuroaesthetic Music</span>
+  <ul class="nav-links">
+    <li><a href="#modules">Modules</a></li>
+    <li><a href="modules/works.html">Works</a></li>
+    <li><a href="modules/rate.html">Rate</a></li>
+  </ul>
+</nav>
+
+<!-- DOT PROGRESS NAV -->
+<nav class="dot-nav" id="dotNav" aria-label="Scroll progress">
+  <button class="active" data-phase="0" aria-label="Phase 1"></button>
+  <button data-phase="1" aria-label="Phase 2"></button>
+  <button data-phase="2" aria-label="Phase 3"></button>
+  <button data-phase="3" aria-label="Phase 4"></button>
+</nav>
+
+<!-- SCROLL CUE -->
+<div class="scroll-cue" id="scrollCue">
+  <div class="mouse"></div>
+  <span>Scroll</span>
+</div>
+
+<!-- SCROLLYTELLING PIN CONTAINER -->
+<div class="scroll-root" id="scrollRoot">
+  <div class="scroll-stage" id="scrollStage">
+
+    <!-- Phase 0: The critique -->
+    <div class="scroll-phase active" id="phase0">
+      <div class="phase-badge">
+        <span class="badge badge-indigo">Northwestern · ELP · 2026</span>
+      </div>
+      <h1 class="phase-headline" style="color:#fff;">AI-generated music is bad.</h1>
+      <p class="phase-sub" style="color:rgba(255,255,255,.72);">
+        Algorithmically generated systems trained on human creativity without consent
+        have given machine-made music its rightfully earned reputation.
+      </p>
+    </div>
+
+    <!-- Phase 1: The reframe -->
+    <div class="scroll-phase" id="phase1">
+      <h1 class="phase-headline" style="color:#e9d5ff;">But machine learning can be a tool,</h1>
+      <p class="phase-sub" style="color:rgba(233,213,255,.75);">
+        not to replace artists or generate music from stolen data, but to help composers
+        explore new timbres, map the body's response to sound, and surface patterns
+        that musicians already sense intuitively.
+      </p>
+    </div>
+
+    <!-- Phase 2: The finding -->
+    <div class="scroll-phase" id="phase2">
+      <h1 class="phase-headline" style="color:#ddd6fe;">Timbre, not harmony, predicts emotional response.</h1>
+      <p class="phase-sub" style="color:rgba(221,214,254,.78);">
+        Random Forest models trained on biosignals from real listening sessions
+        (EDA, PPG, ECG) achieved R&#178;=0.937 for valence. Every top predictive
+        feature was spectral, not harmonic.
+      </p>
+    </div>
+
+    <!-- Phase 3: The invitation -->
+    <div class="scroll-phase" id="phase3">
+      <div class="phase-badge">
+        <span class="badge badge-indigo">Interactive Research</span>
+      </div>
+      <h1 class="phase-headline" style="color:var(--text);">Explore the project.</h1>
+      <p class="phase-sub" style="color:var(--text-2);">
+        Eight modules spanning the full design-build-test-learn cycle.
+        Listen, interact, and contribute your own ratings to train the next model.
+      </p>
+    </div>
+
+  </div><!-- /scroll-stage -->
+</div><!-- /scroll-root -->
+
+<!-- MODULE GRID -->
+<div id="modules">
+  <div class="module-section-head">
+    <h2>Modules</h2>
+    <p>Choose any section to explore.</p>
+  </div>
+
+  <div class="module-grid">
+    <a href="modules/works.html" class="card">
+      <div class="card-img"><img src="assets/icons/Chemistry_music.svg" alt="Selected Works" loading="lazy"></div>
+      <div class="card-body">
+        <div class="card-title">Selected Works</div>
+        <div class="card-desc">10 contemporary pieces spanning all four emotional quadrants</div>
+      </div>
+    </a>
+    <a href="modules/ml-demo.html" class="card">
+      <div class="card-img"><img src="assets/icons/Purple_computer_music.svg" alt="ML Demo" loading="lazy"></div>
+      <div class="card-body">
+        <div class="card-title">ML Demo</div>
+        <div class="card-desc">Pick a quadrant or play random, hear spectral gestures from the model's library</div>
+      </div>
+    </a>
+    <a href="modules/bitalino.html" class="card">
+      <div class="card-img"><img src="assets/icons/Purple_brain_DNA.svg" alt="Bitalino" loading="lazy"></div>
+      <div class="card-body">
+        <div class="card-title">Bitalino</div>
+        <div class="card-desc">EDA, PPG, ECG, accelerometer, how biosignals were captured</div>
+      </div>
+    </a>
+    <a href="modules/valence-arousal.html" class="card">
+      <div class="card-img"><img src="assets/icons/axes_artistic.svg" alt="Valence / Arousal" loading="lazy"></div>
+      <div class="card-body">
+        <div class="card-title">Valence / Arousal</div>
+        <div class="card-desc">The circumplex model and its spectral correlates</div>
+      </div>
+    </a>
+    <a href="modules/waveform.html" class="card">
+      <div class="card-img"><img src="assets/icons/Audioform.svg" alt="Waveform Viewer" loading="lazy"></div>
+      <div class="card-body">
+        <div class="card-title">Waveform Viewer</div>
+        <div class="card-desc">Interactive spectrogram and waveform for each piece</div>
+      </div>
+    </a>
+    <a href="modules/timbre.html" class="card">
+      <div class="card-img"><img src="assets/icons/Resonance.svg" alt="Timbre &amp; Spectralism" loading="lazy"></div>
+      <div class="card-body">
+        <div class="card-title">Timbre &amp; Spectralism</div>
+        <div class="card-desc">Grisey's overtone philosophy and the spectral hypothesis</div>
+      </div>
+    </a>
+    <a href="modules/rate.html" class="card">
+      <div class="card-img"><img src="assets/icons/Rating.svg" alt="Rate Gestures" loading="lazy"></div>
+      <div class="card-body">
+        <div class="card-title">Rate Gestures</div>
+        <div class="card-desc">Place music on the valence/arousal plane, contributes to model training</div>
+      </div>
+    </a>
+    <a href="modules/interviews.html" class="card">
+      <div class="card-img"><img src="assets/icons/Interview.svg" alt="Interviews" loading="lazy"></div>
+      <div class="card-body">
+        <div class="card-title">Interviews</div>
+        <div class="card-desc">Composer and scientist perspectives, coming soon</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<script>
+// Color stops for each phase (RGB)
+const STOPS = [
+  [12,  10, 26],    // phase 0: near-black purple
+  [22,  16, 46],    // phase 1: deep purple
+  [42,  32, 80],    // phase 2: mid purple
+  [234,230,250],    // phase 3: lavender
+];
+const TEXT_STOPS = [
+  [255,255,255],    // phase 0: white text
+  [233,213,255],    // phase 1: soft lavender
+  [221,214,254],    // phase 2: lighter lavender
+  [30, 41, 59],     // phase 3: dark text
+];
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+function ease(t) { return t < .5 ? 2*t*t : 1-(-2*t+2)**2/2; }
+function lerpArr(a, b, t) { return a.map((v,i) => lerp(v, b[i], t)); }
+
+const scrollRoot = document.getElementById('scrollRoot');
+const stage      = document.getElementById('scrollStage');
+const phases     = [...document.querySelectorAll('.scroll-phase')];
+const dots       = [...document.querySelectorAll('.dot-nav button')];
+const nav        = document.getElementById('siteNav');
+const scrollCue  = document.getElementById('scrollCue');
+let currentPhase = 0;
+
+function getProgress() {
+  const rect  = scrollRoot.getBoundingClientRect();
+  const total = scrollRoot.offsetHeight - window.innerHeight;
+  return Math.max(0, Math.min(1, -rect.top / total));
+}
+
+function render() {
+  const p       = getProgress();
+  const segN    = STOPS.length - 1;
+  const raw     = p * segN;
+  const seg     = Math.min(Math.floor(raw), segN - 1);
+  const t       = ease(raw - seg);
+
+  const rgb  = lerpArr(STOPS[seg], STOPS[seg+1], t);
+  const text = lerpArr(TEXT_STOPS[seg], TEXT_STOPS[seg+1], t);
+  const col  = `rgb(${rgb.map(Math.round).join(',')})`;
+  const tcol = `rgb(${text.map(Math.round).join(',')})`;
+
+  stage.style.background = col;
+  nav.style.color        = tcol;
+
+  // Update dot colors to match text
+  dots.forEach(d => {
+    d.style.borderColor = tcol.replace('rgb', 'rgba').replace(')', ',.55)');
+    if (d.classList.contains('active')) d.style.background = tcol;
+    else d.style.background = 'transparent';
+  });
+
+  // Phase visibility
+  const phase = Math.round(p * (phases.length - 1));
+  if (phase !== currentPhase) {
+    phases[currentPhase].classList.remove('active');
+    phases[phase].classList.add('active');
+    currentPhase = phase;
+  }
+
+  // Hide scroll cue after leaving phase 0
+  scrollCue.style.opacity = p < .06 ? '1' : '0';
+}
+
+window.addEventListener('scroll', render, { passive: true });
+render();
+
+// Dot nav click: scroll to the corresponding scroll position
+dots.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ph    = +btn.dataset.phase;
+    const total = scrollRoot.offsetHeight - window.innerHeight;
+    const target = scrollRoot.offsetTop + (ph / (STOPS.length - 1)) * total;
+    window.scrollTo({ top: target, behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bitalino Biosignals — Neuroaesthetic Music</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background: var(--bg); padding-top: 5rem; }
+    .back-link { display:inline-flex;align-items:center;gap:.4rem;color:var(--indigo);text-decoration:none;font-weight:500;font-size:.9rem;margin:2rem 2rem 0; }
+    .hero {
+      background:linear-gradient(135deg,#ede9fe 0%,#e0e7ff 100%);
+      display:flex;align-items:center;justify-content:center;
+      padding:3rem 2rem;border-radius:var(--radius);
+      max-width:1100px;margin:2rem auto;
+    }
+    .hero img { max-width:200px;height:auto; }
+    .page-intro { max-width:1100px;margin:0 auto;padding:0 2rem 1.5rem; }
+    .sensor-grid {
+      display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;
+      max-width:1100px;margin:0 auto;padding:0 2rem;
+    }
+    @media(max-width:700px){ .sensor-grid{grid-template-columns:1fr 1fr;} }
+    @media(max-width:420px){ .sensor-grid{grid-template-columns:1fr;} }
+    .sensor-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;box-shadow:var(--shadow); }
+    .sensor-name { font-size:1rem;font-weight:700;color:var(--indigo);margin-bottom:.2rem; }
+    .sensor-full { font-size:.75rem;color:var(--muted);margin-bottom:.7rem;text-transform:uppercase;letter-spacing:.04em; }
+    .sensor-desc { font-size:.875rem;color:var(--text-2);line-height:1.55; }
+    .py-section { max-width:1100px;margin:2rem auto;padding:0 2rem 4rem; }
+    .code-block { background:#1e1e2e;color:#cdd6f4;border-radius:10px;padding:1.25rem 1.5rem;font-family:'Courier New',monospace;font-size:.85rem;line-height:1.6;overflow-x:auto; }
+  </style>
+</head>
+<body>
+
+<a href="../index.html#modules" class="back-link">&#8592; All Modules</a>
+
+<div class="hero">
+  <img src="../assets/icons/Purple_brain_DNA.svg" alt="Brain and DNA biosignal illustration">
+</div>
+
+<div class="page-intro">
+  <h2>Bitalino Biosignal Capture</h2>
+  <p style="margin-top:.5rem;max-width:680px;">The BITalino (r)evolution kit recorded four physiological signals simultaneously during music listening sessions, synchronized with audio playback via a custom Python program.</p>
+</div>
+
+<div class="sensor-grid">
+  <div class="sensor-card">
+    <div class="sensor-name">EDA</div>
+    <div class="sensor-full">Electrodermal Activity</div>
+    <div class="sensor-desc">Measures skin conductance via fingertip electrodes. Rises with sweat gland activity driven by the sympathetic nervous system. A direct index of emotional arousal, independent of valence direction.</div>
+  </div>
+  <div class="sensor-card">
+    <div class="sensor-name">PPG</div>
+    <div class="sensor-full">Photoplethysmography</div>
+    <div class="sensor-desc">Optical pulse detection via fingertip LED. Captures heart rate variability and blood volume pulse, both strongly modulated by emotional state. Spectral HRV features link to valence.</div>
+  </div>
+  <div class="sensor-card">
+    <div class="sensor-name">ECG</div>
+    <div class="sensor-full">Electrocardiography</div>
+    <div class="sensor-desc">Three-electrode cardiac signal. Provides R-R interval timing for precise HRV computation. Combined with PPG, it offers redundant heart rate measurement and motion artifact cross-check.</div>
+  </div>
+  <div class="sensor-card">
+    <div class="sensor-name">ACC</div>
+    <div class="sensor-full">Accelerometer</div>
+    <div class="sensor-desc">3-axis MEMS wrist accelerometer. Used to detect and exclude motion artifacts from EDA and PPG signals, ensuring signal quality during naturalistic listening sessions.</div>
+  </div>
+</div>
+
+<div class="py-section">
+  <h3 style="margin-bottom:.75rem;">Python Synchronization Program</h3>
+  <p style="font-size:.9rem;margin-bottom:1rem;">A custom Python script managed the BITalino Bluetooth connection, timestamped each biosignal sample at 1000 Hz, and emitted synchronization markers aligned to audio playback events. Resulting CSV files were segmented into 2-second windows for spectral feature extraction.</p>
+  <div class="code-block">
+# Simplified excerpt from bitalino_connector.py
+device = BITalino(MAC_ADDRESS)
+device.start(1000, [0, 1, 2, 3])  # EDA, PPG, ECG, ACC channels
+
+for sample in device.read(NUM_FRAMES):
+    timestamp = time.time()
+    eda, ppg, ecg, acc_x, acc_y, acc_z = parse_sample(sample)
+    log_row(timestamp, eda, ppg, ecg, acc_x, acc_y, acc_z)
+  </div>
+</div>
+
+</body>
+</html>

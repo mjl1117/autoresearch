@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Waveform Viewer — Neuroaesthetic Music</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background:var(--bg);padding-top:5rem; }
+    .back-link { display:inline-flex;align-items:center;gap:.4rem;color:var(--indigo);text-decoration:none;font-weight:500;font-size:.9rem;margin:2rem 2rem 0; }
+    .viewer-layout { max-width:900px;margin:0 auto;padding:0 2rem 4rem; }
+    select {
+      font-family:Inter,sans-serif;font-size:.95rem;padding:.55rem 1rem;
+      border:1.5px solid var(--border);border-radius:8px;background:var(--surface);
+      color:var(--text);margin-bottom:1.5rem;cursor:pointer;width:100%;max-width:560px;
+    }
+    .yt-embed { width:100%;aspect-ratio:16/9;border:none;border-radius:10px;margin-bottom:1.5rem;display:block; }
+    canvas { width:100%;border-radius:8px;display:block;margin-bottom:.75rem; }
+    #waveCanvas { height:100px;background:#0f0e1a; }
+    #specCanvas { height:160px;background:#0f0e1a; }
+    .canvas-label { font-size:.75rem;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em; }
+    .note { font-size:.82rem;color:var(--text-2);background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:.75rem 1rem;margin-top:1rem; }
+  </style>
+</head>
+<body>
+
+<a href="../index.html#modules" class="back-link">&#8592; All Modules</a>
+<div class="viewer-layout">
+  <h2 style="margin-top:1rem;">Waveform Viewer</h2>
+  <p style="margin-bottom:1.5rem;">Select a piece to view its simulated spectral fingerprint alongside the recording. The visualizations are derived from audio feature analysis of the research dataset.</p>
+
+  <select id="pieceSelect">
+    <option value="fTTyS6mjZiI|315|negative-high">Schnittke — Concerto Grosso I</option>
+    <option value="DM7C57d0D6I|352|positive-low">Satoh — The Heavenly Spheres</option>
+    <option value="wZC5cvfn8iw|1040|negative-low">Saariaho — Laterna Magica</option>
+    <option value="peuuOYs5o38|420|positive-high">Adams — Harmonielehre III</option>
+    <option value="jOpRaC8lGDw|145|negative-high">Grisey — Vortex Temporum I</option>
+    <option value="aC5C--GYmSI|1579|positive-high">Norman — Companion Guide to Rome IX</option>
+    <option value="QsFWaY6N4ao|3|positive-high">Macklay — Many, Many Cadences</option>
+    <option value="nnxsRegaZ60|626|negative-low">Soper — Voices from the Killing Jar III</option>
+    <option value="c6Eow6y3QJ4|1042|positive-low">Abrahamsen — Let Me Tell You I</option>
+    <option value="ttF4dWnuhdM|33|negative-high">Weinberg — Table Talk</option>
+  </select>
+
+  <iframe id="ytFrame" class="yt-embed" allowfullscreen></iframe>
+
+  <div class="canvas-label">Amplitude Envelope (simulated from feature analysis)</div>
+  <canvas id="waveCanvas" width="800" height="100"></canvas>
+
+  <div class="canvas-label">Spectral Energy Map (simulated from feature analysis)</div>
+  <canvas id="specCanvas" width="800" height="160"></canvas>
+
+  <div class="note">
+    &#9432; These visualizations are simulated spectral profiles derived from audio feature analysis
+    of the research dataset. Real-time browser spectrograms of YouTube audio are blocked by
+    cross-origin policy. Exact feature values vary from the illustration.
+  </div>
+</div>
+
+<script>
+// Spectral profiles per quadrant (from feature importance analysis)
+const PROFILES = {
+  'positive-high': { centroid:.72, rolloff:.80, zcr:.45, rms:.70, flatness:.30 },
+  'negative-high': { centroid:.55, rolloff:.60, zcr:.75, rms:.55, flatness:.65 },
+  'positive-low':  { centroid:.35, rolloff:.40, zcr:.20, rms:.30, flatness:.18 },
+  'negative-low':  { centroid:.28, rolloff:.30, zcr:.15, rms:.22, flatness:.12 },
+};
+
+const ytFrame  = document.getElementById('ytFrame');
+const waveCtx  = document.getElementById('waveCanvas').getContext('2d');
+const specCtx  = document.getElementById('specCanvas').getContext('2d');
+const sel      = document.getElementById('pieceSelect');
+let   animId   = null;
+let   seed     = 1;
+
+function loadPiece() {
+  const [vid, start, quadrant] = sel.value.split('|');
+  ytFrame.src = `https://www.youtube-nocookie.com/embed/${vid}?start=${start}&rel=0`;
+  cancelAnimationFrame(animId);
+  seed = Math.random() * 100;
+  drawSimulated(PROFILES[quadrant]);
+}
+
+function drawSimulated(p) {
+  const W = 800, Hw = 100, Hs = 160;
+
+  // Waveform (time domain amplitude envelope)
+  waveCtx.fillStyle = '#0f0e1a';
+  waveCtx.fillRect(0, 0, W, Hw);
+  waveCtx.strokeStyle = '#8b5cf6';
+  waveCtx.lineWidth = 1.5;
+  waveCtx.beginPath();
+  for (let x = 0; x < W; x++) {
+    const t   = x / W;
+    const env = p.rms * (0.55 + 0.45 * Math.sin(t * Math.PI));
+    const wav = env * Math.sin(t * 80 + seed) * (0.7 + 0.3 * Math.sin(t * 220)) * Hw * 0.44;
+    const y   = Hw/2 + wav;
+    x === 0 ? waveCtx.moveTo(x, y) : waveCtx.lineTo(x, y);
+  }
+  waveCtx.stroke();
+
+  // Spectrogram
+  specCtx.fillStyle = '#0f0e1a';
+  specCtx.fillRect(0, 0, W, Hs);
+  for (let x = 0; x < W; x++) {
+    const t = x / W;
+    for (let bin = 0; bin < Hs; bin++) {
+      const freq   = 1 - bin / Hs;
+      const energy = energyAt(freq, t, p);
+      specCtx.fillStyle = `rgb(${energyColor(energy).join(',')})`;
+      specCtx.fillRect(x, bin, 1, 1);
+    }
+  }
+}
+
+function energyAt(freq, time, p) {
+  const shape    = Math.exp(-Math.pow(freq - p.centroid, 2) / (2 * 0.13 * 0.13));
+  const rollMask = freq < p.rolloff ? 1 : Math.exp(-(freq - p.rolloff) * 9);
+  const temporal = 0.5 + 0.5 * Math.sin(time * Math.PI * 3 + freq * 5 + seed * 0.1);
+  const noise    = p.flatness * (Math.random() * 0.35 + 0.08);
+  return Math.min(1, (shape * rollMask * temporal + noise) * p.rms * 1.45);
+}
+
+function energyColor(e) {
+  if (e < .22) return [15, 14, 26];
+  if (e < .50) return [Math.round(15 + e*180), Math.round(14 + e*60), Math.round(90 + e*160)];
+  if (e < .75) return [Math.round(120 + (e-.5)*500), Math.round(80 + (e-.5)*200), 246];
+  return [255, Math.round(180 + (e-.75)*300), Math.round(40 + (e-.75)*80)];
+}
+
+sel.addEventListener('change', loadPiece);
+loadPiece();
+</script>
+</body>
+</html>

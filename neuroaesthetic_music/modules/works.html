@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Selected Works — Neuroaesthetic Music</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background: var(--bg); padding-top: 5rem; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: .4rem;
+      color: var(--indigo); text-decoration: none; font-weight: 500; font-size: .9rem;
+      margin: 2rem 2rem 0;
+    }
+    .page-header { max-width: 1200px; margin: 0 auto; padding: 0 2rem 2rem; }
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+    .work-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .work-card iframe { width: 100%; aspect-ratio: 16/9; display: block; border: none; }
+    .work-info  { padding: 1rem 1.25rem 1.25rem; }
+    .work-composer { font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .25rem; }
+    .work-title    { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: .5rem; line-height: 1.3; }
+    .work-meta     { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+    .work-instr    { font-size: .78rem; color: var(--text-2); margin-top: .4rem; }
+  </style>
+</head>
+<body>
+
+<a href="../index.html#modules" class="back-link">&#8592; All Modules</a>
+<div class="page-header">
+  <h2 style="margin-top:1rem;">Selected Works</h2>
+  <p>10 contemporary pieces spanning all four emotional quadrants of the valence/arousal circumplex.
+     Each embed starts at the exact timestamp used in the research dataset.</p>
+</div>
+
+<div class="works-grid" id="worksGrid"></div>
+
+<script>
+const WORKS = [
+  {
+    composer:"Alfred Schnittke", title:"Concerto Grosso I: Toccata",
+    year:"1976-77", instrumentation:"Two violins, harpsichord, prepared piano, strings",
+    valence:"Negative", arousal:"High", quadrant:"negative-high",
+    videoId:"fTTyS6mjZiI", start:315
+  },
+  {
+    composer:"Somei Satoh", title:"The Heavenly Spheres are Illuminated by Lights",
+    year:"1988", instrumentation:"Orchestra",
+    valence:"Positive", arousal:"Low", quadrant:"positive-low",
+    videoId:"DM7C57d0D6I", start:352
+  },
+  {
+    composer:"Kaija Saariaho", title:"Laterna Magica",
+    year:"2009", instrumentation:"Orchestra",
+    valence:"Negative", arousal:"Low", quadrant:"negative-low",
+    videoId:"wZC5cvfn8iw", start:1040
+  },
+  {
+    composer:"John Adams", title:"Harmonielehre: III, Meister Eckhardt and Quackie",
+    year:"1985", instrumentation:"Orchestra",
+    valence:"Positive", arousal:"High", quadrant:"positive-high",
+    videoId:"peuuOYs5o38", start:420
+  },
+  {
+    composer:"Gerard Grisey", title:"Vortex Temporum: I",
+    year:"1994-96", instrumentation:"Piano and five instruments",
+    valence:"Neg/Neutral", arousal:"High/Med", quadrant:"negative-high",
+    videoId:"jOpRaC8lGDw", start:145
+  },
+  {
+    composer:"Andrew Norman", title:"Companion Guide to Rome: IX, Sabina",
+    year:"2010", instrumentation:"String quartet",
+    valence:"Positive", arousal:"High/Med", quadrant:"positive-high",
+    videoId:"aC5C--GYmSI", start:1579
+  },
+  {
+    composer:"Sky Macklay", title:"Many, Many Cadences",
+    year:"2016", instrumentation:"String quartet",
+    valence:"Pos/Neutral", arousal:"High", quadrant:"positive-high",
+    videoId:"QsFWaY6N4ao", start:3
+  },
+  {
+    composer:"Kate Soper", title:"Voices from the Killing Jar: III, Palilalia: Iphigenia",
+    year:"2010-12", instrumentation:"Voice and instruments",
+    valence:"Negative", arousal:"Low/Med", quadrant:"negative-low",
+    videoId:"nnxsRegaZ60", start:626
+  },
+  {
+    composer:"Hans Abrahamsen", title:"Let Me Tell You: I, Let Me Tell You How It Was",
+    year:"2013", instrumentation:"Soprano and orchestra",
+    valence:"Positive", arousal:"Low/Med", quadrant:"positive-low",
+    videoId:"c6Eow6y3QJ4", start:1042
+  },
+  {
+    composer:"Alyssa Weinberg", title:"Table Talk",
+    year:"2016", instrumentation:"Violin and piano",
+    valence:"Neg/Pos", arousal:"High", quadrant:"negative-high",
+    videoId:"ttF4dWnuhdM", start:33
+  }
+];
+
+const BADGE_MAP = {
+  'positive-high':'badge-positive-high',
+  'negative-high':'badge-negative-high',
+  'positive-low' :'badge-positive-low',
+  'negative-low' :'badge-negative-low',
+};
+const LABEL_MAP = {
+  'positive-high':'Excited / Joyful',
+  'negative-high':'Tense / Anxious',
+  'positive-low' :'Calm / Serene',
+  'negative-low' :'Sad / Gloomy',
+};
+
+const grid = document.getElementById('worksGrid');
+WORKS.forEach(w => {
+  const src = `https://www.youtube-nocookie.com/embed/${w.videoId}?start=${w.start}&rel=0`;
+  grid.innerHTML += `
+    <div class="work-card">
+      <iframe src="${src}" title="${w.title}" allowfullscreen loading="lazy"></iframe>
+      <div class="work-info">
+        <div class="work-composer">${w.composer} · ${w.year}</div>
+        <div class="work-title">${w.title}</div>
+        <div class="work-meta">
+          <span class="badge ${BADGE_MAP[w.quadrant]}">${LABEL_MAP[w.quadrant]}</span>
+          <span style="font-size:.8rem;color:var(--muted);">${w.valence} V / ${w.arousal} A</span>
+        </div>
+        <div class="work-instr">${w.instrumentation}</div>
+      </div>
+    </div>`;
+});
+</script>
+</body>
+</html>

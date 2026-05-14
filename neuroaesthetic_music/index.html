@@ -131,7 +131,7 @@
 
     /* Mobile: hero spacing corrections */
     @media (max-width: 768px) {
-      .dot-nav { display: none; }
+      .dot-nav { display: none !important; }
       .scroll-phase { padding: 1.25rem; padding-top: 3.5rem; }
       .phase-headline { font-size: clamp(2.25rem, 9vw, 3.5rem); }
       .phase-badge { margin-bottom: 1rem; }
@@ -338,12 +338,14 @@ function render() {
   stage.style.background = col;
   nav.style.color        = tcol;
 
-  // Update dot colors to match text
-  dots.forEach(d => {
-    d.style.borderColor = tcol.replace('rgb', 'rgba').replace(')', ',.55)');
-    if (d.classList.contains('active')) d.style.background = tcol;
-    else d.style.background = 'transparent';
-  });
+  // Update dot colors to match text (desktop only)
+  if (window.innerWidth > 768) {
+    dots.forEach(d => {
+      d.style.borderColor = tcol.replace('rgb', 'rgba').replace(')', ',.55)');
+      if (d.classList.contains('active')) d.style.background = tcol;
+      else d.style.background = 'transparent';
+    });
+  }
 
   // Phase visibility + dot nav
   const phase = Math.round(p * (phases.length - 1));

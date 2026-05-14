@@ -32,7 +32,11 @@ class GestureSynth {
       this.ctx      = new (window.AudioContext || window.webkitAudioContext)();
       this.analyser = this.ctx.createAnalyser();
       this.analyser.fftSize = 2048;
-      this.analyser.connect(this.ctx.destination);
+      // Global output gain — keeps volume safe regardless of how many partials pile up
+      this.outGain = this.ctx.createGain();
+      this.outGain.gain.value = 0.08;
+      this.analyser.connect(this.outGain);
+      this.outGain.connect(this.ctx.destination);
     } else if (this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
@@ -47,19 +51,23 @@ class GestureSynth {
   _playEvent(event, audioTime, durationSec) {
     if (!event.frequency || event.amplitude === 0) return;
 
-    // Collect all voices: root + chord voices if enabled
+    // Build chord voices. If the gesture has explicit chord frequencies use those;
+    // otherwise default to root + perfect fifth + octave for a chord-like sound.
     const voices = [event.frequency];
-    if (event.chord?.enabled && Array.isArray(event.chord.chord_frequencies)) {
+    if (event.chord?.enabled && Array.isArray(event.chord.chord_frequencies) && event.chord.chord_frequencies.length > 0) {
       event.chord.chord_frequencies.forEach(f => voices.push(f));
+    } else {
+      voices.push(event.frequency * 1.5);  // perfect fifth
+      voices.push(event.frequency * 2.0);  // octave
     }
 
     const releaseTime = Math.min(event.release, durationSec * 0.8);
     const attackTime  = Math.min(event.attack, durationSec * 0.3);
 
     voices.forEach((baseFreq, voiceIdx) => {
-      // Scale amplitude for chord voices (each successive voice quieter)
-      const balance  = event.chord?.balance ?? 0.7;
-      const voiceAmp = event.amplitude * Math.pow(balance, voiceIdx);
+      // Cap amplitude and taper across voices
+      const balance  = event.chord?.balance ?? 0.65;
+      const voiceAmp = Math.min(event.amplitude, 0.5) * Math.pow(balance, voiceIdx);
 
       // Master envelope gain for this voice
       const masterGain = this.ctx.createGain();

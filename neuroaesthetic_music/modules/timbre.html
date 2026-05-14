@@ -475,44 +475,43 @@ function buildStaff(fundamentalKey) {
     'font-family':'Apple Symbols,Segoe UI Symbol,serif', fill:'var(--text)'});
 
   // Grand staff: thick bracket bar + piano curly brace
+  //
+  // Parametric model — normalized coords where:
+  //   x ∈ [−0.22, 0]  0 = right edge / tip (rightmost, touching barline)
+  //                  −0.22 = leftmost body extent
+  //   y ∈ [0, 1]      0 = top of system, 1 = bottom
+  //
+  // The center V-tip is the RIGHTMOST point (x=0).  Scrolls are at the top
+  // and bottom (y ∈ [0, 0.22] and [0.78, 1]) and curve slightly above/below
+  // the staff edges before folding back inward — matching the reference grand-staff brace.
   const by1 = TREBLE_LINES[4] - 8;   // top of system  (y=172)
   const by2 = BASS_LINES[0]  + 6;    // bottom of system (y=346)
-  const mid = (by1 + by2) / 2;       // midpoint       (y=259)
-  const brx  = staffX1 - 14;  // right reference edge
-  const sw   = 16;             // scroll rightward bulge
-  const sh   = 5;              // scroll half-width at junction
-  const tipX = brx - 24;      // centre tip (leftmost extent)
-  const jYt  = by1 + 28;      // top    scroll-to-body junction y
-  const jYb  = by2 - 28;      // bottom scroll-to-body junction y
-  // C1-mirror CP1 x values (mirror of scroll CP2 across the junction point)
-  const oCP1 = 2*(brx+sh) - (brx+sw);    // outer body  (= brx - sw + 2*sh)
-  const iCP1 = 2*(brx-sh) - (brx+sw-4);  // inner body  (= brx - sw + 4 - 2*sh... wait)
+  const bH  = by2 - by1;             // brace height (174)
+  const rx  = staffX1 - 2;           // right edge: brace tip aligns with barline
 
   // Thick vertical bar
   el('line', {x1:staffX1-2, y1:by1, x2:staffX1-2, y2:by2,
     stroke:'var(--text)', 'stroke-width':'2.5'});
 
-  // Filled closed-outline brace.
-  // Key fixes vs previous version:
-  //   1. Scrolls start VERTICALLY DOWNWARD at their tips: CP1 is directly
-  //      below the tip (same x), so the initial tangent is (0, +1) / (0,-1).
-  //      Previous version had CP1 to the right of the tip → wrong direction.
-  //   2. Centre tip uses near-tip control points (±1px) → 90° cusp, visually
-  //      sharp point.  Previous version used ±10px → gradual/rounded.
-  //   3. All junctions are C1-continuous: each segment's CP1 is the mirror of
-  //      the previous segment's CP2 across their shared endpoint.
+  // Map normalized (nx, ny) → SVG coordinate string
+  function bpt(nx, ny) {
+    return `${(nx * bH + rx).toFixed(1)},${(ny * bH + by1).toFixed(1)}`;
+  }
+
+  // Outer edge (left/outer profile) + inner edge (right/inner profile), clockwise.
+  // Scroll sections: y 0→0.22 (top) and 0.78→1 (bottom).
+  // S-body sections: y 0.22→0.5 (upper) and 0.5→0.78 (lower).
+  // Scroll tips dip −0.03 above/below the staff endpoints for a visible curl.
   const braceD = [
-    `M ${brx},${by1}`,
-    // outer edge ↓
-    `C ${brx},${by1+14}      ${brx+sw},${jYt}   ${brx+sh},${jYt}`,  // top scroll  (starts ↓)
-    `C ${oCP1},${jYt}        ${tipX+1},${mid-1} ${tipX},${mid}`,     // upper body  (C1 at junction)
-    `C ${tipX+1},${mid+1}    ${oCP1},${jYb}     ${brx+sh},${jYb}`,   // lower body  (mirror)
-    `C ${brx+sw},${jYb}      ${brx},${by2-14}   ${brx},${by2}`,      // bot  scroll (ends ↓→tip)
-    // inner edge ↑
-    `C ${brx},${by2-14}      ${brx+sw-4},${jYb} ${brx-sh},${jYb}`,   // bot  scroll inner
-    `C ${iCP1},${jYb}        ${tipX-1},${mid+1} ${tipX},${mid}`,     // lower body inner
-    `C ${tipX-1},${mid-1}    ${iCP1},${jYt}     ${brx-sh},${jYt}`,   // upper body inner
-    `C ${brx+sw-4},${jYt}    ${brx},${by1+14}   ${brx},${by1}`,      // top  scroll inner (ends ↑)
+    `M ${bpt(0, 0)}`,
+    `C ${bpt(-0.05,-0.03)} ${bpt(-0.22,0.05)} ${bpt(-0.22,0.17)}`,  // top scroll outer
+    `C ${bpt(-0.22,0.28)}  ${bpt(0,0.28)}     ${bpt(0,0.5)}`,        // upper S-body → tip
+    `C ${bpt(0,0.72)}      ${bpt(-0.22,0.72)} ${bpt(-0.22,0.83)}`,   // tip → lower S-body
+    `C ${bpt(-0.22,0.95)}  ${bpt(-0.05,1.03)} ${bpt(0,1)}`,          // bottom scroll outer
+    `C ${bpt(-0.04,1.03)}  ${bpt(-0.18,0.95)} ${bpt(-0.18,0.83)}`,   // bottom scroll inner
+    `C ${bpt(-0.18,0.72)}  ${bpt(-0.04,0.72)} ${bpt(-0.04,0.5)}`,    // lower S-body inner → tip
+    `C ${bpt(-0.04,0.28)}  ${bpt(-0.18,0.28)} ${bpt(-0.18,0.17)}`,   // upper S-body inner
+    `C ${bpt(-0.18,0.05)}  ${bpt(-0.04,-0.03)} ${bpt(0,0)}`,         // top scroll inner
     'Z'
   ].join(' ');
   el('path', {d:braceD, fill:'var(--text)', stroke:'none'});

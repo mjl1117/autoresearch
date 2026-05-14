@@ -108,6 +108,7 @@ p  { font-size: 1.05rem; color: var(--text-2); }
 }
 @media (max-width: 900px) { .module-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 540px) { .module-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .site-nav { padding: .6rem 1rem; } }
 
 /* === Section Container === */
 .section { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }

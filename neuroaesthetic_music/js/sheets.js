@@ -1,6 +1,6 @@
 // Google Sheets via Apps Script — ratings submission
 // Replace APPS_SCRIPT_URL after Step 12 Google Sheets setup
-const APPS_SCRIPT_URL = 'REPLACE_WITH_APPS_SCRIPT_URL';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjK2zBw01GCwoDJcPmMtBlLzVSTcHKyrOpCjGplEtdtaaHwyO_F41vZ2MulOqLCUpa/exec';
 
 async function submitRatings(ratings) {
   const payload = {

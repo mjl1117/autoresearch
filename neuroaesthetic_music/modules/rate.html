@@ -40,6 +40,9 @@
       font-family:Inter,sans-serif;font-size:1rem;font-weight:600;cursor:pointer;
     }
     .thank-you { text-align:center;padding:3rem 0;display:none; }
+    .va-intro { background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--violet);border-radius:var(--radius);padding:1rem 1.25rem;margin:1rem 0 1.5rem;font-size:.875rem;line-height:1.7; }
+    .va-intro h3 { font-size:.95rem; }
+    .va-intro p { color:var(--text-2);margin:0; }
   </style>
 </head>
 <body>
@@ -48,6 +51,14 @@
 <div class="rate-layout">
   <h2 style="margin-top:1rem;">Rate Gestures</h2>
   <p>Place each sound on the valence/arousal circumplex. Your ratings help train the next model. Data is anonymous.</p>
+
+  <div class="va-intro">
+    <h3 style="margin-bottom:.6rem;">The Valence/Arousal Model</h3>
+    <p>This task uses Russell's (1980) <em>Circumplex Model of Affect</em> to measure emotional response.
+    <strong>Valence</strong> is the hedonic quality of a sound — how pleasant or unpleasant it feels (x-axis, left = negative, right = positive).
+    <strong>Arousal</strong> is its activation level — how calm or energized it makes you feel (y-axis, bottom = calm, top = activated).
+    Together they place any emotional response in a continuous two-dimensional space. Click or drag the dot to your position.</p>
+  </div>
 
   <div id="ratingFlow"></div>
   <div class="thank-you" id="thankYou">
@@ -162,6 +173,21 @@ function attachCircumplexHandlers() {
   svg.addEventListener('touchmove',  e => { e.preventDefault(); place(e); }, { passive:false });
 }
 
+function renderBaseline() {
+  placed = false; curValence = 0; curArousal = 0;
+  flow.innerHTML = `
+    <div style="margin-bottom:1.25rem;">
+      <h3 style="margin-bottom:.35rem;">Before we begin — how are you feeling right now?</h3>
+      <p style="font-size:.85rem;color:var(--text-2);">This baseline helps contextualize your gesture ratings.</p>
+    </div>
+    ${buildCircumplexWidget()}
+    <button class="next-btn" id="nextBtn" style="opacity:1;cursor:pointer;" onclick="
+      ratings.push({type:'baseline',id:'baseline',valence:curValence,arousal:curArousal});
+      buildRounds(); renderItem();
+    ">Begin Rating &#8594;</button>`;
+  attachCircumplexHandlers();
+}
+
 function renderItem() {
   const round = ROUNDS[roundIdx];
   const item  = round.items[itemIdx];
@@ -239,7 +265,7 @@ function renderSubmit() {
 
 fetch('../data/gestures.json')
   .then(r => r.json())
-  .then(data => { gestureLib = data; buildRounds(); renderItem(); })
+  .then(data => { gestureLib = data; renderBaseline(); })
   .catch(() => {
     flow.innerHTML = '<p style="color:var(--muted);">Could not load gesture library. Run scripts/export_gestures.py first.</p>';
   });

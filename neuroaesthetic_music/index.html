@@ -44,9 +44,17 @@
     .phase-headline { opacity: 0; font-size: clamp(2rem, 5.5vw, 4rem); font-weight: 700; letter-spacing: -.03em; max-width: 820px; line-height: 1.1; }
     .phase-sub      { opacity: 0; max-width: 660px; font-size: clamp(.95rem, 2vw, 1.2rem); margin-top: 1.25rem; }
 
-    .scroll-phase.active .phase-badge    { animation: phaseIn 0.45s ease          forwards; }
-    .scroll-phase.active .phase-headline { animation: phaseIn 0.55s ease 0.1s     forwards; }
-    .scroll-phase.active .phase-sub      { animation: phaseIn 0.65s ease 0.35s    forwards; }
+    /* Badge + headline animate for all phases on activation */
+    .scroll-phase.active .phase-badge    { animation: phaseIn 0.45s ease       forwards; }
+    .scroll-phase.active .phase-headline { animation: phaseIn 0.55s ease 0.1s  forwards; }
+
+    /* Phase 0: sub-text animates automatically on page load (phase 0 is active at start) */
+    #phase0.active .phase-sub { animation: phaseIn 0.65s ease 0.35s forwards; }
+
+    /* Phases 1-3: sub-text only animates after additional scrolling (JS adds .sub-visible) */
+    #phase1.active.sub-visible .phase-sub,
+    #phase2.active.sub-visible .phase-sub,
+    #phase3.active.sub-visible .phase-sub { animation: phaseIn 0.55s ease forwards; }
 
     /* Nav (text color injected by JS) */
     .site-nav { color: #fff; }
@@ -293,6 +301,12 @@ const nav        = document.getElementById('siteNav');
 const scrollCue  = document.getElementById('scrollCue');
 let currentPhase = 0;
 
+// Sub-text scroll triggers: how far into each phase's scroll band before sub-text appears.
+// Phase 0 is always visible (shows on page load). Phases 1-3 require additional scrolling.
+// Values are overall progress thresholds (~35% into each phase's band).
+const SUB_TRIGGERS  = [0, 0.28, 0.62, 0.89];
+const subRevealed   = [true, false, false, false];
+
 function getProgress() {
   const rect  = scrollRoot.getBoundingClientRect();
   const total = scrollRoot.offsetHeight - window.innerHeight;
@@ -326,12 +340,30 @@ function render() {
   if (phase !== currentPhase) {
     phases[currentPhase].classList.remove('active');
     dots[currentPhase].classList.remove('active');
-    // Force animation replay by removing, triggering reflow, then re-adding active
+    // When scrolling backward, reset sub-visible for phases we leave behind
+    if (phase < currentPhase) {
+      for (let i = phase + 1; i < phases.length; i++) {
+        subRevealed[i] = false;
+        phases[i].classList.remove('sub-visible');
+      }
+    }
+    // Force animation replay
     phases[phase].classList.remove('active');
     void phases[phase].offsetWidth;
     phases[phase].classList.add('active');
     dots[phase].classList.add('active');
     currentPhase = phase;
+  }
+
+  // Sub-text reveal: trigger for phases 1-3 when scroll crosses their threshold
+  for (let i = 1; i < phases.length; i++) {
+    if (!subRevealed[i] && p >= SUB_TRIGGERS[i]) {
+      subRevealed[i] = true;
+      // Force reflow so the animation restarts cleanly
+      phases[i].classList.remove('sub-visible');
+      void phases[i].querySelector('.phase-sub').offsetWidth;
+      phases[i].classList.add('sub-visible');
+    }
   }
 
   // Hide scroll cue after leaving phase 0

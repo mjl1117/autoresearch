@@ -9,18 +9,42 @@
   <style>
     body { background:var(--bg);padding-top:5rem; }
     .back-link { display:inline-flex;align-items:center;gap:.4rem;color:var(--indigo);text-decoration:none;font-weight:500;font-size:.9rem;margin:2rem 2rem 0; }
-    .viewer-layout { max-width:900px;margin:0 auto;padding:0 2rem 4rem; }
+    .viewer-layout { max-width:960px;margin:0 auto;padding:0 2rem 4rem; }
     select {
       font-family:Inter,sans-serif;font-size:.95rem;padding:.55rem 1rem;
       border:1.5px solid var(--border);border-radius:8px;background:var(--surface);
       color:var(--text);margin-bottom:1.5rem;cursor:pointer;width:100%;max-width:560px;
     }
     .yt-embed { width:100%;aspect-ratio:16/9;border:none;border-radius:10px;margin-bottom:1.5rem;display:block; }
-    canvas { width:100%;border-radius:8px;display:block;margin-bottom:.75rem; }
-    #waveCanvas { height:100px;background:#0f0e1a; }
-    #specCanvas { height:160px;background:#0f0e1a; }
-    .canvas-label { font-size:.75rem;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em; }
-    .note { font-size:.82rem;color:var(--text-2);background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:.75rem 1rem;margin-top:1rem; }
+    .canvas-wrap { position:relative;margin-bottom:1.25rem; }
+    canvas { width:100%;border-radius:8px;display:block; }
+    #waveCanvas { height:120px;background:#0f0e1a; }
+    #specCanvas { height:180px;background:#0f0e1a; }
+    .canvas-label {
+      font-size:.75rem;color:var(--muted);margin-bottom:.35rem;
+      text-transform:uppercase;letter-spacing:.07em;font-weight:600;
+    }
+
+    /* How-to-read section */
+    .guide { margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border); }
+    .guide h3 { margin-bottom:1.25rem; }
+    .guide-grid { display:grid;grid-template-columns:1fr 1fr;gap:1.5rem; }
+    @media(max-width:600px){ .guide-grid{grid-template-columns:1fr;} }
+    .guide-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem; }
+    .guide-card h4 { font-size:.9rem;font-weight:600;margin-bottom:.6rem;color:var(--indigo-d); }
+    .guide-card p  { font-size:.83rem;color:var(--text-2);line-height:1.65;margin:0; }
+    .guide-card p + p { margin-top:.6rem; }
+
+    /* Spectrogram color legend */
+    .spec-legend { display:flex;align-items:center;gap:.75rem;margin-top:.4rem;margin-bottom:1.25rem; }
+    .spec-grad { flex:0 0 200px;height:10px;border-radius:3px;background:linear-gradient(to right,#440154,#3b528b,#21918c,#5ec962,#fde725); }
+    .spec-legend span { font-size:.72rem;color:var(--muted); }
+
+    .loading { text-align:center;padding:2rem;color:var(--muted);font-size:.9rem; }
+
+    .analysis-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-top:1.25rem; }
+    .analysis-header { display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem; }
+    .analysis-label { font-weight:700;font-size:.88rem;color:var(--text); }
   </style>
 </head>
 <body>
@@ -28,109 +52,310 @@
 <a href="../index.html#modules" class="back-link">&#8592; All Modules</a>
 <div class="viewer-layout">
   <h2 style="margin-top:1rem;">Waveform Viewer</h2>
-  <p style="margin-bottom:1.5rem;">Select a piece to view its simulated spectral fingerprint alongside the recording. The visualizations are derived from audio feature analysis of the research dataset.</p>
+  <p style="margin-bottom:1.5rem;color:var(--text-2);">
+    Real spectral analysis computed from the research audio at 10 Hz resolution.
+    Each visualization is drawn from the same feature data used to train the emotion models.
+    Select a piece, then scroll down to learn how to read each panel.
+  </p>
 
   <select id="pieceSelect">
-    <option value="fTTyS6mjZiI|315|negative-high">Schnittke — Concerto Grosso I</option>
-    <option value="DM7C57d0D6I|352|positive-low">Satoh — The Heavenly Spheres</option>
-    <option value="wZC5cvfn8iw|1040|negative-low">Saariaho — Laterna Magica</option>
-    <option value="peuuOYs5o38|420|positive-high">Adams — Harmonielehre III</option>
-    <option value="jOpRaC8lGDw|145|negative-high">Grisey — Vortex Temporum I</option>
-    <option value="aC5C--GYmSI|1579|positive-high">Norman — Companion Guide to Rome IX</option>
-    <option value="QsFWaY6N4ao|3|positive-high">Macklay — Many, Many Cadences</option>
-    <option value="nnxsRegaZ60|626|negative-low">Soper — Voices from the Killing Jar III</option>
-    <option value="c6Eow6y3QJ4|1042|positive-low">Abrahamsen — Let Me Tell You I</option>
-    <option value="ttF4dWnuhdM|33|negative-high">Weinberg — Table Talk</option>
+    <option value="schnittke|fTTyS6mjZiI|315">Schnittke — Concerto Grosso I</option>
+    <option value="satoh|DM7C57d0D6I|352">Satoh — The Heavenly Spheres</option>
+    <option value="saariaho|wZC5cvfn8iw|1040">Saariaho — Laterna Magica</option>
+    <option value="adams|peuuOYs5o38|420">Adams — Harmonielehre III</option>
+    <option value="grisey|jOpRaC8lGDw|145">Grisey — Vortex Temporum I</option>
+    <option value="norman|aC5C--GYmSI|1579">Norman — Companion Guide to Rome IX</option>
+    <option value="macklay|QsFWaY6N4ao|3">Macklay — Many, Many Cadences</option>
+    <option value="soper|nnxsRegaZ60|626">Soper — Voices from the Killing Jar III</option>
+    <option value="abrahamsen|c6Eow6y3QJ4|1042">Abrahamsen — Let Me Tell You I</option>
+    <option value="weinberg|ttF4dWnuhdM|33">Weinberg — Table Talk</option>
   </select>
 
   <iframe id="ytFrame" class="yt-embed" allowfullscreen></iframe>
 
-  <div class="canvas-label">Amplitude Envelope (simulated from feature analysis)</div>
-  <canvas id="waveCanvas" width="800" height="100"></canvas>
+  <div id="loadingMsg" class="loading">Loading analysis data...</div>
 
-  <div class="canvas-label">Spectral Energy Map (simulated from feature analysis)</div>
-  <canvas id="specCanvas" width="800" height="160"></canvas>
+  <div id="visuals" style="display:none">
+    <div class="canvas-label">Amplitude Envelope — RMS Energy over time</div>
+    <div class="canvas-wrap">
+      <canvas id="waveCanvas" width="900" height="120"></canvas>
+    </div>
 
-  <div class="note">
-    &#9432; These visualizations are simulated spectral profiles derived from audio feature analysis
-    of the research dataset. Real-time browser spectrograms of YouTube audio are blocked by
-    cross-origin policy. Exact feature values vary from the illustration.
+    <div class="canvas-label">Spectral Energy Map — reconstructed from spectral centroid &amp; bandwidth</div>
+    <div class="canvas-wrap">
+      <canvas id="specCanvas" width="900" height="180"></canvas>
+    </div>
+    <div class="spec-legend">
+      <span>Low energy</span><div class="spec-grad"></div><span>High energy</span>
+    </div>
+
+    <div id="analysisCard" class="analysis-card" style="display:none">
+      <div class="analysis-header">
+        <span class="analysis-label">Spectral Analysis</span>
+        <span style="font-size:.75rem;color:var(--muted);font-style:italic;">Claude analyzed the 10 Hz feature time series and reported on notable patterns, considered alongside participant valence/arousal ratings.</span>
+      </div>
+      <p id="analysisText" style="font-size:.875rem;line-height:1.75;color:var(--text-2);margin:0;"></p>
+    </div>
+  </div>
+
+  <!-- How to read -->
+  <div class="guide">
+    <h3>How to Read These Visualizations</h3>
+    <div class="guide-grid">
+      <div class="guide-card">
+        <h4>Amplitude Envelope (top panel)</h4>
+        <p>The mirrored waveform traces RMS energy, the root-mean-square amplitude of the audio signal
+        in each 0.1-second window. Taller peaks mean louder moments. In classical music,
+        envelopes reveal phrase structure, dynamic contrasts, and orchestral texture changes.</p>
+        <p>Formula: RMS = sqrt(mean(x²)) where x is the audio sample array in a window.</p>
+      </div>
+      <div class="guide-card">
+        <h4>Spectral Energy Map (bottom panel)</h4>
+        <p>Time runs left to right; frequency runs bottom (low) to top (high).
+        Color encodes energy concentration using the viridis colormap: dark purple = quiet, teal = moderate, yellow = intense.
+        Each column is reconstructed from the spectral centroid and bandwidth, the statistical
+        summary of where energy is concentrated in frequency space.</p>
+        <p>A bright yellow band near the top means bright, treble-heavy timbre. A dense band
+        near the bottom means rich bass or low-string texture.</p>
+      </div>
+      <div class="guide-card">
+        <h4>Spectral Analysis</h4>
+        <p>Each piece includes a written analysis of its key spectral features, drawn from the
+        full 10 Hz time-series data. The analysis discusses spectral centroid, RMS energy,
+        zero-crossing rate, dissonance, and spectral flatness in relation to the emotional
+        responses participants reported.</p>
+      </div>
+      <div class="guide-card">
+        <h4>What These Features Predict</h4>
+        <p>The Random Forest model trained on this data found spectral features most predictive
+        of human emotional response. High spectral centroid and rolloff correlate with positive valence
+        and high arousal (bright, energetic). High ZCR and flatness correlate with tension and anxiety.
+        Low centroid with smooth rolloff predicts calm or sad affect.</p>
+        <p>All top-5 features by importance were spectral, not harmonic, confirming Grisey's
+        spectralist hypothesis computationally.</p>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-// Spectral profiles per quadrant (from feature importance analysis)
-const PROFILES = {
-  'positive-high': { centroid:.72, rolloff:.80, zcr:.45, rms:.70, flatness:.30 },
-  'negative-high': { centroid:.55, rolloff:.60, zcr:.75, rms:.55, flatness:.65 },
-  'positive-low':  { centroid:.35, rolloff:.40, zcr:.20, rms:.30, flatness:.18 },
-  'negative-low':  { centroid:.28, rolloff:.30, zcr:.15, rms:.22, flatness:.12 },
+function viridis(t) {
+  const pts = [
+    [68,1,84],[72,40,120],[62,74,137],[49,104,142],
+    [38,130,142],[53,183,121],[110,206,88],[253,231,37]
+  ];
+  const idx = t * (pts.length - 1);
+  const lo = Math.floor(idx), hi = Math.min(lo+1, pts.length-1);
+  const f = idx - lo;
+  return pts[lo].map((v,i) => Math.round(v + f*(pts[hi][i]-v)));
+}
+
+const ANALYSES = {
+schnittke: "The spectral centroid sweeps 4,086 Hz across the 60-second excerpt — the widest range of any piece in the corpus — with zero-crossing rate elevated at 0.061, consistent with Schnittke's characteristic sul ponticello and extended string techniques that coat the surface with noise energy. Dissonance reaches its maximum (1.0) in brief targeted bursts against a moderate mean of 0.14: tension is structural, not continuous. This pattern of controlled spectral instability maps directly onto the reported high arousal (+0.64) and negative valence (−0.39) — an anxious quality that remains organized rather than chaotic.",
+
+satoh: "Satoh's meditation is confirmed numerically: the spectral centroid settles to the lowest mean (1,940 Hz) of all ten pieces, with a range of only 2,667 Hz — the narrowest in the corpus — indicating a stable, low-register timbral center built from sustained piano harmonics and marimba resonance. Zero-crossing rate at 0.021 is by far the lowest across all pieces, consistent with the gradual, sine-like amplitude envelopes of the sustained tones. RMS energy variation (range 0.043) is the smallest, reflecting the piece's remarkably even dynamic surface. The statistics quantify what the ear hears: this is the most spectrally stable and least agitated work, matching its reported strongly positive valence (+0.70) and the lowest arousal in the set (−0.67).",
+
+saariaho: "Laterna Magica presents a textural paradox: the second-highest RMS mean (0.080) of any piece, yet negative valence and only moderate arousal. The full orchestra operates at high sustained power, but the spectral centroid (2,030 Hz, range only 2,330 Hz) remains stable and low-centered, creating weight without brightness. Spectral flatness is the lowest of all pieces (0.199), indicating dense, tonal energy rather than noise-like content, and the dissonance mean (0.109, lowest of the corpus) confirms that this darkness is harmonic rather than rough. High amplitude without spectral agitation: the sonic equivalent of a heavy, stationary shadow.",
+
+adams: "Harmonielehre III shows high-energy coherence: an RMS mean of 0.083 matched by a narrow centroid range (2,059 Hz), indicating that the orchestra sustains a bright, stable timbral identity rather than sweeping the spectrum. Unlike the tense pieces whose energy comes from spectral instability, Adams's dynamic range (RMS range 0.172) reflects organic orchestral breathing — soft introduction, building density. ZCR at 0.048 is moderate and consistent. The overall picture is well-organized, energetic, spectral coherence, which aligns with both positive valence (+0.44) and high arousal (+0.60) in the participant ratings.",
+
+grisey: "Vortex Temporum shows the spectral fingerprint of spectralism's first major statement: an extreme dynamic range (RMS range 0.210) driven by the ensemble's expansion and contraction from near-silence to full texture, with the centroid sweeping 3,172 Hz as the piece traverses dark-to-bright harmonic fields. Most revealing is the dissonance signal, which ranges across 0.861 — from near-zero to near-maximum roughness — tracking the harmonic-series-based voice-leading that creates temporary regions of acute partial beating before resolving. This is spectralism's core process made measurable: controlled roughness as the primary expressive carrier, confirming both the strongly negative valence (−0.62) and high arousal (+0.50) participants reported.",
+
+norman: "The Companion Guide to Rome stands out as the highest-energy piece by both RMS mean (0.113) and RMS range (0.261) — the widest absolute dynamic swing in the corpus. Norman's rhetorical string writing involves rapid shifts from hushed tremolo to fortissimo unison attacks, captured in wide ZCR swings (range 0.113) and dissonance spikes (range 0.919). Yet the centroid mean (2,402 Hz) and rolloff (4,087 Hz) remain in the moderate-bright range: extreme energy is deployed with direction rather than indiscriminately. Participants rated this the highest on both valence (+0.82) and arousal (+0.80), and the data reflects why: maximum dynamic power with coherent timbral purpose.",
+
+macklay: "Many, Many Cadences presents a spectral mismatch with its participant ratings: designed for the excited/joyful quadrant, the data shows high brightness (centroid 2,575 Hz, rolloff 4,253 Hz) and wide dynamic activity (RMS range 0.209), and the ZCR range (0.116, among the widest) captures the piece's characteristic iterative bow pressure at cadential arrivals. Yet participants reported slightly negative valence (−0.26). The energy is present, but the obsessive repetition of the same harmonic gesture — the 'many, many' in the title — may have pushed emotional perception toward neutral-negative despite the bright, high-arousal spectral profile: arousal without harmonic resolution.",
+
+soper: "Voices from the Killing Jar is the spectrally most extreme work in the corpus. The centroid (3,257 Hz) and rolloff (6,271 Hz) are far above any other piece, driven by extended vocal techniques — Sprechstimme, flutter-tongue, multiphonics — alongside electronics and prepared instruments. Dissonance mean (0.318, highest of all) and ZCR range (0.336, roughly double any other piece) quantify the timbral complexity. Yet participants reported mildly positive valence (+0.35). This counterintuitive result is spectrally legible: the high spectral activity may register as engaged, intense, dramatically compelling rather than simply unpleasant — noise-as-expression rather than noise-as-failure.",
+
+abrahamsen: "Let Me Tell You has the longest analyzed duration in the dataset (662 windows), reflecting Abrahamsen's characteristically slow tempos. The RMS mean (0.028) is among the lowest, consistent with the glassy, sparse scoring for soprano and large orchestra playing at chamber dynamics. Yet the dynamic range is wide relative to the mean (0.148), as occasional orchestral swells punctuate the quiet surface — a structural technique Abrahamsen calls 'large amounts of silence.' Dissonance reaches 1.0 in isolated moments (complex ornamental grace-note clusters) but averages at a low 0.134. The result matches the reported calm, mildly positive affect: V=+0.42, A=−0.14 — present but unforced.",
+
+weinberg: "Table Talk encodes its compositional arc — negative-to-positive valence, high sustained arousal — as the most extreme dynamic spread of any piece: an RMS range of 0.320, nearly twice that of most other works. Two percussionists traversing bass drum, vibraphone, tam-tam, crotales, and small metals produce a rolloff range of 9,453 Hz — the widest spectral excursion in the corpus. Dissonance mean (0.209) is second only to Soper's, reflecting the attack complexity of mallet and membrane transients. The 'transitional' design intention is measurable: no stable spectral center, constant reinvention of timbre, an instrument-hopping restlessness that pushes the piece from tense unpredictability toward percussive celebration."
 };
 
 const ytFrame  = document.getElementById('ytFrame');
-const waveCtx  = document.getElementById('waveCanvas').getContext('2d');
-const specCtx  = document.getElementById('specCanvas').getContext('2d');
 const sel      = document.getElementById('pieceSelect');
-let   animId   = null;
-let   seed     = 1;
+const loading  = document.getElementById('loadingMsg');
+const visuals  = document.getElementById('visuals');
 
-function loadPiece() {
-  const [vid, start, quadrant] = sel.value.split('|');
-  ytFrame.src = `https://www.youtube-nocookie.com/embed/${vid}?start=${start}&rel=0`;
-  cancelAnimationFrame(animId);
-  seed = Math.random() * 100;
-  drawSimulated(PROFILES[quadrant]);
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',');
+  return lines.slice(1).map(line => {
+    const vals = line.split(',');
+    const row = {};
+    headers.forEach((h, i) => row[h.trim()] = parseFloat(vals[i]));
+    return row;
+  }).filter(r => !isNaN(r.time));
 }
 
-function drawSimulated(p) {
-  const W = 800, Hw = 100, Hs = 160;
+function normalize(arr) {
+  const mn = Math.min(...arr), mx = Math.max(...arr);
+  if (mx === mn) return arr.map(() => 0);
+  return arr.map(v => (v - mn) / (mx - mn));
+}
 
-  // Waveform (time domain amplitude envelope)
-  waveCtx.fillStyle = '#0f0e1a';
-  waveCtx.fillRect(0, 0, W, Hw);
-  waveCtx.strokeStyle = '#8b5cf6';
-  waveCtx.lineWidth = 1.5;
-  waveCtx.beginPath();
-  for (let x = 0; x < W; x++) {
-    const t   = x / W;
-    const env = p.rms * (0.55 + 0.45 * Math.sin(t * Math.PI));
-    const wav = env * Math.sin(t * 80 + seed) * (0.7 + 0.3 * Math.sin(t * 220)) * Hw * 0.44;
-    const y   = Hw/2 + wav;
-    x === 0 ? waveCtx.moveTo(x, y) : waveCtx.lineTo(x, y);
+function drawWaveform(rows) {
+  const canvas = document.getElementById('waveCanvas');
+  canvas.width = canvas.offsetWidth * window.devicePixelRatio || 900;
+  const W = canvas.width, H = canvas.height;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#0f0e1a';
+  ctx.fillRect(0, 0, W, H);
+
+  const rms = rows.map(r => r.rms_energy);
+  const rmsN = normalize(rms);
+  const n = rmsN.length;
+
+  const midY = H/2;
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(139,92,246,0.05)');
+  grad.addColorStop(0.5,'rgba(139,92,246,0.65)');
+  grad.addColorStop(1,'rgba(139,92,246,0.05)');
+
+  ctx.beginPath();
+  rmsN.forEach((v,i)=>{
+    const x=(i/(n-1))*W, y=midY-v*midY*0.88;
+    i===0?ctx.moveTo(x,midY):null; ctx.lineTo(x,y);
+  });
+  for(let i=n-1;i>=0;i--){
+    const x=(i/(n-1))*W, y=midY+rmsN[i]*midY*0.88;
+    ctx.lineTo(x,y);
   }
-  waveCtx.stroke();
+  ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
 
-  // Spectrogram
-  specCtx.fillStyle = '#0f0e1a';
-  specCtx.fillRect(0, 0, W, Hs);
-  for (let x = 0; x < W; x++) {
-    const t = x / W;
-    for (let bin = 0; bin < Hs; bin++) {
-      const freq   = 1 - bin / Hs;
-      const energy = energyAt(freq, t, p);
-      specCtx.fillStyle = `rgb(${energyColor(energy).join(',')})`;
-      specCtx.fillRect(x, bin, 1, 1);
+  // Center line
+  ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(0,midY); ctx.lineTo(W,midY); ctx.stroke();
+
+  // Outline curves top and bottom
+  ctx.strokeStyle='#c4b5fd'; ctx.lineWidth=1.5;
+  ['top','bot'].forEach(side=>{
+    ctx.beginPath();
+    rmsN.forEach((v,i)=>{
+      const x=(i/(n-1))*W;
+      const y=side==='top'?midY-v*midY*0.88:midY+v*midY*0.88;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  });
+}
+
+function drawSpectrogram(rows) {
+  const canvas = document.getElementById('specCanvas');
+  canvas.width = canvas.offsetWidth * window.devicePixelRatio || 900;
+  const W = canvas.width, H = canvas.height;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#0f0e1a';
+  ctx.fillRect(0, 0, W, H);
+
+  // Frequency axis: 100 Hz to 15000 Hz, log scale
+  const FMIN = 100, FMAX = 15000;
+  const logFmin = Math.log(FMIN), logFmax = Math.log(FMAX);
+
+  const rmsN    = normalize(rows.map(r => r.rms_energy));
+  const centAll = rows.map(r => r.spectral_centroid);
+  const bwAll   = rows.map(r => r.spectral_bandwidth);
+  const rollAll = rows.map(r => r.spectral_rolloff);
+  const n = rows.length;
+
+  // Number of frequency bins to draw
+  const BINS = H;
+  // Pre-compute log-scale frequency for each bin
+  const binFreqs = Array.from({length: BINS}, (_, b) => {
+    const t = 1 - b / (BINS - 1);   // b=0 → top → high freq
+    return Math.exp(logFmin + t * (logFmax - logFmin));
+  });
+
+  // Draw column by column
+  const colW = Math.ceil(W / n);
+  for (let xi = 0; xi < n; xi++) {
+    const x = Math.round((xi / (n - 1)) * (W - colW));
+    const amp    = rmsN[xi];
+    const center = centAll[xi];
+    const bw     = Math.max(bwAll[xi], 500);
+    const roll   = rollAll[xi];
+
+    const imgData = ctx.createImageData(colW, BINS);
+    for (let b = 0; b < BINS; b++) {
+      const freq = binFreqs[b];
+      // Gaussian centered at spectral centroid, width ~ spectral bandwidth
+      const sigma = bw * 0.7;
+      const gaussian = Math.exp(-0.5 * Math.pow((freq - center) / sigma, 2));
+      // Rolloff mask: energy falls off sharply above rolloff
+      const rollMask = freq <= roll ? 1.0 : Math.exp(-2.5 * (freq - roll) / (FMAX - FMIN) * 10);
+      const energy = Math.min(1, gaussian * rollMask * amp * 2.2);
+      const [r, g, bl] = viridis(energy);
+      const idx = b * colW * 4;
+      for (let dx = 0; dx < colW; dx++) {
+        imgData.data[(idx + dx * 4)]     = r;
+        imgData.data[(idx + dx * 4) + 1] = g;
+        imgData.data[(idx + dx * 4) + 2] = bl;
+        imgData.data[(idx + dx * 4) + 3] = 255;
+      }
     }
+    ctx.putImageData(imgData, x, 0);
   }
+
+  // Overlay: frequency axis labels
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '10px Inter,sans-serif';
+  [[200,'200 Hz'],[1000,'1k'],[5000,'5k'],[10000,'10k']].forEach(([f, label]) => {
+    const t = (Math.log(f) - logFmin) / (logFmax - logFmin);
+    const y = Math.round((1 - t) * (H - 1));
+    ctx.fillRect(0, y, W, 1);
+    ctx.fillText(label, 4, y - 3);
+  });
 }
 
-function energyAt(freq, time, p) {
-  const shape    = Math.exp(-Math.pow(freq - p.centroid, 2) / (2 * 0.13 * 0.13));
-  const rollMask = freq < p.rolloff ? 1 : Math.exp(-(freq - p.rolloff) * 9);
-  const temporal = 0.5 + 0.5 * Math.sin(time * Math.PI * 3 + freq * 5 + seed * 0.1);
-  const noise    = p.flatness * (Math.random() * 0.35 + 0.08);
-  return Math.min(1, (shape * rollMask * temporal + noise) * p.rms * 1.45);
-}
+async function loadPiece() {
+  const [stem, vid, start] = sel.value.split('|');
+  ytFrame.src = `https://www.youtube-nocookie.com/embed/${vid}?start=${start}&rel=0`;
 
-function energyColor(e) {
-  if (e < .22) return [15, 14, 26];
-  if (e < .50) return [Math.round(15 + e*180), Math.round(14 + e*60), Math.round(90 + e*160)];
-  if (e < .75) return [Math.round(120 + (e-.5)*500), Math.round(80 + (e-.5)*200), 246];
-  return [255, Math.round(180 + (e-.75)*300), Math.round(40 + (e-.75)*80)];
+  loading.style.display = 'block';
+  visuals.style.display = 'none';
+
+  try {
+    const resp = await fetch(`../data/timeseries/${stem}.csv`);
+    if (!resp.ok) throw new Error('CSV not found');
+    const text = await resp.text();
+    const rows = parseCSV(text);
+
+    drawWaveform(rows);
+    drawSpectrogram(rows);
+
+    loading.style.display = 'none';
+    visuals.style.display = 'block';
+
+    const card = document.getElementById('analysisCard');
+    const txt  = document.getElementById('analysisText');
+    if (ANALYSES[stem]) {
+      txt.textContent = ANALYSES[stem];
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  } catch (e) {
+    loading.textContent = 'Could not load analysis data. ' + e.message;
+  }
 }
 
 sel.addEventListener('change', loadPiece);
 loadPiece();
+
+// Redraw on window resize
+window.addEventListener('resize', () => {
+  const [stem] = sel.value.split('|');
+  fetch(`../data/timeseries/${stem}.csv`)
+    .then(r => r.text())
+    .then(text => {
+      const rows = parseCSV(text);
+      drawWaveform(rows);
+      drawSpectrogram(rows);
+    });
+});
 </script>
 </body>
 </html>

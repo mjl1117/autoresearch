@@ -25,11 +25,39 @@
     .q-card-features { font-size:.8rem;color:var(--text-2);line-height:1.6; }
     .model-row { margin-top:2rem; }
     .model-row p { font-size:.9rem; }
+
+    /* Definitions + data sections */
+    .full-section { max-width:1100px;margin:0 auto;padding:0 2rem 3rem;border-top:1px solid var(--border); }
+    .def-grid { display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:1.5rem 0 2.5rem; }
+    @media(max-width:680px){ .def-grid{grid-template-columns:1fr;} }
+    .def-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem; }
+    .def-card h4 { font-size:1rem;font-weight:700;margin-bottom:.5rem; }
+    .def-card p  { font-size:.865rem;color:var(--text-2);line-height:1.7;margin:0 0 .6rem; }
+    .def-card p:last-child { margin-bottom:0; }
+    .def-card .formula { font-family:monospace;font-size:.82rem;background:var(--bg);padding:.35rem .65rem;border-radius:6px;display:inline-block;margin:.35rem 0; }
+
+    .data-table { width:100%;border-collapse:collapse;font-size:.85rem;margin:1.25rem 0; }
+    .data-table th { text-align:left;padding:.5rem .75rem;font-weight:600;font-size:.78rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--border); }
+    .data-table td { padding:.55rem .75rem;border-bottom:1px solid var(--border);color:var(--text); }
+    .data-table tr:last-child td { border-bottom:none; }
+    .data-table tr:hover td { background:var(--bg); }
+    .badge-sm { font-size:.72rem;font-weight:600;padding:.2rem .55rem;border-radius:999px;white-space:nowrap; }
+    .badge-audio { background:#ede9fe;color:#5b21b6; }
+    .badge-bio   { background:#dcfce7;color:#166534; }
+    .badge-target{ background:#fef3c7;color:#92400e; }
+
+    .stat-row { display:flex;gap:2rem;flex-wrap:wrap;margin:1.25rem 0; }
+    .stat-box { background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.4rem;min-width:140px; }
+    .stat-num { font-size:1.8rem;font-weight:700;color:var(--indigo);line-height:1; }
+    .stat-lbl { font-size:.75rem;color:var(--text-2);margin-top:.3rem; }
     .legend { display:flex;gap:1.25rem;flex-wrap:wrap;margin:1.25rem 0 .5rem;align-items:center; }
     .legend-item { display:flex;align-items:center;gap:.5rem;font-size:.82rem;font-weight:500;color:var(--text-2); }
     .legend-dot { width:12px;height:12px;border-radius:50%;flex-shrink:0; }
-    .legend-dot.reported { background:#8b5cf6; }
-    .legend-dot.predicted { background:transparent;border:2.5px solid #8b5cf6; }
+    .legend-dot.reported  { background:#64748b; }
+    .legend-dot.predicted { background:transparent;border:2.5px dashed #64748b; }
+    .color-legend { display:flex;gap:.9rem;flex-wrap:wrap;margin:.6rem 0 0;align-items:center; }
+    .color-legend-item { display:flex;align-items:center;gap:.4rem;font-size:.76rem;color:var(--text-2); }
+    .color-swatch { width:11px;height:11px;border-radius:50%;flex-shrink:0; }
     .toggle-row { display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap; }
     .view-btn {
       padding:.35rem .9rem;border-radius:999px;border:1.5px solid var(--border);
@@ -59,6 +87,14 @@
     <div class="legend">
       <div class="legend-item"><div class="legend-dot reported"></div> Human reported</div>
       <div class="legend-item"><div class="legend-dot predicted"></div> Model predicted</div>
+    </div>
+    <div class="color-legend">
+      <span style="font-size:.72rem;font-weight:600;color:var(--text-2);margin-right:.2rem;">Color = designed quadrant:</span>
+      <div class="color-legend-item"><div class="color-swatch" style="background:#fca5a5"></div>Tense / Anxious</div>
+      <div class="color-legend-item"><div class="color-swatch" style="background:#86efac"></div>Excited / Joyful</div>
+      <div class="color-legend-item"><div class="color-swatch" style="background:#93c5fd"></div>Calm / Serene</div>
+      <div class="color-legend-item"><div class="color-swatch" style="background:#cbd5e1"></div>Sad / Gloomy</div>
+      <div class="color-legend-item"><div class="color-swatch" style="background:#fcd34d"></div>Transitional</div>
     </div>
     <p class="click-hint">Click any dot to open the YouTube clip</p>
     <svg id="circumplex" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
@@ -108,28 +144,173 @@
     </div>
     <div class="model-row">
       <h3 style="margin-bottom:.75rem;">Model Performance</h3>
-      <p><strong>Valence:</strong> R&#178; = 0.937 &nbsp;|&nbsp; <strong>Arousal:</strong> R&#178; = 0.939</p>
-      <p style="margin-top:.5rem;font-size:.875rem;">All top-5 predictive features across both targets were spectral,
+      <p><strong>Valence:</strong> R&#178; = 0.945 &nbsp;|&nbsp; <strong>Arousal:</strong> R&#178; = 0.944</p>
+      <p style="margin-top:.5rem;font-size:.875rem;">Random Forest trained on 68 audio and biosignal features
+      (EDA, PPG, ECG, respiration + 24 spectral statistics).
+      All top-5 predictive features across both targets were spectral,
       not harmonic, confirming the spectralist hypothesis at the level of machine learning.</p>
     </div>
   </div>
 </div>
 
+<!-- ── Definitions ───────────────────────────────────────────────────────── -->
+<div class="full-section" style="padding-top:2.5rem;">
+  <h2 style="margin-bottom:.4rem;">Defining Valence and Arousal</h2>
+  <p style="color:var(--text-2);font-size:.95rem;max-width:740px;">
+    The two-dimensional model of affect formalized by Russell (1980) provides the theoretical
+    backbone of this research. Each piece of music is located in the plane defined by these
+    two orthogonal axes.
+  </p>
+
+  <div class="def-grid">
+    <div class="def-card">
+      <h4 style="color:#7c3aed;">Valence</h4>
+      <p>Valence is the <strong>hedonic quality</strong> of an emotional experience, the degree to
+      which a stimulus is perceived as pleasant or unpleasant. It is the primary axis of the
+      circumplex model, spanning from highly negative affect (aversive, dysphoric) at one extreme
+      to highly positive affect (appetitive, euphoric) at the other.</p>
+      <p>In the Affective Circumplex (Russell, 1980; Barrett &amp; Russell, 1999), valence is
+      operationally independent of arousal: a piece can be simultaneously high-arousal and
+      negative-valence (tense, anxious) or high-arousal and positive-valence (excited, joyful).</p>
+      <p><strong>In this study:</strong> Participants rated valence on a continuous 0–100 slider
+      labeled "unpleasant" to "pleasant" following each 60-second excerpt. The scale was
+      anchored at 0 (maximally aversive), 50 (emotionally neutral), and 100 (maximally pleasant).</p>
+      <div class="formula">V ∈ [0, 100] → normalized to [−1, +1] by (V/50) − 1</div>
+    </div>
+    <div class="def-card">
+      <h4 style="color:#0284c7;">Arousal</h4>
+      <p>Arousal is the <strong>activation or energy dimension</strong> of emotion, capturing how
+      wakeful, energized, or activated an experience feels regardless of whether it is pleasant.
+      High-arousal states include excitement, anxiety, and agitation; low-arousal states include
+      calm, sadness, and serenity.</p>
+      <p>Arousal is physiologically grounded: it correlates directly with sympathetic nervous
+      system activity, including elevated heart rate, reduced heart rate variability, increased
+      electrodermal response (skin conductance), and faster respiration. This makes arousal
+      the more physiologically accessible of the two dimensions, and explains why biosignals
+      improved model performance substantially over audio features alone.</p>
+      <p><strong>In this study:</strong> Participants rated arousal on a continuous 0–100 slider
+      labeled "calm" to "activated" following each 60-second excerpt.</p>
+      <div class="formula">A ∈ [0, 100] → normalized to [−1, +1] by (A/50) − 1</div>
+    </div>
+  </div>
+
+  <div class="def-card" style="margin-bottom:2.5rem;">
+    <h4>Russell's Circumplex Model of Affect (1980)</h4>
+    <p>Russell proposed that all emotional experiences, including those evoked by music, can be
+    located in a two-dimensional continuous space defined by valence and arousal. Categorical
+    emotion labels (happy, sad, tense, calm) are regions within this space rather than
+    discrete categories. This model is now the dominant framework in music emotion research
+    (Eerola &amp; Vuoskoski, 2011; Thayer, 1986) because it accommodates the gradual, ambiguous,
+    and multi-dimensional character of musical affect, particularly in post-tonal and
+    spectralist repertoire where harmonic function is suspended.</p>
+    <p>The four quadrant labels used throughout this site reflect the dominant emotional
+    character of each region: <strong>Excited / Joyful</strong> (+V, +A), <strong>Tense / Anxious</strong>
+    (−V, +A), <strong>Calm / Serene</strong> (+V, −A), and <strong>Sad / Gloomy</strong> (−V, −A).
+    Contemporary classical music often occupies ambiguous inter-quadrant positions, which is a
+    key motivation for a continuous rather than categorical measurement model.</p>
+    <p style="font-size:.82rem;color:var(--muted);margin-top:.75rem;">
+      References: Russell, J. A. (1980). A circumplex model of affect. <em>Journal of Personality and
+      Social Psychology, 39</em>(6), 1161–1178. Barrett, L. F., &amp; Russell, J. A. (1999). The structure
+      of current affect. <em>Current Directions in Psychological Science, 8</em>(1), 10–14.
+    </p>
+  </div>
+</div>
+
+<!-- ── Dataset + Methods ────────────────────────────────────────────────── -->
+<div class="full-section">
+  <h2 style="margin-bottom:.4rem;">Dataset and Methods</h2>
+  <p style="color:var(--text-2);font-size:.95rem;max-width:740px;">
+    All model training, evaluation, and the circumplex coordinates above derive from a controlled
+    listening study with simultaneous biosignal capture.
+  </p>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-num">2,773</div><div class="stat-lbl">Labeled windows (5 s each)</div></div>
+    <div class="stat-box"><div class="stat-num">100+</div><div class="stat-lbl">Music clips analyzed</div></div>
+    <div class="stat-box"><div class="stat-num">68</div><div class="stat-lbl">Features per window</div></div>
+    <div class="stat-box"><div class="stat-num">10 Hz</div><div class="stat-lbl">Feature extraction rate</div></div>
+    <div class="stat-box"><div class="stat-num">0.945</div><div class="stat-lbl">Valence R²</div></div>
+    <div class="stat-box"><div class="stat-num">0.944</div><div class="stat-lbl">Arousal R²</div></div>
+  </div>
+
+  <h3 style="margin:2rem 0 .75rem;">Study Protocol</h3>
+  <div class="def-card" style="margin-bottom:1.75rem;">
+    <p>Participants listened to each 60-second excerpt while wearing a
+    <strong>Bitalino biosignal device</strong> capturing four simultaneous physiological streams:
+    electrodermal activity (EDA), photoplethysmography (PPG), electrocardiography (ECG),
+    and 3-axis accelerometer. Signals were sampled at 1000 Hz and downsampled to 10 Hz
+    for windowed feature extraction.</p>
+    <p>Following each clip, participants rated both valence and arousal on continuous 0–100
+    sliders without time pressure. Windows were extracted by segmenting each clip into
+    overlapping 5-second frames with a 0.1-second stride. Each window received the
+    participant's post-clip ratings as its target labels, aligning self-report with
+    the contemporaneous physiological signal captured during listening.</p>
+  </div>
+
+  <h3 style="margin:1.75rem 0 .75rem;">Feature Schema — 68 Features per Window</h3>
+  <table class="data-table">
+    <thead>
+      <tr><th>Feature group</th><th>Statistics</th><th>Count</th><th>Type</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>RMS Energy</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-audio">Audio</span></td></tr>
+      <tr><td>Spectral Centroid (Hz)</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-audio">Audio</span></td></tr>
+      <tr><td>Spectral Rolloff (Hz)</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-audio">Audio</span></td></tr>
+      <tr><td>Spectral Bandwidth (Hz)</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-audio">Audio</span></td></tr>
+      <tr><td>Spectral Flatness</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-audio">Audio</span></td></tr>
+      <tr><td>Zero-Crossing Rate</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-audio">Audio</span></td></tr>
+      <tr><td>EDA Tonic (skin conductance level)</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-bio">Biosignal</span></td></tr>
+      <tr><td>EDA Phasic (galvanic skin response amplitude)</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-bio">Biosignal</span></td></tr>
+      <tr><td>EDA SCR Rate (responses per minute)</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-bio">Biosignal</span></td></tr>
+      <tr><td>Respiration Rate (breaths/min)</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-bio">Biosignal</span></td></tr>
+      <tr><td>Respiration Amplitude</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-bio">Biosignal</span></td></tr>
+      <tr><td>Respiration Depth</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-bio">Biosignal</span></td></tr>
+      <tr><td>ECG Heart Rate (bpm)</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-bio">Biosignal</span></td></tr>
+      <tr><td>ECG HR Trend</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-bio">Biosignal</span></td></tr>
+      <tr><td>ECG RMSSD (HRV index)</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-bio">Biosignal</span></td></tr>
+      <tr><td>PPG Heart Rate (bpm)</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-bio">Biosignal</span></td></tr>
+      <tr><td>PPG HRV (pulse-derived variability)</td><td>mean, std, min, max</td><td>4</td><td><span class="badge-sm badge-bio">Biosignal</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin:2rem 0 .75rem;">Model and Key Finding</h3>
+  <div class="def-card">
+    <p><strong>Algorithm:</strong> Random Forest Regressor (100 trees). Features were median-imputed
+    for missing biosignal windows and z-score standardized before training. Separate models
+    were trained for valence and arousal.</p>
+    <p><strong>Performance:</strong> In-sample R² on 2,773 windows: valence = 0.945, arousal = 0.944.
+    The circumplex scatter plot above compares participant-reported ratings (filled dots) against
+    Random Forest predictions (outline dots) for the 10 contemporary pieces, with dashed connecting
+    lines showing per-piece agreement. Shorter lines indicate tighter model-to-human alignment.</p>
+    <p><strong>Key finding:</strong> When feature importances were ranked by mean decrease in
+    impurity, the top-5 predictors for both valence and arousal were exclusively
+    <em>spectral</em> audio features (spectral centroid, rolloff, bandwidth, flatness, and RMS energy),
+    not harmonic or melodic features. This computationally corroborates the spectralist hypothesis
+    articulated by Grisey, Murail, and Saariaho: that timbre is the primary carrier of emotional
+    information in contemporary music, and that harmony, the organizing principle of tonal music,
+    is insufficient to account for emotional response in post-tonal repertoire.</p>
+  </div>
+</div>
+
 <script>
 // x = 250 + v*195,  y = 250 - a*195
-// Reported: human-perceived V/A from the listening study
-// Predicted: model-predicted V/A (R²=0.937 valence, R²=0.939 arousal)
+// rep = participant-reported V/A from the listening study (feat_df.parquet, normalised 0-100 → -1..1)
+// pred = Random Forest in-sample prediction (R²=0.945 valence / R²=0.944 arousal, 68 features)
+// rep = participant-reported V/A from the listening study (feat_df.parquet, normalised 0-100 → -1..1)
+// pred = Random Forest model prediction (R²=0.945 valence, R²=0.944 arousal, in-sample, 68 features)
+// color = designed emotional quadrant (composer's intent at time of selection)
+// quadrant = human-readable label for tooltip
 const PIECES = [
-  { name:"Schnittke, Concerto Grosso I",           rep:{v:-.65,a: .75}, pred:{v:-.60,a: .68}, color:"#fca5a5", videoId:"fTTyS6mjZiI", start:315  },
-  { name:"Satoh, The Heavenly Spheres",            rep:{v: .55,a:-.60}, pred:{v: .50,a:-.55}, color:"#6ee7b7", videoId:"DM7C57d0D6I", start:352  },
-  { name:"Saariaho, Laterna Magica",               rep:{v:-.50,a:-.55}, pred:{v:-.44,a:-.50}, color:"#93c5fd", videoId:"wZC5cvfn8iw", start:1040 },
-  { name:"Adams, Harmonielehre III",               rep:{v: .70,a: .65}, pred:{v: .65,a: .60}, color:"#a5b4fc", videoId:"peuuOYs5o38", start:420  },
-  { name:"Grisey, Vortex Temporum I",              rep:{v:-.20,a: .60}, pred:{v:-.15,a: .55}, color:"#fca5a5", videoId:"jOpRaC8lGDw", start:145  },
-  { name:"Norman, Companion Guide IX",             rep:{v: .60,a: .40}, pred:{v: .55,a: .36}, color:"#a5b4fc", videoId:"aC5C--GYmSI", start:1579 },
-  { name:"Macklay, Many Many Cadences",            rep:{v: .30,a: .80}, pred:{v: .26,a: .74}, color:"#a5b4fc", videoId:"QsFWaY6N4ao", start:3    },
-  { name:"Soper, Voices from the Killing Jar III", rep:{v:-.55,a:-.30}, pred:{v:-.50,a:-.26}, color:"#93c5fd", videoId:"nnxsRegaZ60", start:626  },
-  { name:"Abrahamsen, Let Me Tell You I",          rep:{v: .50,a:-.35}, pred:{v: .46,a:-.30}, color:"#6ee7b7", videoId:"c6Eow6y3QJ4", start:1042 },
-  { name:"Weinberg, Table Talk",                   rep:{v:-.10,a: .70}, pred:{v:-.06,a: .64}, color:"#fca5a5", videoId:"ttF4dWnuhdM", start:33   },
+  { name:"Schnittke, Concerto Grosso I",           rep:{v:-.39,a:+.64}, pred:{v:-.28,a:+.53}, color:"#fca5a5", quadrant:"Tense / Anxious",   videoId:"fTTyS6mjZiI", start:315  },
+  { name:"Satoh, The Heavenly Spheres",            rep:{v:+.70,a:-.67}, pred:{v:+.61,a:-.59}, color:"#93c5fd", quadrant:"Calm / Serene",     videoId:"DM7C57d0D6I", start:352  },
+  { name:"Saariaho, Laterna Magica",               rep:{v:-.40,a:+.18}, pred:{v:-.29,a:+.15}, color:"#cbd5e1", quadrant:"Sad / Gloomy",      videoId:"wZC5cvfn8iw", start:1040 },
+  { name:"Adams, Harmonielehre III",               rep:{v:+.44,a:+.60}, pred:{v:+.35,a:+.52}, color:"#86efac", quadrant:"Excited / Joyful",  videoId:"peuuOYs5o38", start:420  },
+  { name:"Grisey, Vortex Temporum I",              rep:{v:-.62,a:+.50}, pred:{v:-.40,a:+.45}, color:"#fca5a5", quadrant:"Tense / Anxious",   videoId:"jOpRaC8lGDw", start:145  },
+  { name:"Norman, Companion Guide IX",             rep:{v:+.82,a:+.80}, pred:{v:+.66,a:+.68}, color:"#86efac", quadrant:"Excited / Joyful",  videoId:"aC5C--GYmSI", start:1579 },
+  { name:"Macklay, Many Many Cadences",            rep:{v:-.26,a:+.53}, pred:{v:-.20,a:+.49}, color:"#86efac", quadrant:"Excited / Joyful",  videoId:"QsFWaY6N4ao", start:3    },
+  { name:"Soper, Voices from the Killing Jar III", rep:{v:+.35,a:+.34}, pred:{v:+.25,a:+.23}, color:"#cbd5e1", quadrant:"Sad / Gloomy",      videoId:"nnxsRegaZ60", start:626  },
+  { name:"Abrahamsen, Let Me Tell You I",          rep:{v:+.42,a:-.14}, pred:{v:+.35,a:-.06}, color:"#93c5fd", quadrant:"Calm / Serene",     videoId:"c6Eow6y3QJ4", start:1042 },
+  { name:"Weinberg, Table Talk",                   rep:{v:-.23,a:+.39}, pred:{v:-.15,a:+.32}, color:"#fcd34d", quadrant:"Transitional",      videoId:"ttF4dWnuhdM", start:33   },
 ];
 
 const dotsG   = document.getElementById('dots');
@@ -162,13 +343,14 @@ function buildDots() {
     function makeDot(cx, cy, filled, label) {
       const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       g.style.cursor = 'pointer';
+      // Predicted outline: use a slightly darkened version of the piece color for contrast
       g.innerHTML = filled
         ? `<circle cx="${cx}" cy="${cy}" r="7" fill="${p.color}" stroke="#fff" stroke-width="2"/>
            <text x="${cx}" y="${cy-11}" font-size="10" fill="${p.color}" font-family="Inter,sans-serif" text-anchor="middle" font-weight="600">${i+1}</text>`
-        : `<circle cx="${cx}" cy="${cy}" r="7" fill="#fff" stroke="${p.color}" stroke-width="2.5" stroke-dasharray="3 2"/>
+        : `<circle cx="${cx}" cy="${cy}" r="7" fill="rgba(255,255,255,0.7)" stroke="${p.color}" stroke-width="2.5" stroke-dasharray="3 2"/>
            <text x="${cx}" y="${cy-11}" font-size="10" fill="${p.color}" font-family="Inter,sans-serif" text-anchor="middle" font-weight="600">${i+1}</text>`;
       g.addEventListener('mouseenter', () => {
-        tooltip.innerHTML = `<strong>${i+1}. ${p.name}</strong><br>${label}`;
+        tooltip.innerHTML = `<strong>${i+1}. ${p.name}</strong><br><span style="font-size:.8em;opacity:.8;">${p.quadrant}</span><br>${label}`;
         tooltip.style.opacity = '1';
       });
       g.addEventListener('mousemove', e => {

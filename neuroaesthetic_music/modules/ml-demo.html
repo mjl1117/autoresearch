@@ -29,6 +29,7 @@
     .q-btn.positive-low  { color:#1d4ed8; }
     .q-btn.negative-low  { color:#475569; }
     .q-btn.random-btn    { color:var(--violet);grid-column:1/-1; }
+    .q-btn.chord-btn     { color:#0891b2;grid-column:1/-1; }
     .q-btn small { font-weight:400;opacity:.65;font-size:.8em;display:block; }
 
     .play-btn {
@@ -83,6 +84,10 @@
       &#127922; Random Gesture
       <small>Any quadrant</small>
     </button>
+    <button class="q-btn chord-btn" data-quadrant="chord">
+      &#127931; Chord Gesture
+      <small>Gestures with harmonic chord voicing</small>
+    </button>
   </div>
 
   <button class="play-btn" id="btnPlay" disabled>&#9654; Play Gesture</button>
@@ -134,7 +139,9 @@ document.getElementById('quadrantGrid').addEventListener('click', e => {
 function pickGesture() {
   const pool = quadrant === 'random'
     ? gestures
-    : gestures.filter(g => g.quadrant === quadrant);
+    : quadrant === 'chord'
+      ? gestures.filter(g => g.events && g.events.some(e => e.chord?.enabled))
+      : gestures.filter(g => g.quadrant === quadrant);
   if (!pool.length) return null;
   // Avoid repeating the same gesture back-to-back
   let idx;

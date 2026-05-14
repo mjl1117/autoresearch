@@ -37,11 +37,82 @@
     .feature-track { flex:1;height:22px;background:var(--border);border-radius:999px;overflow:hidden; }
     .feature-fill { height:100%;border-radius:999px;background:linear-gradient(90deg,var(--indigo),var(--violet)); }
     .feature-val { font-size:.8rem;color:var(--muted);min-width:42px;text-align:right; }
+
+    /* Scroll cue */
+    .scroll-cue {
+      position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);
+      display:flex;flex-direction:column;align-items:center;gap:.4rem;
+      color:rgba(255,255,255,.55);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+      z-index:200;transition:opacity .4s;pointer-events:none;
+    }
+    .scroll-cue .mouse {
+      width:22px;height:34px;border:2px solid rgba(255,255,255,.45);border-radius:11px;position:relative;
+    }
+    .scroll-cue .mouse::after {
+      content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);
+      width:3px;height:7px;background:rgba(255,255,255,.65);border-radius:2px;
+      animation:scrollDot 1.6s ease-in-out infinite;
+    }
+    @keyframes scrollDot {
+      0%  { opacity:1;transform:translateX(-50%) translateY(0); }
+      80% { opacity:0;transform:translateX(-50%) translateY(8px); }
+      100%{ opacity:0;transform:translateX(-50%) translateY(8px); }
+    }
+
+    /* Spectralism sandbox */
+    .sandbox-section {
+      background:var(--bg);padding:4rem 2rem 5rem;max-width:880px;margin:0 auto;
+    }
+    .sandbox-controls {
+      display:flex;flex-wrap:wrap;align-items:center;gap:1rem;margin:1.5rem 0;
+    }
+    .sandbox-controls label { font-weight:600;font-size:.9rem;color:var(--text); }
+    .note-select {
+      font-family:Inter,sans-serif;font-size:1rem;font-weight:600;
+      padding:.4rem .9rem;border-radius:8px;border:1.5px solid var(--border);
+      background:var(--surface);color:var(--text);cursor:pointer;
+      appearance:none;-webkit-appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23475569' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right .7rem center;padding-right:2rem;
+    }
+    .play-all-btn {
+      background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;
+      border:none;border-radius:999px;padding:.55rem 1.5rem;
+      font-family:Inter,sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;
+      transition:opacity .2s;
+    }
+    .play-all-btn:hover { opacity:.88; }
+    .stop-btn {
+      background:var(--surface);border:1.5px solid var(--border);color:var(--text-2);
+      border-radius:999px;padding:.5rem 1.2rem;
+      font-family:Inter,sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;
+    }
+    .staff-wrap { overflow-x:auto;margin:1.5rem 0; }
+    .staff-wrap svg { display:block;min-width:700px; }
+    .partial-note { cursor:pointer;transition:opacity .15s; }
+    .partial-note:hover circle { filter:brightness(1.25); }
+    .partial-note.playing circle { filter:drop-shadow(0 0 6px var(--violet)); }
+    .sandbox-legend {
+      font-size:.8rem;color:var(--text-2);margin-top:.75rem;line-height:1.6;
+    }
+    .out-of-et { color:#f59e0b;font-weight:600; }
+
+    /* Clef glyphs use system music fonts only — no web font loaded.
+       Bravura was removed because its async load (font-display:swap) caused
+       a jarring layout shift: the page renders with Apple Symbols metrics,
+       then Bravura swaps in with different glyph dimensions.
+       Apple Symbols (macOS) and Segoe UI Symbol (Windows) both contain
+       U+1D11E (𝄞) and U+1D122 (𝄢) — no web font needed. */
   </style>
 </head>
 <body>
 
 <a href="../index.html#modules" class="back-link">&#8592; All Modules</a>
+
+<div class="scroll-cue" id="scrollCue">
+  <div class="mouse"></div>
+  <span>Scroll</span>
+</div>
 
 <div class="timbre-root" id="timbreRoot">
   <div class="timbre-stage" id="timbreStage">
@@ -96,6 +167,59 @@
   <div id="featureBars"></div>
 </div>
 
+<!-- Spectralism Sandbox -->
+<div class="sandbox-section">
+  <h2 style="margin-bottom:.5rem;">Spectralism Sandbox</h2>
+  <p style="color:var(--text-2);margin-bottom:.75rem;">
+    A vibrating string naturally divides into exact fractions of itself — a half, a third, a quarter, and so on.
+    Each division vibrates at an integer multiple of the fundamental frequency and produces a distinct pitch
+    called a <strong>partial</strong> (or harmonic). The diagram below shows what this looks like physically:
+    the gray dots are <em>nodes</em>, points on the string that stay perfectly still while everything else vibrates.
+  </p>
+  <p style="color:var(--text-2);margin-bottom:.75rem;">
+    Some of these partials land between the keys of a standard piano. A piano divides the octave into
+    12 equal steps (equal temperament), but the harmonic series follows the physics of vibrating strings —
+    not a 12-step grid. <strong>Partials 7, 11, 13, and 14</strong> (highlighted in orange below) produce
+    pitches that sit in the cracks between piano keys. To play them on a piano you would have to use the
+    nearest key, which is noticeably out of tune with the pure harmonic. Spectral composers like Grisey
+    treated these "off-key" partials as deliberate timbral colors rather than approximating them into
+    familiar chords.
+  </p>
+
+  <div id="vibStringWrap" style="margin:1rem 0 1.75rem;"></div>
+
+  <div class="sandbox-controls">
+    <label for="fundSelect">Fundamental:</label>
+    <select class="note-select" id="fundSelect">
+      <option value="C">C</option>
+      <option value="C#">C&#9839;</option>
+      <option value="D">D</option>
+      <option value="Eb">E&#9837;</option>
+      <option value="E">E</option>
+      <option value="F">F</option>
+      <option value="F#">F&#9839;</option>
+      <option value="G" selected>G</option>
+      <option value="Ab">A&#9837;</option>
+      <option value="A">A</option>
+      <option value="Bb">B&#9837;</option>
+      <option value="B">B</option>
+    </select>
+    <button class="play-all-btn" id="playAllBtn">&#9654; Play All</button>
+    <button class="stop-btn" id="stopBtn">&#9646;&#9646; Stop</button>
+  </div>
+
+  <div class="staff-wrap">
+    <svg id="staffSvg" viewBox="0 0 820 420" xmlns="http://www.w3.org/2000/svg"
+         style="font-family:Inter,sans-serif;"></svg>
+  </div>
+
+  <div class="sandbox-legend">
+    <span class="out-of-et">&#9679; Orange notes</span> fall between piano keys and cannot be played in tune on a standard instrument &nbsp;|&nbsp;
+    Click any notehead to hear that partial &nbsp;|&nbsp;
+    <em>1/n</em> = the fraction of the string that vibrates to produce the <em>n</em>th partial
+  </div>
+</div>
+
 <script>
 const STOPS_T = [
   [12,  10, 26],
@@ -128,7 +252,13 @@ function render(){
     curPhase = phase;
   }
 }
-window.addEventListener('scroll', render, { passive:true });
+const scrollCue = document.getElementById('scrollCue');
+window.addEventListener('scroll', () => {
+  render();
+  const total = root.offsetHeight - window.innerHeight;
+  const p = Math.max(0, Math.min(1, -root.getBoundingClientRect().top / total));
+  scrollCue.style.opacity = p < 0.06 ? '1' : '0';
+}, { passive:true });
 render();
 
 // Feature importance bars (values from poster)
@@ -153,6 +283,450 @@ FEATURES.forEach(f => {
       <div class="feature-val">${(f.importance*100).toFixed(1)}%</div>
     </div>`;
 });
+</script>
+
+<script>
+// ── Vibrating String Modes Diagram ────────────────────────────────────────
+// Recreates the classical "string harmonics" illustration: each row shows
+// the standing-wave shape for mode n (fundamental + first 6 harmonics).
+// The two mirrored sine envelopes bound the string's maximum displacement.
+// Gray dots mark the nodes (points of zero motion) at positions k/n.
+(function () {
+  const ns = 'http://www.w3.org/2000/svg';
+  const N = 7;          // fundamental + 6 harmonics
+  const SPAN = 400;     // horizontal string length in px
+  const LEFT = 58;      // left margin (for fraction labels)
+  const TOP  = 18;      // top padding
+  const ROW  = 54;      // height per mode row
+  const AMP  = 15;      // max displacement (half-amplitude)
+  const STEPS = 300;    // path resolution
+  const W = LEFT + SPAN + 16;
+  const H = TOP + N * ROW + 14;
+
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('style', 'max-width:540px;display:block;border-radius:10px;border:1px solid var(--border);background:var(--surface);');
+
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k,v));
+    (parent || svg).appendChild(e);
+    return e;
+  }
+  function txt(content, attrs, parent) {
+    const t = el('text', attrs, parent);
+    t.textContent = content;
+    return t;
+  }
+
+  // "0" and "1" endpoint labels at top
+  txt('0', { x: LEFT, y: TOP - 4, 'font-size': '11', fill: 'var(--text-2)', 'text-anchor': 'middle' });
+  txt('1', { x: LEFT + SPAN, y: TOP - 4, 'font-size': '11', fill: 'var(--text-2)', 'text-anchor': 'middle' });
+
+  for (let n = 1; n <= N; n++) {
+    const cy = TOP + (n - 0.5) * ROW;
+
+    // Faint center line
+    el('line', { x1: LEFT, y1: cy, x2: LEFT + SPAN, y2: cy,
+      stroke: '#e2e7f0', 'stroke-width': '1' });
+
+    // Upper + lower envelope as a single closed path (creates lens-shaped lobes)
+    let d = '';
+    for (let i = 0; i <= STEPS; i++) {
+      const t = i / STEPS;
+      const sx = (LEFT + t * SPAN).toFixed(1);
+      const sy = (cy - AMP * Math.sin(n * Math.PI * t)).toFixed(1);
+      d += (i === 0 ? 'M' : 'L') + sx + ',' + sy + ' ';
+    }
+    // trace back along lower envelope
+    for (let i = STEPS; i >= 0; i--) {
+      const t = i / STEPS;
+      const sx = (LEFT + t * SPAN).toFixed(1);
+      const sy = (cy + AMP * Math.sin(n * Math.PI * t)).toFixed(1);
+      d += 'L' + sx + ',' + sy + ' ';
+    }
+    d += 'Z';
+    el('path', { d, fill: 'none', stroke: '#1e293b', 'stroke-width': '1.5',
+      'stroke-linejoin': 'round' });
+
+    // Endpoint anchor dots
+    [0, 1].forEach(t => {
+      el('circle', { cx: LEFT + t * SPAN, cy, r: '3', fill: '#1e293b' });
+    });
+
+    // Node dots (gray) at k/n for k=1..n-1, label the first one with 1/n
+    for (let k = 1; k < n; k++) {
+      const nx = (LEFT + (k / n) * SPAN).toFixed(1);
+      el('circle', { cx: nx, cy, r: '4', fill: '#94a3b8' });
+    }
+
+    // Fraction label at left (1/n for n>1; blank for fundamental)
+    const label = n === 1 ? '' : `1/${n}`;
+    if (label) {
+      // position label at first node x, above center line
+      const firstNodeX = LEFT + (1 / n) * SPAN;
+      txt(label, {
+        x: firstNodeX, y: cy - AMP - 5,
+        'font-size': '10.5', fill: 'var(--text-2)',
+        'text-anchor': 'middle', 'font-family': 'Inter,sans-serif'
+      });
+    }
+  }
+
+  document.getElementById('vibStringWrap').appendChild(svg);
+})();
+</script>
+
+<script>
+// ── Spectralism Sandbox ───────────────────────────────────────────────────
+// Fundamental frequencies for C2–B2 range (MIDI octave 2)
+const FUND_HZ = {
+  'C': 65.41, 'C#': 69.30, 'D': 73.42, 'Eb': 77.78,
+  'E': 82.41, 'F':  87.31, 'F#': 92.50, 'G': 98.00,
+  'Ab':103.83, 'A':110.00, 'Bb':116.54, 'B':123.47
+};
+
+// Partials 7, 11, 13, 14 deviate >14 cents from 12-TET
+const OUT_OF_ET = new Set([7, 11, 13, 14]);
+
+// ── Note naming ────────────────────────────────────────────────────────────
+// Given a frequency, return {name, octave, cents} closest 12-TET pitch
+function freqToNote(freq) {
+  const A4 = 440, MIDI_A4 = 69;
+  const midi = MIDI_A4 + 12 * Math.log2(freq / A4);
+  const midiRound = Math.round(midi);
+  const cents = Math.round((midi - midiRound) * 100);
+  const names = ['C','C♯','D','E♭','E','F','F♯','G','A♭','A','B♭','B'];
+  const name = names[((midiRound % 12) + 12) % 12];
+  const octave = Math.floor(midiRound / 12) - 1;
+  return { name, octave, cents, midi: midiRound };
+}
+
+// ── Grand staff SVG geometry ───────────────────────────────────────────────
+// STEP = 8px per diatonic step; midCy = 260 (middle C ledger line between staves)
+const STEP = 8;
+const MID_C_Y = 260;
+
+// Diatonic pitch class → position offset from C (steps from C upward in scale)
+const DIAT_STEP = { 'C':0,'D':1,'E':2,'F':3,'G':4,'A':5,'B':6 };
+// Enharmonic spellings map to the diatonic step
+const ENHARMONIC = { 'C♯':'C','E♭':'E','F♯':'F','A♭':'A','B♭':'B' };
+
+function noteY(name, octave) {
+  // Resolve accidentals to their diatonic base for vertical positioning
+  const base = ENHARMONIC[name] || name;
+  const diat = DIAT_STEP[base] ?? 0;
+  // Each octave = 7 diatonic steps; C4 (middle C) = MID_C_Y
+  const stepsFromC4 = (octave - 4) * 7 + diat;
+  return MID_C_Y - stepsFromC4 * STEP;
+}
+
+// ── Staff line y-positions ──────────────────────────────────────────────────
+// Bass clef lines: G2 B2 D3 F3 A3
+const BASS_LINES   = [340, 324, 308, 292, 276];
+// Treble clef lines: E4 G4 B4 D5 F5
+const TREBLE_LINES = [244, 228, 212, 196, 180];
+const LEFT_MARGIN = 145;
+const COL_W = 70;  // horizontal spacing per partial
+const N_PARTIALS = 16;
+
+function buildStaff(fundamentalKey) {
+  const svg = document.getElementById('staffSvg');
+  svg.innerHTML = '';
+  const W = LEFT_MARGIN + N_PARTIALS * COL_W + 80;
+  const H = 420;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+  const ns = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k,v));
+    (parent || svg).appendChild(e);
+    return e;
+  }
+  function txt(content, attrs, parent) {
+    const e = el('text', attrs, parent);
+    e.textContent = content;
+    return e;
+  }
+
+  // Background
+  el('rect', {x:0,y:0,width:W,height:H,fill:'var(--surface)',rx:12});
+
+  // Staff lines
+  const staffX1 = LEFT_MARGIN - 10;
+  const staffX2 = W - 20;
+  [...TREBLE_LINES, ...BASS_LINES].forEach(y => {
+    el('line', {x1:staffX1, y1:y, x2:staffX2, y2:y,
+      stroke:'var(--border)', 'stroke-width':'1.5'});
+  });
+
+  // Clef symbols — standard Unicode Musical Symbols (U+1D11E treble, U+1D122 bass).
+  // These are present in Apple Symbols (macOS), Segoe UI Symbol (Windows), and Bravura.
+  // y = SVG baseline. Apple Symbols font metrics (empirically tuned):
+  //   Treble (font-size=130): y=248 — shifts glyph up so bottom scroll clears the
+  //     bass clef area; G-curl lands near G4 (2nd treble staff line, y=228).
+  //   Bass   (font-size=72):  F-dots ~34px above baseline → baseline = F3(292)+34 = 326
+  // 𝄞 = U+1D11E treble clef
+  txt('𝄞', {x:staffX1+4, y:248, 'font-size':'130',
+    'font-family':'Apple Symbols,Segoe UI Symbol,serif', fill:'var(--text)'});
+  // 𝄢 = U+1D122 bass clef
+  txt('𝄢', {x:staffX1+4, y:326, 'font-size':'72',
+    'font-family':'Apple Symbols,Segoe UI Symbol,serif', fill:'var(--text)'});
+
+  // Grand staff: thick bracket bar + piano curly brace
+  const by1 = TREBLE_LINES[4] - 8;   // top of system  (y=172)
+  const by2 = BASS_LINES[0]  + 6;    // bottom of system (y=346)
+  const mid = (by1 + by2) / 2;       // midpoint       (y=259)
+  const brx  = staffX1 - 14;  // right reference edge
+  const sw   = 16;             // scroll rightward bulge
+  const sh   = 5;              // scroll half-width at junction
+  const tipX = brx - 24;      // centre tip (leftmost extent)
+  const jYt  = by1 + 28;      // top    scroll-to-body junction y
+  const jYb  = by2 - 28;      // bottom scroll-to-body junction y
+  // C1-mirror CP1 x values (mirror of scroll CP2 across the junction point)
+  const oCP1 = 2*(brx+sh) - (brx+sw);    // outer body  (= brx - sw + 2*sh)
+  const iCP1 = 2*(brx-sh) - (brx+sw-4);  // inner body  (= brx - sw + 4 - 2*sh... wait)
+
+  // Thick vertical bar
+  el('line', {x1:staffX1-2, y1:by1, x2:staffX1-2, y2:by2,
+    stroke:'var(--text)', 'stroke-width':'2.5'});
+
+  // Filled closed-outline brace.
+  // Key fixes vs previous version:
+  //   1. Scrolls start VERTICALLY DOWNWARD at their tips: CP1 is directly
+  //      below the tip (same x), so the initial tangent is (0, +1) / (0,-1).
+  //      Previous version had CP1 to the right of the tip → wrong direction.
+  //   2. Centre tip uses near-tip control points (±1px) → 90° cusp, visually
+  //      sharp point.  Previous version used ±10px → gradual/rounded.
+  //   3. All junctions are C1-continuous: each segment's CP1 is the mirror of
+  //      the previous segment's CP2 across their shared endpoint.
+  const braceD = [
+    `M ${brx},${by1}`,
+    // outer edge ↓
+    `C ${brx},${by1+14}      ${brx+sw},${jYt}   ${brx+sh},${jYt}`,  // top scroll  (starts ↓)
+    `C ${oCP1},${jYt}        ${tipX+1},${mid-1} ${tipX},${mid}`,     // upper body  (C1 at junction)
+    `C ${tipX+1},${mid+1}    ${oCP1},${jYb}     ${brx+sh},${jYb}`,   // lower body  (mirror)
+    `C ${brx+sw},${jYb}      ${brx},${by2-14}   ${brx},${by2}`,      // bot  scroll (ends ↓→tip)
+    // inner edge ↑
+    `C ${brx},${by2-14}      ${brx+sw-4},${jYb} ${brx-sh},${jYb}`,   // bot  scroll inner
+    `C ${iCP1},${jYb}        ${tipX-1},${mid+1} ${tipX},${mid}`,     // lower body inner
+    `C ${tipX-1},${mid-1}    ${iCP1},${jYt}     ${brx-sh},${jYt}`,   // upper body inner
+    `C ${brx+sw-4},${jYt}    ${brx},${by1+14}   ${brx},${by1}`,      // top  scroll inner (ends ↑)
+    'Z'
+  ].join(' ');
+  el('path', {d:braceD, fill:'var(--text)', stroke:'none'});
+
+  const fundHz = FUND_HZ[fundamentalKey];
+
+  // Draw each partial
+  for (let n = 1; n <= N_PARTIALS; n++) {
+    const freq = fundHz * n;
+    const {name, octave, cents} = freqToNote(freq);
+    const cy = noteY(name, octave);
+    const cx = LEFT_MARGIN + (n - 0.5) * COL_W;
+    const isOOT = OUT_OF_ET.has(n);
+
+    // Column x midpoint
+    const x = LEFT_MARGIN + (n - 1) * COL_W + COL_W / 2;
+
+    // Ledger lines if needed
+    // Above treble staff (above F5=y180): every 2 steps
+    if (cy < TREBLE_LINES[4] - STEP) {
+      for (let ly = TREBLE_LINES[4] - 2*STEP; ly >= cy - STEP; ly -= 2*STEP) {
+        if (ly < TREBLE_LINES[4]) {
+          el('line',{x1:x-12,y1:ly,x2:x+12,y2:ly,stroke:'var(--text)',
+            'stroke-width':'1.5','opacity':'0.5'});
+        }
+      }
+    }
+    // Middle C ledger line (C4 = MID_C_Y = 260)
+    if (Math.abs(cy - MID_C_Y) < 2) {
+      el('line',{x1:x-12,y1:MID_C_Y,x2:x+12,y2:MID_C_Y,
+        stroke:'var(--text)','stroke-width':'1.5','opacity':'0.6'});
+    }
+    // Below bass staff (below G2=y340)
+    if (cy > BASS_LINES[0] + STEP) {
+      for (let ly = BASS_LINES[0] + 2*STEP; ly <= cy + STEP; ly += 2*STEP) {
+        el('line',{x1:x-12,y1:ly,x2:x+12,y2:ly,stroke:'var(--text)',
+          'stroke-width':'1.5','opacity':'0.5'});
+      }
+    }
+
+    // Notehead group (clickable)
+    const g = el('g', {
+      class:'partial-note',
+      'data-n': n,
+      'data-freq': freq.toFixed(2),
+      role:'button',
+      tabindex:'0',
+      'aria-label': `Partial ${n}: ${name}${octave} ${freq.toFixed(0)} Hz`
+    });
+
+    // Accidental to the left of the notehead (♯ or ♭).
+    // font-size=17 makes the main body of the accidental roughly the same height as the
+    // notehead (ry=5.5, total ~11px). Positioned with text-anchor='middle' so the
+    // horizontal center of the glyph is 16px to the left of the notehead center.
+    //
+    // Vertical alignment: dominant-baseline='middle' centers the glyph bounding box.
+    // For ♯ the two horizontal lines sit at the bounding-box middle → y = cy.
+    // For ♭ the white oval is ~25% below the bounding-box middle → shift y down 5px
+    //   so the oval (the "white part") lands at cy.
+    const accSym = name.includes('♯') ? '♯' : name.includes('♭') ? '♭' : null;
+    if (accSym) {
+      txt(accSym, {
+        x: x - 16,
+        y: accSym === '♭' ? cy + 5 : cy,
+        'font-size': '17',
+        fill: isOOT ? '#f59e0b' : 'var(--indigo)',
+        'text-anchor': 'middle',
+        'dominant-baseline': 'middle'
+      }, g);
+    }
+
+    // Notehead
+    el('ellipse', {
+      cx: x, cy,
+      rx:'7', ry:'5.5',
+      fill: isOOT ? '#f59e0b' : 'var(--indigo)',
+      stroke: isOOT ? '#d97706' : 'var(--indigo-d)',
+      'stroke-width':'1'
+    }, g);
+
+    // Stem (down for upper staff, up for lower)
+    const stemUp = cy > MID_C_Y;
+    if (stemUp) {
+      el('line',{x1:x+6,y1:cy,x2:x+6,y2:cy-32,stroke:isOOT?'#f59e0b':'var(--indigo)','stroke-width':'1.5'},g);
+    } else {
+      el('line',{x1:x-6,y1:cy,x2:x-6,y2:cy+32,stroke:isOOT?'#f59e0b':'var(--indigo)','stroke-width':'1.5'},g);
+    }
+
+    // Partial number label above/below
+    txt(`${n}`, {
+      x, y: stemUp ? cy + 44 : cy - 42,
+      'font-size':'10','font-weight':'600',
+      fill: isOOT ? '#f59e0b' : 'var(--indigo)',
+      'text-anchor':'middle'
+    }, g);
+
+    // Fraction label (1/n)
+    txt(`1/${n}`, {
+      x, y: stemUp ? cy + 55 : cy - 52,
+      'font-size':'8.5', fill:'var(--muted)', 'text-anchor':'middle'
+    }, g);
+
+    // Note name + Hz label
+    const accName = name.replace('♯','#').replace('♭','b');
+    const centsStr = cents === 0 ? '' : (cents > 0 ? `+${cents}¢` : `${cents}¢`);
+    const ootMark  = isOOT ? ' ⚠' : '';
+    txt(`${name}${ootMark}`, {
+      x, y: stemUp ? cy + 68 : cy - 64,
+      'font-size':'9','font-weight': isOOT ? '700' : '500',
+      fill: isOOT ? '#f59e0b' : 'var(--text-2)',
+      'text-anchor':'middle'
+    }, g);
+    if (centsStr) {
+      txt(centsStr, {
+        x, y: stemUp ? cy + 79 : cy - 74,
+        'font-size':'8', fill:'var(--muted)', 'text-anchor':'middle'
+      }, g);
+    }
+    txt(`${freq.toFixed(0)} Hz`, {
+      x, y: stemUp ? cy + (centsStr ? 90 : 79) : cy - (centsStr ? 84 : 74),
+      'font-size':'8', fill:'var(--muted)', 'text-anchor':'middle'
+    }, g);
+  }
+
+  // Attach click listeners
+  document.querySelectorAll('.partial-note').forEach(g => {
+    g.addEventListener('click',  () => playSinglePartial(+g.dataset.freq, g));
+    g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') playSinglePartial(+g.dataset.freq, g); });
+  });
+}
+
+// ── Web Audio ──────────────────────────────────────────────────────────────
+let audioCtx = null;
+let activeNodes = [];
+
+function ensureCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  else if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function stopAll() {
+  activeNodes.forEach(n => { try { n.stop?.(); } catch(_){} try { n.disconnect(); } catch(_){} });
+  activeNodes = [];
+  document.querySelectorAll('.partial-note.playing').forEach(g => g.classList.remove('playing'));
+}
+
+function playFreq(freq, duration = 2.0, groupEl = null) {
+  ensureCtx();
+  const amp = 1 / Math.log2(freq / 30 + 1) * 0.18; // natural rolloff
+  const masterGain = audioCtx.createGain();
+  masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+  masterGain.gain.linearRampToValueAtTime(amp, audioCtx.currentTime + 0.05);
+  masterGain.gain.setValueAtTime(amp, audioCtx.currentTime + duration - 0.4);
+  masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration);
+  masterGain.connect(audioCtx.destination);
+
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+  osc.connect(masterGain);
+  osc.start(audioCtx.currentTime);
+  osc.stop(audioCtx.currentTime + duration + 0.05);
+  activeNodes.push(osc, masterGain);
+
+  if (groupEl) {
+    groupEl.classList.add('playing');
+    setTimeout(() => groupEl.classList.remove('playing'), (duration + 0.1) * 1000);
+  }
+}
+
+function playSinglePartial(freq, groupEl) {
+  stopAll();
+  playFreq(freq, 2.0, groupEl);
+}
+
+function playAll() {
+  stopAll();
+  ensureCtx();
+  const fundKey = document.getElementById('fundSelect').value;
+  const fundHz  = FUND_HZ[fundKey];
+  const groups  = [...document.querySelectorAll('.partial-note')];
+  groups.forEach((g, i) => {
+    const freq = fundHz * (i + 1);
+    const t = audioCtx.currentTime + i * 0.35;
+    const amp = 1 / Math.log2(freq / 30 + 1) * 0.18;
+    const masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(0, t);
+    masterGain.gain.linearRampToValueAtTime(amp, t + 0.05);
+    masterGain.gain.setValueAtTime(amp, t + 1.6);
+    masterGain.gain.linearRampToValueAtTime(0, t + 2.0);
+    masterGain.connect(audioCtx.destination);
+    const osc = audioCtx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    osc.connect(masterGain);
+    osc.start(t);
+    osc.stop(t + 2.1);
+    activeNodes.push(osc, masterGain);
+    setTimeout(() => {
+      g.classList.add('playing');
+      setTimeout(() => g.classList.remove('playing'), 2000);
+    }, i * 350);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+const fundSelect = document.getElementById('fundSelect');
+buildStaff(fundSelect.value);
+fundSelect.addEventListener('change', () => {
+  stopAll();
+  buildStaff(fundSelect.value);
+});
+document.getElementById('playAllBtn').addEventListener('click', playAll);
+document.getElementById('stopBtn').addEventListener('click', stopAll);
 </script>
 </body>
 </html>

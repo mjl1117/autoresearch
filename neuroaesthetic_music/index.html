@@ -129,8 +129,8 @@
     }
     .module-section-head p { font-size: 1rem; color: var(--text-2); margin-top: .5rem; }
 
-    /* Mobile: hero spacing corrections */
-    @media (max-width: 768px) {
+    /* Mobile: hero spacing corrections — pointer:coarse targets touch screens directly */
+    @media (pointer: coarse) {
       .dot-nav { display: none !important; }
       .scroll-phase { padding: 1.25rem; padding-top: 3.5rem; }
       .phase-headline { font-size: clamp(2.25rem, 9vw, 3.5rem); }
@@ -338,8 +338,8 @@ function render() {
   stage.style.background = col;
   nav.style.color        = tcol;
 
-  // Update dot colors to match text (desktop only)
-  if (window.innerWidth > 768) {
+  // Update dot colors to match text (non-touch devices only)
+  if (!window.matchMedia('(pointer: coarse)').matches) {
     dots.forEach(d => {
       d.style.borderColor = tcol.replace('rgb', 'rgba').replace(')', ',.55)');
       if (d.classList.contains('active')) d.style.background = tcol;
